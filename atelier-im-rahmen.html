@@ -1,0 +1,618 @@
+<!doctype html>
+<html lang="de-CH" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Atelier im Rahmen | Gasserwerk Design-Labor</title>
+  <style>
+    :root {
+      --frame: #0b4a3d;
+      --frame-deep: #07382f;
+      --frame-line: #316b5e;
+      --frame-content: #f4f1e8;
+      --canvas: #e8e5dc;
+      --work: #fbfaf6;
+      --raised: #fffefa;
+      --inset: #f1efe8;
+      --lane: #f5f3ed;
+      --ink: #18211e;
+      --ink-soft: #5d6864;
+      --ink-faint: #7c8782;
+      --line: #d4d8d2;
+      --line-strong: #afb9b2;
+      --green: #086d57;
+      --green-soft: #dfeee8;
+      --blue: #3568a8;
+      --blue-soft: #e4ecf7;
+      --amber: #9b6b27;
+      --amber-soft: #f4ead7;
+      --violet: #78598a;
+      --violet-soft: #eee7f1;
+      --red: #a33d35;
+      --red-soft: #f6e3e0;
+      --graphite: #66716d;
+      --overlay: rgb(8 28 23 / 38%);
+      --shadow-work: 0 20px 55px rgb(34 55 47 / 14%);
+      --shadow-raised: 0 18px 45px rgb(25 42 36 / 18%);
+      --sans: "Aptos", "Trebuchet MS", sans-serif;
+      --serif: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
+    }
+
+    html[data-theme="evening"] {
+      --frame: #163f36;
+      --frame-deep: #0d2b25;
+      --frame-line: #3f6259;
+      --canvas: #27322e;
+      --work: #343d39;
+      --raised: #3d4843;
+      --inset: #2d3733;
+      --lane: #303a36;
+      --ink: #f2efe6;
+      --ink-soft: #c0c8c3;
+      --ink-faint: #9ca8a2;
+      --line: #4b5852;
+      --line-strong: #697770;
+      --green: #6bc9a9;
+      --green-soft: #24473c;
+      --blue: #91b8e7;
+      --blue-soft: #30465e;
+      --amber: #e1b873;
+      --amber-soft: #4d3d27;
+      --violet: #c4a8d2;
+      --violet-soft: #45384b;
+      --red: #ef9087;
+      --red-soft: #532f2c;
+      --graphite: #aeb8b3;
+      --overlay: rgb(3 12 10 / 58%);
+      --shadow-work: 0 16px 45px rgb(0 0 0 / 22%);
+      --shadow-raised: 0 18px 48px rgb(0 0 0 / 32%);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; }
+    body { margin: 0; overflow: hidden; color: var(--ink); background: var(--frame-deep); font-family: var(--sans); font-size: 15px; line-height: 1.42; }
+    button, input, select, textarea { font: inherit; }
+    button, select { cursor: pointer; }
+    button:focus-visible, input:focus-visible, select:focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 58%, transparent); outline-offset: 2px; }
+    button:disabled { cursor: not-allowed; opacity: .54; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { font-family: var(--sans); }
+    .tabular, time, .time, .metric-value, .appointment-time, .price { font-variant-numeric: tabular-nums; }
+
+    .lab-bar {
+      height: 40px; display: flex; align-items: center; gap: 12px; padding: 0 13px;
+      color: #303934; background: #ddd8cc; border-bottom: 1px solid #c2bbac; position: relative; z-index: 100;
+    }
+    .lab-mark { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+    .lab-mark::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #a8493f; box-shadow: 0 0 0 3px rgb(168 73 63 / 14%); }
+    .lab-note { color: #68685f; font-size: 11px; white-space: nowrap; }
+    .lab-controls { margin-left: auto; display: flex; align-items: center; gap: 7px; }
+    .lab-control { display: flex; align-items: center; gap: 5px; }
+    .lab-control label { color: #6e6b61; font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+    .lab-select, .lab-button, .density-button { min-height: 28px; padding: 3px 8px; border: 1px solid #aaa494; border-radius: 8px; color: #28332e; background: #f5f2e9; font-size: 11px; font-weight: 750; }
+    .lab-segment { display: flex; padding: 2px; border: 1px solid #aaa494; border-radius: 9px; background: #ccc6b9; }
+    .density-button { min-height: 24px; border: 0; background: transparent; }
+    .density-button.is-active { background: #f8f5ec; box-shadow: 0 1px 4px rgb(0 0 0 / 12%); }
+
+    .product-shell { height: calc(100vh - 40px); display: grid; grid-template-columns: 208px minmax(0, 1fr); gap: 10px; padding: 10px 10px 10px 0; background: var(--frame); }
+    .sidebar { min-height: 0; display: flex; flex-direction: column; padding: 18px 13px 13px; color: var(--frame-content); overflow: hidden; }
+    .product-signature { display: flex; align-items: center; gap: 8px; margin: 0 8px 20px; color: #b6d2c8; font-size: 10px; font-weight: 850; letter-spacing: .17em; text-transform: uppercase; }
+    .signature-seal { width: 27px; height: 27px; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 28%); border-radius: 50%; color: #e3eee9; font-family: var(--serif); font-size: 14px; }
+    .salon-identity { margin: 0 8px 22px; padding: 0 0 18px; border-bottom: 1px solid rgb(255 255 255 / 17%); }
+    .salon-identity h2 { margin: 0 0 6px; font-size: 25px; line-height: 1.03; letter-spacing: -.025em; }
+    .salon-identity p { margin: 0; color: #b8d0c7; font-size: 12px; }
+    .nav-label { margin: 0 9px 7px; color: #91b5a8; font-size: 9px; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
+    .main-nav { display: grid; gap: 3px; }
+    .nav-button { min-height: 43px; width: 100%; display: flex; align-items: center; gap: 10px; padding: 0 11px; border: 0; border-radius: 11px; color: #dce9e4; background: transparent; text-align: left; font-weight: 680; }
+    .nav-button:hover { background: rgb(255 255 255 / 8%); }
+    .nav-button.is-active { color: white; background: rgb(255 255 255 / 14%); box-shadow: inset 3px 0 0 #a9d6c6; }
+    .nav-icon { width: 23px; color: #a8cbbf; text-align: center; font-size: 13px; }
+    .rail-spacer { flex: 1; }
+    .rail-context { padding: 12px 9px; border-top: 1px solid rgb(255 255 255 / 16%); }
+    .rail-context span { display: block; color: #91b5a8; font-size: 9px; font-weight: 800; letter-spacing: .13em; text-transform: uppercase; }
+    .rail-context strong { display: block; margin-top: 4px; font-size: 12px; }
+    .rail-account { display: flex; align-items: center; gap: 9px; margin-top: 10px; padding: 9px; border-radius: 11px; background: rgb(0 0 0 / 12%); }
+    .avatar { width: 34px; height: 34px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: #16463b; background: #f3f0e7; font-weight: 800; }
+    .rail-account strong, .rail-account small { display: block; }
+    .rail-account small { color: #abc8bd; font-size: 10px; }
+
+    .workspace { min-width: 0; min-height: 0; display: grid; grid-template-rows: 76px minmax(0, 1fr); overflow: hidden; border: 1px solid rgb(255 255 255 / 18%); border-radius: 24px; background: var(--canvas); box-shadow: var(--shadow-work); }
+    .global-header { min-width: 0; display: grid; grid-template-columns: minmax(235px, .8fr) minmax(280px, 620px) auto; align-items: center; gap: 16px; padding: 12px 18px 12px 22px; background: var(--work); border-bottom: 1px solid var(--line); }
+    .title-kicker { margin-bottom: 1px; color: var(--green); font-size: 9px; font-weight: 850; letter-spacing: .14em; text-transform: uppercase; }
+    .title-line { display: flex; align-items: baseline; gap: 11px; min-width: 0; }
+    .title-line h1 { margin: 0; font-size: 27px; line-height: 1; letter-spacing: -.025em; }
+    .page-context { overflow: hidden; color: var(--ink-soft); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .search-wrap { position: relative; min-width: 0; }
+    .global-search { width: 100%; height: 42px; padding: 0 76px 0 38px; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); background: var(--raised); }
+    .search-symbol { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--ink-soft); }
+    .shortcut { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); padding: 2px 6px; border: 1px solid var(--line); border-radius: 6px; color: var(--ink-faint); background: var(--inset); font-size: 9px; }
+    .global-actions { display: flex; align-items: center; justify-content: flex-end; gap: 7px; }
+
+    .button { min-height: 40px; display: inline-flex; align-items: center; justify-content: center; gap: 7px; padding: 0 13px; border: 1px solid var(--line-strong); border-radius: 10px; color: var(--ink); background: var(--raised); font-weight: 750; }
+    .button:hover { border-color: var(--blue); }
+    .button.primary { color: white; border-color: var(--green); background: var(--green); }
+    html[data-theme="evening"] .button.primary { color: #102b24; }
+    .button.blue { color: white; border-color: var(--blue); background: var(--blue); }
+    html[data-theme="evening"] .button.blue { color: #172333; }
+    .button.danger { color: var(--red); border-color: color-mix(in srgb, var(--red) 46%, var(--line)); background: var(--red-soft); }
+    .button.small { min-height: 34px; padding: 0 10px; font-size: 12px; }
+    .button.icon { width: 38px; padding: 0; }
+    .workspace-body { min-width: 0; min-height: 0; overflow: auto; padding: 16px; scrollbar-gutter: stable; }
+    .workspace-body.day-mode { overflow: hidden; }
+    .screen { min-height: 100%; }
+    .paper { background: var(--work); border: 1px solid var(--line); border-radius: 17px; }
+    .raised { background: var(--raised); border: 1px solid var(--line-strong); box-shadow: var(--shadow-raised); }
+    .eyebrow { color: var(--green); font-size: 9px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    .muted { color: var(--ink-soft); }
+
+    .status { display: inline-flex; align-items: center; gap: 6px; min-height: 24px; padding: 2px 8px; border-radius: 999px; color: var(--ink); background: var(--inset); font-size: 11px; font-weight: 720; }
+    .status::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--graphite); }
+    .status.confirmed::before { background: var(--green); }
+    .status.pending::before { background: var(--amber); }
+    .status.arrived::before, .status.visit::before { background: var(--violet); }
+    .status.no-show::before { background: var(--red); }
+    .status.cancelled::before, .status.done::before { background: var(--graphite); }
+
+    .today-layout { display: grid; grid-template-columns: minmax(0, 1.7fr) minmax(275px, .72fr); gap: 13px; }
+    .section-head { min-height: 64px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px 16px; border-bottom: 1px solid var(--line); }
+    .section-head h2 { margin: 0 0 2px; font-size: 18px; }
+    .next-list { display: grid; }
+    .next-row { width: 100%; min-height: 68px; display: grid; grid-template-columns: 56px 1fr auto; align-items: center; gap: 11px; padding: 9px 16px; border: 0; border-bottom: 1px solid var(--line); color: var(--ink); background: transparent; text-align: left; }
+    .next-row:last-child { border-bottom: 0; }
+    .next-row:hover { background: var(--inset); }
+    .next-row strong, .next-row small { display: block; }
+    .next-row small { color: var(--ink-soft); font-size: 12px; }
+    .attention-list { display: grid; gap: 8px; padding: 12px; }
+    .attention-item { padding: 11px; border-left: 3px solid var(--amber); background: var(--inset); }
+    .attention-item strong, .attention-item span { display: block; }
+    .attention-item span { margin-top: 2px; color: var(--ink-soft); font-size: 12px; }
+    .metric-line { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-top: 13px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--line); }
+    .metric { min-height: 90px; padding: 13px 15px; background: var(--work); }
+    .metric-label { color: var(--ink-soft); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .metric-value { display: block; margin: 6px 0 1px; font-size: 25px; line-height: 1; }
+    .metric small { color: var(--ink-soft); font-size: 11px; }
+
+    .local-toolbar { min-height: 52px; display: flex; align-items: center; gap: 7px; padding: 7px 10px; border-bottom: 1px solid var(--line); background: var(--work); }
+    .date-label { min-width: 178px; }
+    .toolbar-spacer { flex: 1; }
+    .search-hint { min-width: max-content; color: var(--ink-soft); font-size: 11px; }
+    .period-switch { display: flex; padding: 2px; border: 1px solid var(--line); border-radius: 9px; background: var(--inset); }
+    .period-switch button { min-height: 31px; padding: 0 9px; border: 0; border-radius: 7px; color: var(--ink-soft); background: transparent; font-size: 11px; font-weight: 750; }
+    .period-switch button.is-active { color: var(--blue); background: var(--blue-soft); }
+    .day-screen { height: 100%; min-height: 0; display: grid; grid-template-rows: auto minmax(0, 1fr); overflow: hidden; }
+    .day-viewport-wrap { min-width: 0; min-height: 0; position: relative; overflow: hidden; }
+    .day-viewport { width: 100%; height: 100%; min-width: 0; min-height: 0; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable both-edges; background: var(--work); }
+    .day-grid { height: 820px; display: grid; grid-template-columns: 70px repeat(var(--staff-count), minmax(122px, 1fr)); position: relative; }
+    .time-column, .staff-column { position: relative; border-right: 1px solid var(--line); }
+    .time-column { position: sticky; left: 0; z-index: 8; background: var(--work); }
+    .column-head { height: 62px; position: sticky; top: 0; z-index: 7; display: flex; align-items: center; gap: 8px; padding: 8px; background: var(--work); border-bottom: 1px solid var(--line-strong); }
+    .time-column .column-head { z-index: 10; justify-content: center; color: var(--ink-soft); font-size: 10px; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+    .staff-column:nth-child(even) { background: var(--lane); }
+    .staff-avatar { width: 28px; height: 28px; flex: 0 0 auto; display: grid; place-items: center; border-radius: 50%; color: var(--ink); background: var(--inset); font-weight: 800; }
+    .staff-copy { min-width: 0; }
+    .staff-copy strong, .staff-copy small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .staff-copy strong { font-size: 13px; }
+    .staff-copy small { color: var(--ink-soft); font-size: 10px; }
+    .hour-lines { position: absolute; top: 62px; right: 0; bottom: 0; left: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, transparent 0 calc(10% - 1px), var(--line) calc(10% - 1px) 10%); }
+    .time-label { position: absolute; right: 9px; transform: translateY(-50%); color: var(--ink-soft); font-size: 11px; }
+    .appointment { position: absolute; z-index: 3; left: 5px; right: 5px; min-height: 38px; overflow: hidden; padding: 5px 6px 5px 9px; border: 1px solid var(--line); border-left: 3px solid var(--green); border-radius: 8px; color: var(--ink); background: var(--raised); text-align: left; box-shadow: 0 2px 5px rgb(28 49 42 / 8%); transition: border-color .14s ease, box-shadow .14s ease, opacity .14s ease; }
+    .appointment:hover { z-index: 5; box-shadow: 0 7px 16px rgb(28 49 42 / 15%); }
+    .appointment.pending { border-left-color: var(--amber); }
+    .appointment.arrived, .appointment.visit { border-left-color: var(--violet); }
+    .appointment.done { border-left-color: var(--graphite); }
+    .appointment.cancelled { border-left-color: var(--graphite); opacity: .68; }
+    .appointment.no-show { border-left-color: var(--red); }
+    .appointment.is-hit { z-index: 6; border-color: var(--blue); border-left-color: var(--blue); box-shadow: 0 0 0 3px color-mix(in srgb, var(--blue) 25%, transparent); }
+    .appointment.is-dim { opacity: .28; }
+    .appointment.is-selected { outline: 3px solid color-mix(in srgb, var(--blue) 38%, transparent); outline-offset: 1px; }
+    .appointment.is-returned { animation: returned 1.1s ease; }
+    @keyframes returned { 45% { box-shadow: 0 0 0 5px color-mix(in srgb, var(--green) 24%, transparent); } }
+    .appointment-time, .appointment strong, .appointment small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .appointment-time { font-size: 11px; font-weight: 850; }
+    .appointment strong { font-size: 13px; line-height: 1.18; }
+    .appointment small { color: var(--ink-soft); font-size: 11px; }
+    .scroll-cue { position: absolute; z-index: 12; top: 50%; width: 32px; height: 70px; display: none; place-items: center; border: 1px solid var(--line-strong); color: var(--blue); background: color-mix(in srgb, var(--raised) 94%, transparent); box-shadow: var(--shadow-raised); }
+    .scroll-cue.show { display: grid; }
+    .scroll-cue.left { left: 74px; border-radius: 0 10px 10px 0; }
+    .scroll-cue.right { right: 4px; border-radius: 10px 0 0 10px; }
+    .staff-range { min-width: max-content; padding: 3px 7px; border-radius: 999px; color: var(--ink-soft); background: var(--inset); font-size: 10px; }
+    .mobile-agenda { display: none; padding: 8px; }
+
+    .filter-bar { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 10px; }
+    .filter-control { min-height: 35px; padding: 0 10px; border: 1px solid var(--line); border-radius: 9px; color: var(--ink); background: var(--work); }
+    .table-wrap { overflow: auto; }
+    table { width: 100%; border-collapse: collapse; }
+    th { padding: 10px 13px; color: var(--ink-soft); background: var(--inset); border-bottom: 1px solid var(--line); font-size: 9px; letter-spacing: .09em; text-align: left; text-transform: uppercase; }
+    td { padding: 11px 13px; border-bottom: 1px solid var(--line); }
+    tbody tr { cursor: pointer; }
+    tbody tr:hover { background: var(--inset); }
+    td strong, td small { display: block; }
+    td small { color: var(--ink-soft); font-size: 11px; }
+
+    .master-detail { min-height: 555px; display: grid; grid-template-columns: minmax(280px, .78fr) minmax(410px, 1.3fr); overflow: hidden; }
+    .master-list { overflow: auto; border-right: 1px solid var(--line); }
+    .master-row { width: 100%; min-height: 60px; display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 9px; padding: 9px 13px; border: 0; border-bottom: 1px solid var(--line); color: var(--ink); background: transparent; text-align: left; }
+    .master-row:hover, .master-row.active { background: var(--blue-soft); }
+    .master-row strong, .master-row small { display: block; }
+    .master-row small { color: var(--ink-soft); font-size: 11px; }
+    .detail { padding: 20px; overflow: auto; background: var(--raised); }
+    .detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+    .detail-top h2 { margin: 2px 0; font-size: 24px; }
+    .detail-facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 14px 0; }
+    .detail-fact { padding: 10px; background: var(--inset); border: 1px solid var(--line); }
+    .detail-fact span, .detail-fact strong { display: block; }
+    .detail-fact span { color: var(--ink-soft); font-size: 9px; letter-spacing: .07em; text-transform: uppercase; }
+    .note { padding: 12px; border-left: 3px solid var(--amber); background: var(--amber-soft); }
+
+    .group { overflow: hidden; margin-bottom: 12px; }
+    .group-head { min-height: 48px; display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 15px; border-bottom: 1px solid var(--line); background: var(--inset); }
+    .group-head h2 { margin: 0; font-size: 16px; }
+    .ordered-list { display: grid; }
+    .ordered-row { min-height: 65px; display: grid; grid-template-columns: minmax(220px, 1.25fr) minmax(140px, .75fr) minmax(130px, .7fr) auto; align-items: center; gap: 14px; padding: 9px 15px; border-bottom: 1px solid var(--line); background: var(--work); }
+    .ordered-row:last-child { border-bottom: 0; }
+    .ordered-row:hover { background: var(--inset); }
+    .ordered-primary { min-width: 0; display: flex; align-items: center; gap: 9px; }
+    .ordered-primary strong, .ordered-primary small, .ordered-cell strong, .ordered-cell small { display: block; }
+    .ordered-primary small, .ordered-cell small { color: var(--ink-soft); font-size: 11px; }
+
+    .empty-state { min-height: 410px; display: grid; place-items: center; padding: 35px 18px; text-align: center; }
+    .empty-state h2 { margin-bottom: 5px; font-family: var(--serif); font-size: 25px; font-weight: 550; }
+    .mountain-mark { width: 150px; height: 65px; position: relative; margin: 0 auto 16px; overflow: hidden; border-bottom: 1px solid var(--line-strong); }
+    .mountain-mark::before, .mountain-mark::after { content: ""; position: absolute; bottom: -36px; width: 90px; height: 75px; transform: rotate(45deg); border: 1px solid var(--line-strong); background: var(--green-soft); opacity: .65; }
+    .mountain-mark::before { left: 8px; }
+    .mountain-mark::after { right: 3px; bottom: -45px; }
+
+    .auth-view { height: 100%; display: grid; grid-template-columns: minmax(280px, .72fr) minmax(500px, 1.4fr); overflow: hidden; }
+    .auth-brand { display: flex; flex-direction: column; padding: clamp(28px, 5vw, 65px); color: var(--frame-content); background: linear-gradient(150deg, var(--frame-deep), var(--frame)); }
+    .auth-brand h1 { margin-top: auto; font-family: var(--serif); font-size: clamp(40px, 5vw, 62px); line-height: .98; font-weight: 550; }
+    .auth-brand p { max-width: 330px; color: #bdd3cb; }
+    .auth-brand small { margin-top: auto; padding-top: 26px; border-top: 1px solid rgb(255 255 255 / 18%); color: #a9c6bc; }
+    .auth-stage { position: relative; display: grid; place-items: center; padding: 24px; overflow: hidden; background: var(--canvas); }
+    .auth-stage::before, .auth-stage::after { content: ""; position: absolute; bottom: -190px; width: 500px; height: 360px; transform: rotate(45deg); border: 1px solid var(--line); background: var(--green-soft); opacity: .42; }
+    .auth-stage::before { left: -120px; }
+    .auth-stage::after { right: -90px; bottom: -225px; }
+    .login-card { position: relative; z-index: 2; width: min(430px, 100%); padding: 32px; border-radius: 21px; }
+    .login-card h2 { margin: 4px 0; font-family: var(--serif); font-size: 32px; font-weight: 550; text-align: center; }
+    .login-card > p { color: var(--ink-soft); text-align: center; }
+    .field { display: grid; gap: 5px; margin-top: 14px; }
+    .field label { font-size: 12px; font-weight: 750; }
+    .field input, .field select { width: 100%; min-height: 46px; padding: 9px 11px; border: 1px solid var(--line-strong); border-radius: 9px; color: var(--ink); background: var(--work); }
+    .login-card .primary { width: 100%; margin-top: 18px; }
+    .prototype-note { margin-top: 13px; color: var(--ink-soft); font-size: 10px; text-align: center; }
+
+    .onboarding { min-height: 590px; display: grid; grid-template-columns: 260px minmax(0, 1fr); overflow: hidden; }
+    .steps { padding: 23px; color: var(--frame-content); background: var(--frame); }
+    .steps h2 { margin: 20px 0 4px; font-size: 25px; }
+    .step-list { display: grid; gap: 7px; margin-top: 24px; }
+    .step { width: 100%; min-height: 44px; display: flex; align-items: center; gap: 9px; padding: 7px 9px; border: 0; border-radius: 9px; color: #dbe8e3; background: transparent; text-align: left; }
+    .step.active { background: rgb(255 255 255 / 14%); }
+    .step-number { width: 25px; height: 25px; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 30%); border-radius: 50%; font-size: 10px; }
+    .step.done .step-number { color: #093d32; border-color: #acd8c8; background: #acd8c8; }
+    .step-content { padding: clamp(26px, 5vw, 62px); display: grid; align-content: center; background: var(--work); }
+    .step-content h1 { margin: 5px 0; font-size: 38px; }
+    .check-list { display: grid; gap: 7px; margin: 18px 0; }
+    .check-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px; border: 1px solid var(--line); background: var(--raised); }
+
+    .backdrop { position: fixed; z-index: 110; inset: 40px 0 0; display: none; background: var(--overlay); backdrop-filter: blur(2px); }
+    .backdrop.open { display: block; }
+    .context-panel { position: fixed; z-index: 120; top: 54px; right: 14px; bottom: 14px; width: min(450px, calc(100vw - 28px)); display: none; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; border-radius: 20px; }
+    .context-panel.open { display: grid; animation: panel-in .21s ease both; }
+    @keyframes panel-in { from { opacity: .5; transform: translateX(16px) scale(.97); } to { opacity: 1; transform: none; } }
+    .panel-head { min-height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 9px; padding: 12px 15px; border-bottom: 1px solid var(--line); }
+    .panel-head h2 { margin: 1px 0 0; font-size: 21px; }
+    .panel-body { min-height: 0; overflow: auto; padding: 15px; }
+    .panel-footer { min-height: 64px; display: flex; align-items: center; justify-content: flex-end; gap: 7px; padding: 9px 14px; border-top: 1px solid var(--line); background: var(--inset); }
+    .appointment-summary { padding: 13px; border-left: 3px solid var(--green); background: var(--green-soft); }
+    .appointment-summary h3 { margin: 5px 0 1px; font-size: 19px; }
+    .appointment-summary p { margin: 0; color: var(--ink-soft); }
+    .facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; margin: 11px 0; }
+    .fact { padding: 9px; border: 1px solid var(--line); background: var(--work); }
+    .fact span, .fact strong { display: block; }
+    .fact span { color: var(--ink-soft); font-size: 9px; letter-spacing: .07em; text-transform: uppercase; }
+    .action-list { display: grid; gap: 7px; margin-top: 13px; }
+    .action { width: 100%; min-height: 51px; display: flex; align-items: center; justify-content: space-between; gap: 9px; padding: 9px 11px; border: 1px solid var(--line); color: var(--ink); background: var(--work); text-align: left; }
+    .action:hover { border-color: var(--blue); background: var(--blue-soft); }
+    .action strong, .action small { display: block; }
+    .action small { color: var(--ink-soft); font-size: 11px; }
+    .notice { margin: 11px 0; padding: 10px; border-left: 3px solid var(--blue); background: var(--blue-soft); }
+    .notice.warning { border-left-color: var(--amber); background: var(--amber-soft); }
+    .notice.danger { border-left-color: var(--red); background: var(--red-soft); }
+    .slot-list, .visit-list { display: grid; gap: 7px; margin-top: 12px; }
+    .slot { width: 100%; min-height: 55px; display: flex; align-items: center; justify-content: space-between; gap: 9px; padding: 9px 11px; border: 1px solid var(--line); color: var(--ink); background: var(--work); text-align: left; }
+    .slot.selected { border-color: var(--blue); background: var(--blue-soft); }
+    .slot strong, .slot small { display: block; }
+    .slot small { color: var(--ink-soft); }
+    .choice { display: flex; align-items: flex-start; gap: 8px; margin-top: 8px; padding: 9px; border: 1px solid var(--line); }
+    .visit-step { display: grid; grid-template-columns: 28px 1fr; gap: 8px; padding: 9px; border: 1px solid var(--line); background: var(--work); }
+    .visit-step.current { border-color: var(--violet); background: var(--violet-soft); }
+    .step-dot { width: 26px; height: 26px; display: grid; place-items: center; border-radius: 50%; color: var(--ink-soft); background: var(--inset); font-size: 10px; font-weight: 800; }
+    .visit-step.current .step-dot { color: white; background: var(--violet); }
+    .visit-step.done .step-dot { color: white; background: var(--green); }
+    html[data-theme="evening"] .visit-step.current .step-dot, html[data-theme="evening"] .visit-step.done .step-dot { color: #13231e; }
+    .success { min-height: 360px; display: grid; place-items: center; padding: 25px; text-align: center; }
+    .success-mark { width: 58px; height: 58px; display: grid; place-items: center; margin: 0 auto 12px; border-radius: 50%; color: white; background: var(--green); font-size: 22px; }
+    html[data-theme="evening"] .success-mark { color: #13231e; }
+    .success h3 { margin-bottom: 5px; font-size: 24px; }
+    .toast-area { position: fixed; z-index: 140; right: 20px; bottom: 20px; display: grid; gap: 7px; pointer-events: none; }
+    .toast { min-width: 285px; max-width: 390px; padding: 11px 13px; border: 1px solid var(--line); border-left: 3px solid var(--green); color: var(--ink); background: var(--raised); box-shadow: var(--shadow-raised); }
+
+    .auth-screen .sidebar, .auth-screen .global-header { display: none; }
+    .auth-screen.product-shell { grid-template-columns: 1fr; padding-left: 10px; }
+    .auth-screen .workspace { grid-template-rows: minmax(0, 1fr); }
+    .auth-screen .workspace-body { padding: 0; }
+    .mobile-nav { display: none; }
+
+    @media (max-width: 1080px) {
+      .product-shell { grid-template-columns: 176px minmax(0, 1fr); }
+      .global-header { grid-template-columns: minmax(190px, .65fr) minmax(260px, 1fr) auto; gap: 9px; padding-left: 16px; }
+      .page-context { display: none; }
+      .ordered-row { grid-template-columns: minmax(200px, 1.15fr) minmax(125px, .7fr) auto; }
+      .ordered-row .ordered-cell:nth-child(3) { display: none; }
+      .lab-note { display: none; }
+    }
+
+    @media (max-width: 720px) {
+      body { font-size: 16px; }
+      .lab-bar { height: 48px; padding: 4px 7px; }
+      .lab-mark { display: none; }
+      .lab-controls { width: 100%; margin: 0; justify-content: space-between; gap: 4px; }
+      .lab-control { flex: 1; }
+      .lab-control label { display: none; }
+      .lab-select { width: 100%; }
+      .product-shell, .auth-screen.product-shell { height: calc(100vh - 48px); grid-template-columns: 1fr; gap: 0; padding: 0; }
+      .sidebar { display: none; }
+      .workspace { border: 0; border-radius: 0; box-shadow: none; }
+      .global-header { min-height: 66px; grid-template-columns: 1fr auto; grid-template-rows: auto auto; padding: 8px 10px; }
+      .search-wrap { grid-column: 1 / -1; grid-row: 2; }
+      .title-kicker { display: none; }
+      .title-line h1 { font-size: 23px; }
+      .global-actions .button { width: 40px; padding: 0; }
+      .global-actions .button span { display: none; }
+      .workspace-body { padding: 9px 9px 66px; }
+      .today-layout { grid-template-columns: 1fr; }
+      .metric-line { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .next-row { grid-template-columns: 48px 1fr; }
+      .next-row .status { grid-column: 2; justify-self: start; }
+      .local-toolbar { flex-wrap: wrap; }
+      .toolbar-spacer { display: none; }
+      .search-hint { width: 100%; order: 3; }
+      .day-grid { display: none; }
+      .mobile-agenda { display: grid; gap: 7px; }
+      .scroll-cue { display: none !important; }
+      .master-detail { grid-template-columns: 1fr; }
+      .master-list { max-height: 220px; border-right: 0; border-bottom: 1px solid var(--line); }
+      .detail { padding: 14px; }
+      .detail-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .ordered-row { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+      .ordered-row .ordered-cell { grid-column: 1; }
+      .ordered-row .ordered-cell:nth-child(3) { display: none; }
+      th:nth-child(4), td:nth-child(4) { display: none; }
+      .onboarding { grid-template-columns: 1fr; }
+      .steps { padding: 16px; }
+      .step-list { display: flex; overflow: auto; margin-top: 12px; }
+      .step { min-width: 135px; }
+      .step-content { padding: 24px 16px; }
+      .auth-view { grid-template-columns: 1fr; }
+      .auth-brand { display: none; }
+      .auth-stage { padding: 14px; }
+      .login-card { padding: 23px 17px; }
+      .backdrop { inset: 48px 0 0; }
+      .context-panel { top: auto; right: 0; bottom: 0; left: 0; width: 100%; max-height: calc(100vh - 66px); border-radius: 20px 20px 0 0; }
+      .context-panel.open { animation-name: sheet-in; }
+      @keyframes sheet-in { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
+      .toast-area { right: 9px; bottom: 68px; left: 9px; }
+      .toast { min-width: 0; max-width: none; }
+      .mobile-nav { position: fixed; z-index: 80; right: 0; bottom: 0; left: 0; height: 58px; display: flex; gap: 2px; padding: 5px; overflow-x: auto; color: var(--frame-content); background: var(--frame-deep); }
+      .mobile-nav .nav-button { min-width: 68px; min-height: 47px; flex-direction: column; justify-content: center; gap: 0; padding: 3px 6px; font-size: 9px; }
+      .mobile-nav .nav-icon { width: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0s !important; transition-duration: 0s !important; }
+    }
+  </style>
+</head>
+<body>
+  <header class="lab-bar" aria-label="Steuerung des Designprototyps">
+    <div class="lab-mark">Design-Labor</div>
+    <div class="lab-note">Lokale Simulation · keine echten Salon- oder Kundendaten</div>
+    <div class="lab-controls">
+      <div class="lab-control"><label for="screenSelect">Screen</label><select id="screenSelect" class="lab-select"><option value="login">Login</option><option value="onboarding">Onboarding</option><option value="today" selected>Heute</option><option value="day">Tagesplan</option><option value="bookings">Buchungen</option><option value="customers">Kundschaft</option><option value="team">Team</option><option value="offer">Angebot</option><option value="admin">Verwaltung</option></select></div>
+      <div class="lab-control"><label>Zustand</label><div class="lab-segment"><button class="density-button" data-density="empty">Leer</button><button class="density-button is-active" data-density="normal">Normal</button><button class="density-button" data-density="stress">Stress</button></div></div>
+      <button id="themeButton" class="lab-button" type="button">Abendatelier</button>
+    </div>
+  </header>
+
+  <div id="productShell" class="product-shell">
+    <aside class="sidebar">
+      <div class="product-signature"><span class="signature-seal">G</span> Gasserwerk</div>
+      <section class="salon-identity"><h2>Coiffure<br>Sonnegg</h2><p>Zürich Enge · Salonbetrieb</p></section>
+      <div class="nav-label">Arbeitsbereich</div>
+      <nav id="mainNav" class="main-nav"></nav>
+      <div class="rail-spacer"></div>
+      <div class="rail-context"><span>Standort</span><strong>Zürich Enge</strong><div class="rail-account"><div class="avatar">MS</div><div><strong>Melanie Schneider</strong><small>Inhaberin</small></div></div></div>
+    </aside>
+
+    <main class="workspace">
+      <header id="globalHeader" class="global-header">
+        <div><div id="pageKicker" class="title-kicker">Salonbetrieb</div><div class="title-line"><h1 id="pageTitle">Heute</h1><span id="pageContext" class="page-context">Donnerstag, 20. August 2026</span></div></div>
+        <div class="search-wrap"><span class="search-symbol">⌕</span><input id="globalSearch" class="global-search" type="search" autocomplete="off" placeholder="Kundin, Termin, freie Zeit oder Aufgabe suchen ..."><span class="shortcut">Strg K</span></div>
+        <div id="globalActions" class="global-actions"></div>
+      </header>
+      <div id="workspaceBody" class="workspace-body" tabindex="-1"></div>
+    </main>
+    <nav id="mobileNav" class="mobile-nav"></nav>
+  </div>
+
+  <div id="backdrop" class="backdrop"></div>
+  <aside id="contextPanel" class="context-panel raised" role="dialog" aria-modal="true" aria-labelledby="panelTitle"></aside>
+  <div id="toastArea" class="toast-area" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const nav = [
+        ["today", "Heute", "◌"], ["day", "Tagesplan", "▦"], ["bookings", "Buchungen", "▤"],
+        ["customers", "Kundschaft", "○"], ["team", "Team", "◎"], ["offer", "Angebot", "≡"], ["admin", "Verwaltung", "◇"]
+      ];
+      const staff = [
+        ["melanie", "Melanie", "Schneider", "Top Stylistin"], ["sofia", "Sofia", "Keller", "Stylistin"],
+        ["lea", "Lea", "Bianchi", "Stylistin"], ["nina", "Nina", "Frei", "Coloristin"],
+        ["jasmin", "Jasmin", "Rüfenacht", "Top Stylistin"], ["alina", "Alina", "Zurbuchen", "Lernende"],
+        ["carmen", "Carmen", "Bühlmann", "Stylistin"], ["ramona", "Ramona", "Lüscher", "Coloristin"],
+        ["tanja", "Tanja", "Imhof", "Stylistin"], ["yves", "Yves", "Portmann", "Barber"]
+      ];
+      const baseAppointments = [
+        ["a1", "Mia Frei", "079 238 14 62", "Schnitt & Föhnen", "melanie", "08:30", 90, "confirmed", 118, "Feines Haar, kinnlanger Bob"],
+        ["a2", "Lara Baumann", "076 470 22 18", "Beratung", "sofia", "09:00", 45, "pending", 45, "Neukundin, Farbberatung"],
+        ["a3", "Lynn Schneider", "078 944 51 20", "Schnitt & Föhnen", "lea", "08:30", 90, "arrived", 104, "Keine Duftprodukte"],
+        ["a4", "Sabrina Lutz", "079 775 33 09", "Balayage & Glossing", "nina", "09:00", 150, "confirmed", 248, "Ansatz weich verblenden"],
+        ["a5", "Petra Hofer", "076 330 80 44", "Balayage", "jasmin", "09:00", 120, "confirmed", 226, "Kühle Nuance"],
+        ["a6", "Anna Keller", "079 205 17 83", "Schnitt & Föhnen", "melanie", "10:30", 90, "visit", 118, "Keine Duftprodukte"],
+        ["a7", "Julia Schmid", "078 616 45 92", "Farbe & Pflege", "sofia", "10:00", 90, "confirmed", 172, "Rezeptur 7.1 / 7.13"],
+        ["a8", "Chiara Bianchi", "079 501 27 08", "Farbe", "lea", "10:15", 90, "arrived", 160, "Kopfhaut empfindlich"],
+        ["a9", "Vanessa Meier", "076 799 04 13", "Farbe", "nina", "11:00", 90, "arrived", 160, "Glossing nach Einwirkzeit"],
+        ["a10", "Corinne Zbinden", "079 488 31 75", "Farbe", "jasmin", "11:00", 90, "confirmed", 168, "Kontakt nur per SMS"],
+        ["a11", "Céline Rufer", "078 330 12 97", "Balayage", "melanie", "13:00", 105, "confirmed", 238, "Lange Haare"],
+        ["a12", "Sara Vogel", "079 860 77 31", "Schnitt", "sofia", "12:30", 60, "pending", 86, "Fransen nachschneiden"],
+        ["a13", "Elena Weber", "076 144 38 91", "Lockenschnitt", "lea", "12:00", 75, "visit", 104, "Natürliche Locken"],
+        ["a14", "Tobias Egger", "079 612 09 43", "Herrenhaarschnitt", "nina", "13:30", 45, "done", 61, "Seiten 6 mm"],
+        ["a15", "Reto Gfeller", "076 220 54 68", "Schnitt & Bart", "jasmin", "13:00", 75, "pending", 94, "Bartkontur ergänzen"],
+        ["a16", "Vreni Schmid", "079 311 65 02", "Waschen & Legen", "alina", "09:15", 45, "no-show", 58, "Vor Folgetermin anrufen"],
+        ["a17", "Rahel Brunner", "078 519 72 44", "Foliensträhnen", "carmen", "09:00", 120, "done", 212, "Viele feine Folien"],
+        ["a18", "Cornelia Moser", "079 740 05 66", "Haarschnitt Damen", "alina", "10:00", 45, "confirmed", 74, "Ohne Föhnen"],
+        ["a19", "Tamara Jost", "076 881 26 30", "Coloration", "carmen", "12:15", 105, "confirmed", 176, "Ansatzfarbe"],
+        ["a20", "Isabelle Frei", "079 444 19 02", "Foliensträhnen", "ramona", "08:45", 135, "confirmed", 235, "Sehr langes Haar"],
+        ["a21", "Edith Aeschlimann", "078 105 39 48", "Coloration", "tanja", "10:30", 120, "confirmed", 184, "Grauabdeckung"],
+        ["a22", "Marco Bättig", "079 763 01 21", "Haarschnitt Herren", "yves", "11:00", 30, "confirmed", 58, "Konturen sauber"]
+      ];
+      const customers = [
+        ["Mia Frei", "079 238 14 62", 14, 1684, "Feines Haar, bevorzugt Vormittage"],
+        ["Anna Keller", "079 205 17 83", 21, 2410, "Keine Duftprodukte. Kontakt per SMS."],
+        ["Chiara Bianchi", "079 501 27 08", 8, 1322, "Kopfhaut empfindlich, Farbe sanft auftragen"],
+        ["Corinne Zbinden", "079 488 31 75", 11, 1968, "Kontakt nur per SMS"],
+        ["Petra Hofer", "076 330 80 44", 6, 1260, "Kühle Blondnuancen"],
+        ["Vreni Schmid", "079 311 65 02", 18, 1094, "Vor dem nächsten Termin anrufen"]
+      ];
+      const services = [
+        ["Schnitt & Föhnen", 75, 104, 6], ["Herrenhaarschnitt", 45, 61, 5], ["Beratung", 30, 45, 8],
+        ["Farbe & Pflege", 90, 172, 5], ["Balayage & Glossing", 150, 248, 3], ["Foliensträhnen", 120, 212, 4]
+      ];
+      const meta = {
+        login: ["Sicherer Zugang", "Login", "Gasserwerk Kundenbereich"], onboarding: ["Salonstart", "Einrichtung", "4 von 5 Schritten"],
+        today: ["Salonbetrieb", "Heute", "Donnerstag, 20. August 2026"], day: ["Tagesplan", "Tagesplan", "Zürich Enge · 08:00–18:00"],
+        bookings: ["Terminregister", "Buchungen", "20.–27. August 2026"], customers: ["Beziehungen", "Kundschaft", "1'248 aktive Kontakte"],
+        team: ["Buchbarkeit", "Team", "10 Mitarbeitende · Zürich Enge"], offer: ["Buchbarkeit", "Angebot", "18 aktive Dienstleistungen"],
+        admin: ["Organisation", "Verwaltung", "Salonprofil und System"]
+      };
+      const state = { screen: "today", density: "normal", theme: "light", query: "", appointments: [], selectedId: null, customerIndex: 0, panelMode: "details", slot: null, origin: null, visitStep: 1, dayPart: "morning", returnedId: null, onboardingStep: 3 };
+      state.appointments = baseAppointments.map(toAppointment);
+
+      const $ = id => document.getElementById(id);
+      const body = $("workspaceBody"), panel = $("contextPanel"), backdrop = $("backdrop");
+      function toAppointment(row) { return { id:row[0], customer:row[1], phone:row[2], service:row[3], staff:row[4], start:row[5], duration:row[6], status:row[7], price:row[8], note:row[9], visitStep: row[7] === "visit" ? 2 : 0 }; }
+      function visibleAppointments() { if (state.density === "empty") return []; return state.density === "stress" ? state.appointments : state.appointments.slice(0, 15); }
+      function visibleStaff() { return state.density === "stress" ? staff : staff.slice(0, 5); }
+      function person(id) { return staff.find(item => item[0] === id); }
+      function appointment(id) { return state.appointments.find(item => item.id === id); }
+      function mins(value) { const [h,m] = value.split(":").map(Number); return h * 60 + m; }
+      function clock(value) { return `${String(Math.floor(value / 60)).padStart(2,"0")}:${String(value % 60).padStart(2,"0")}`; }
+      function statusLabel(value) { return ({confirmed:"Bestätigt",pending:"Angefragt",arrived:"Angekommen",visit:"In Arbeit",done:"Abgeschlossen",cancelled:"Abgesagt","no-show":"Nicht erschienen"})[value]; }
+
+      function renderNavigation() {
+        const html = nav.map(([id,label,icon]) => `<button class="nav-button ${state.screen === id ? "is-active" : ""}" data-nav="${id}"><span class="nav-icon">${icon}</span><span>${label}</span></button>`).join("");
+        $("mainNav").innerHTML = html; $("mobileNav").innerHTML = html;
+      }
+
+      function renderHeader() {
+        const [kicker,title,context] = meta[state.screen];
+        $("pageKicker").textContent = kicker; $("pageTitle").textContent = title; $("pageContext").textContent = context;
+        const action = ({today:["Buchung","booking"],day:["Buchung","booking"],bookings:["Buchung","booking"],customers:["Termin","customer-book"],team:["Person","team"],offer:["Leistung","service"]})[state.screen];
+        $("globalActions").innerHTML = action ? `<button class="button primary" data-primary="${action[1]}"><b>+</b><span>${action[0]}</span></button>` : "";
+        $("globalSearch").value = state.query;
+      }
+
+      function render() {
+        const auth = state.screen === "login";
+        $("productShell").classList.toggle("auth-screen", auth);
+        $("globalHeader").hidden = auth;
+        body.classList.toggle("day-mode", state.screen === "day");
+        renderNavigation(); renderHeader();
+        const views = {login:renderLogin,onboarding:renderOnboarding,today:renderToday,day:renderDay,bookings:renderBookings,customers:renderCustomers,team:renderTeam,offer:renderOffer,admin:renderAdmin};
+        body.innerHTML = views[state.screen]();
+        requestAnimationFrame(updateScrollCues);
+      }
+
+      function renderLogin() {
+        return `<section class="screen auth-view"><div class="auth-brand"><div class="product-signature"><span class="signature-seal">G</span> Gasserwerk</div><h1>Mehr Ruhe<br>im Salonalltag.</h1><p>Termine, Kundschaft und Team präzise organisiert, damit persönliche Betreuung im Mittelpunkt bleibt.</p><small>Gasserwerk begleitet den Ablauf. Die Identität deines Salons bleibt deine eigene.</small></div><div class="auth-stage"><form id="loginForm" class="login-card raised"><div class="eyebrow" style="text-align:center">Sicherer Zugang</div><h2>Willkommen zurück</h2><p>Melde dich an, um deinen Salonalltag zu organisieren.</p><div class="field"><label>E-Mail</label><input type="email" value="melanie@sonnegg.ch" required></div><div class="field"><label>Passwort</label><input type="password" value="prototyp" required></div><button class="button primary" type="submit">Anmelden</button><div class="prototype-note">Simulierter Login. Es werden keine Zugangsdaten übertragen.</div></form></div></section>`;
+      }
+
+      function renderOnboarding() {
+        const steps = ["Salonprofil","Leistungen","Team","Arbeitszeiten","Startklar"];
+        return `<section class="screen paper onboarding"><aside class="steps"><div class="product-signature"><span class="signature-seal">G</span> Gasserwerk</div><h2>Salon einrichten</h2><p>Schritt ${state.onboardingStep + 1} von 5</p><div class="step-list">${steps.map((name,index)=>`<button class="step ${index === state.onboardingStep ? "active" : ""} ${index < state.onboardingStep ? "done" : ""}" data-step="${index}"><span class="step-number">${index < state.onboardingStep ? "✓" : index + 1}</span>${name}</button>`).join("")}</div></aside><div class="step-content"><div class="eyebrow">Buchbarkeit herstellen</div><h1>${state.onboardingStep === 4 ? "Dein Salon ist startklar" : "Wann ist dein Team verfügbar?"}</h1><p class="muted">${state.onboardingStep === 4 ? "Alle notwendigen Grundlagen sind vorhanden. Du kannst den ersten Arbeitstag öffnen." : "Arbeitszeiten verbinden dein Team mit den buchbaren Leistungen im Tagesplan."}</p><div class="check-list"><div class="check-row"><span><strong>Melanie Schneider</strong><br><small class="muted">Mo–Fr · 08:00–18:00</small></span><span class="status confirmed">Vollständig</span></div><div class="check-row"><span><strong>Sofia Keller</strong><br><small class="muted">Di–Sa · 09:00–17:30</small></span><span class="status confirmed">Vollständig</span></div><div class="check-row"><span><strong>Lea Bianchi</strong><br><small class="muted">Samstag noch offen</small></span><span class="status pending">Prüfen</span></div></div><div style="display:flex;gap:7px;justify-content:flex-end"><button class="button" data-step-back>Zurück</button><button class="button primary" data-step-next>${state.onboardingStep === 4 ? "Heute öffnen" : "Speichern und weiter"}</button></div></div></section>`;
+      }
+
+      function renderToday() {
+        const list = visibleAppointments().filter(a => !["cancelled","no-show"].includes(a.status));
+        if (!list.length) return `<section class="screen"><div class="paper empty-state"><div><div class="mountain-mark"></div><h2>Heute bleibt der Kalender frei.</h2><p class="muted">Füge einen Termin hinzu oder geniesse die Aussicht.</p><button class="button primary" data-primary="booking">+ Termin eintragen</button></div></div></section>`;
+        const total = list.reduce((sum,a)=>sum+a.price,0);
+        return `<section class="screen"><div class="today-layout"><section class="paper"><div class="section-head"><div><div class="eyebrow">Jetzt im Salon</div><h2>Als Nächstes</h2><span class="muted">Die nächsten Termine und notwendigen Handlungen</span></div><button class="button small" data-nav="day">Tagesplan öffnen</button></div><div class="next-list">${list.slice(0,state.density === "stress" ? 9 : 5).map(nextRow).join("")}</div></section><aside class="paper"><div class="section-head"><div><h2>Aufmerksamkeit</h2><span class="muted">Was jetzt geklärt werden sollte</span></div></div><div class="attention-list"><div class="attention-item"><strong>Lara Baumann bestätigen</strong><span>Anfrage für 09:00 bei Sofia</span></div><div class="attention-item"><strong>Anna Keller ist beim Waschen</strong><span>Danach folgt der Schnitt</span></div><div class="attention-item"><strong>Freie Zeit bei Nina</strong><span>14:15–15:00 direkt buchbar</span></div></div></aside></div><div class="metric-line"><div class="metric"><span class="metric-label">Termine</span><strong class="metric-value">${list.length}</strong><small>heute im Salon</small></div><div class="metric"><span class="metric-label">Gebucht</span><strong class="metric-value">CHF ${total.toLocaleString("de-CH")}</strong><small>bestätigt und angefragt</small></div><div class="metric"><span class="metric-label">Freie Zeit</span><strong class="metric-value">3:45 Std</strong><small>im Arbeitstag</small></div><div class="metric"><span class="metric-label">Im Salon</span><strong class="metric-value">${list.filter(a=>["arrived","visit"].includes(a.status)).length}</strong><small>angekommen oder in Arbeit</small></div></div></section>`;
+      }
+      function nextRow(a) { const p=person(a.staff); return `<button class="next-row" data-appointment="${a.id}"><time class="time">${a.start}</time><span><strong>${a.customer}</strong><small>${a.service} · ${p[1]}</small></span><span class="status ${a.status}">${statusLabel(a.status)}</span></button>`; }
+
+      function renderDay() {
+        const appointments = visibleAppointments(), people = visibleStaff();
+        if (!appointments.length) return `<section class="screen paper day-screen"><div class="local-toolbar">${dateTools()}<span class="toolbar-spacer"></span><span class="search-hint">Keine Suchauswahl</span></div><div class="empty-state"><div><div class="mountain-mark"></div><h2>Dein Tag ist noch frei.</h2><p class="muted">Füge einen Termin hinzu oder geniesse die Aussicht.</p></div></div></section>`;
+        const start = state.dayPart === "afternoon" ? 720 : 480, end = state.dayPart === "full" ? 1080 : state.dayPart === "afternoon" ? 1080 : 840, range=end-start;
+        const hours=[]; for(let m=start;m<=end;m+=60)hours.push(m);
+        const cols = people.map(p=>`<div class="staff-column"><div class="column-head"><span class="staff-avatar">${p[1][0]}</span><span class="staff-copy"><strong>${p[1]} ${p[2]}</strong><small>${p[3]}</small></span></div><div class="hour-lines"></div>${appointments.filter(a=>a.staff===p[0]&&mins(a.start)+a.duration>start&&mins(a.start)<end).map(a=>appointmentCard(a,start,range)).join("")}</div>`).join("");
+        const labels=hours.map(m=>`<span class="time-label" style="top:calc(62px + ${(m-start)/range*758}px)">${clock(m)}</span>`).join("");
+        const agenda=appointments.sort((a,b)=>mins(a.start)-mins(b.start)).map(nextRow).join("");
+        return `<section class="screen paper day-screen"><div class="local-toolbar">${dateTools()}<div class="period-switch"><button class="${state.dayPart==="morning"?"is-active":""}" data-period="morning">Vormittag</button><button class="${state.dayPart==="afternoon"?"is-active":""}" data-period="afternoon">Nachmittag</button><button class="${state.dayPart==="full"?"is-active":""}" data-period="full">Ganzer Tag</button></div><span class="toolbar-spacer"></span><span class="search-hint">${state.query ? `Treffer für „${state.query}“` : "Keine Suchauswahl"}</span><span id="staffRange" class="staff-range">${people.length} Mitarbeitende</span></div><div class="day-viewport-wrap"><div id="dayViewport" class="day-viewport"><div class="day-grid" style="--staff-count:${people.length};min-width:${70+people.length*122}px"><div class="time-column"><div class="column-head">Zeit</div><div class="hour-lines"></div>${labels}</div>${cols}</div><div class="mobile-agenda">${agenda}</div></div><button class="scroll-cue left" data-scroll="-1">‹</button><button class="scroll-cue right" data-scroll="1">›</button></div></section>`;
+      }
+      function dateTools(){return `<button class="button small icon" data-day="prev">‹</button><button class="button small date-label" data-day="pick">Donnerstag, 20. August</button><button class="button small icon" data-day="next">›</button><button class="button small" data-day="today">Heute</button>`;}
+      function appointmentCard(a,start,range){const top=62+(Math.max(mins(a.start),start)-start)/range*758,height=Math.max(38,(Math.min(mins(a.start)+a.duration,start+range)-Math.max(mins(a.start),start))/range*758-4),q=state.query.trim().toLocaleLowerCase("de-CH"),hit=q&&`${a.customer} ${a.service}`.toLocaleLowerCase("de-CH").includes(q);return `<button id="appointment-${a.id}" class="appointment ${a.status} ${hit?"is-hit":""} ${q&&!hit?"is-dim":""} ${state.selectedId===a.id?"is-selected":""} ${state.returnedId===a.id?"is-returned":""}" style="top:${top}px;height:${height}px" data-appointment="${a.id}"><time class="appointment-time">${a.start}–${clock(mins(a.start)+a.duration)}</time><strong>${a.customer}</strong><small>${a.service}</small></button>`;}
+
+      function renderBookings(){const list=visibleAppointments();return `<section class="screen"><div class="filter-bar"><select class="filter-control"><option>Alle Status</option><option>Bestätigt</option><option>Im Salon</option></select><select class="filter-control"><option>Zürich Enge</option><option>Alle Standorte</option></select><button class="button small">20.–27. August</button><span class="muted">${list.length} Einträge</span></div><div class="paper table-wrap">${list.length?`<table><thead><tr><th>Zeit</th><th>Kundschaft</th><th>Leistung</th><th>Mitarbeitende</th><th>Status</th></tr></thead><tbody>${list.map(a=>{const p=person(a.staff);return `<tr data-appointment="${a.id}" tabindex="0"><td><strong>20. Aug.</strong><small>${a.start}</small></td><td><strong>${a.customer}</strong><small>${a.phone}</small></td><td>${a.service}</td><td>${p[1]} ${p[2]}</td><td><span class="status ${a.status}">${statusLabel(a.status)}</span></td></tr>`}).join("")}</tbody></table>`:`<div class="empty-state"><div><h2>Noch keine Buchungen</h2><p class="muted">Neue Termine erscheinen hier automatisch.</p></div></div>`}</div></section>`;}
+
+      function renderCustomers(){const c=customers[state.customerIndex];return `<section class="screen paper master-detail"><div class="master-list">${customers.map((item,index)=>`<button class="master-row ${index===state.customerIndex?"active":""}" data-customer="${index}"><span class="avatar">${item[0].split(" ").map(v=>v[0]).join("")}</span><span><strong>${item[0]}</strong><small>${item[1]}</small></span><span class="muted">${item[2]}</span></button>`).join("")}</div><div class="detail"><div class="detail-top"><div><div class="eyebrow">Kundenprofil</div><h2>${c[0]}</h2><span class="muted">${c[1]}</span></div><button class="button primary" data-primary="customer-book">+ Termin für ${c[0].split(" ")[0]}</button></div><div class="detail-facts"><div class="detail-fact"><span>Besuche</span><strong>${c[2]}</strong></div><div class="detail-fact"><span>Umsatz</span><strong>CHF ${c[3].toLocaleString("de-CH")}</strong></div><div class="detail-fact"><span>Kontakt</span><strong>SMS erlaubt</strong></div></div><div class="note"><strong>Salonnotiz</strong><br>${c[4]}</div><div class="group-head" style="margin-top:16px"><h2>Letzte Besuche</h2></div><div class="ordered-row"><div class="ordered-primary"><span><strong>Schnitt & Föhnen</strong><small>7. August · Melanie Schneider</small></span></div><div class="ordered-cell"><strong>CHF 104</strong></div></div></div></section>`;}
+
+      function renderTeam(){const people=state.density==="empty"?[]:visibleStaff();if(!people.length)return emptyList("Wer arbeitet im Salon?","Mit der ersten Person werden Arbeitszeit und Buchbarkeit verbunden.");return `<section class="screen"><section class="paper group"><div class="group-head"><h2>Mitarbeitende in Zürich Enge</h2><span class="muted">${people.length} aktiv</span></div><div class="ordered-list">${people.map((p,index)=>`<div class="ordered-row"><div class="ordered-primary"><span class="avatar">${p[1][0]}${p[2][0]}</span><span><strong>${p[1]} ${p[2]}</strong><small>${p[3]}</small></span></div><div class="ordered-cell"><strong>Zürich Enge</strong><small>Hauptstandort</small></div><div class="ordered-cell"><strong>${index%2?"Di–Sa · 09:00–17:30":"Mo–Fr · 08:00–18:00"}</strong><small>Arbeitszeit vollständig</small></div><button class="button small" data-lab-action="Person bearbeiten">Bearbeiten</button></div>`).join("")}</div></section></section>`;}
+      function renderOffer(){if(state.density==="empty")return emptyList("Was bietet dein Salon an?","Dauer, Preis und Teamzuordnung machen eine Leistung buchbar.");const groups=[["Schnitt & Styling",services.slice(0,3)],["Farbe",services.slice(3)]];return `<section class="screen">${groups.map(([name,list])=>`<section class="paper group"><div class="group-head"><h2>${name}</h2><span class="muted">${list.length} Leistungen</span></div><div class="ordered-list">${list.map(s=>`<div class="ordered-row"><div class="ordered-primary"><span><strong>${s[0]}</strong><small>Online buchbar · aktiv</small></span></div><div class="ordered-cell"><strong class="tabular">${s[1]} Min.</strong><small>Dauer</small></div><div class="ordered-cell"><strong class="tabular">CHF ${s[2]}</strong><small>${s[3]} Personen</small></div><button class="button small" data-lab-action="Leistung bearbeiten">Bearbeiten</button></div>`).join("")}</div></section>`).join("")}</section>`;}
+      function renderAdmin(){const groups=[["Salon",[["Salonprofil","Adresse, Kontakt und rechtliche Angaben"],["Marke","Logo und dezente salonbezogene Akzente"],["Standorte","Zürich Enge und weitere Filialen"]]],["Organisation & System",[["Integrationen","Kalender, Kommunikation und verbundene Dienste"],["Rollen & Zugriff","Zugriff für Leitung, Mitarbeitende und Lesende"]]],["Vertrag",[["Plan & Abrechnung","Vertrags- und Rechnungsangaben · nur Inhaberin"]]]];return `<section class="screen">${groups.map(([name,list])=>`<section class="paper group"><div class="group-head"><h2>${name}</h2></div><div class="ordered-list">${list.map(i=>`<div class="ordered-row"><div class="ordered-primary"><span><strong>${i[0]}</strong><small>${i[1]}</small></span></div><div class="ordered-cell"></div><div class="ordered-cell"></div><button class="button small" data-lab-action="${i[0]} öffnen">Öffnen</button></div>`).join("")}</div></section>`).join("")}</section>`;}
+      function emptyList(title,copy){return `<section class="screen paper empty-state"><div><h2>${title}</h2><p class="muted">${copy}</p></div></section>`;}
+
+      function openAppointment(id,trigger){const vp=$("dayViewport");state.selectedId=id;state.panelMode="details";state.origin={screen:state.screen,query:state.query,bodyScroll:body.scrollTop,dayLeft:vp?.scrollLeft||0,dayTop:vp?.scrollTop||0,focusId:id};renderPanel();backdrop.classList.add("open");panel.classList.add("open");trigger?.classList.add("is-selected");requestAnimationFrame(()=>panel.querySelector("button")?.focus());}
+      function renderPanel(){const a=appointment(state.selectedId);if(!a)return;const p=person(a.staff);if(state.panelMode==="details")panel.innerHTML=panelFrame("Termin",`<div class="appointment-summary"><span class="status ${a.status}">${statusLabel(a.status)}</span><h3>${a.customer}</h3><p>${a.start}–${clock(mins(a.start)+a.duration)} · ${a.service}</p></div><div class="facts"><div class="fact"><span>Mitarbeitende</span><strong>${p[1]} ${p[2]}</strong></div><div class="fact"><span>Standort</span><strong>Zürich Enge</strong></div><div class="fact"><span>Kontakt</span><strong>${a.phone}</strong></div><div class="fact"><span>Preis</span><strong>CHF ${a.price}</strong></div></div><div class="note"><strong>Salonhinweis</strong><br>${a.note}</div><div class="action-list">${a.status==="confirmed"?action("arrival","Ankunft bestätigen","Der Besuch kann danach geführt werden"):""}${["arrived","visit"].includes(a.status)?action("visit","Besuch weiterführen",visitLabel(a)):""}${!["cancelled","no-show","done"].includes(a.status)?action("reschedule","Termin verschieben","Kundschaft, Leistung und Dauer bleiben erhalten")+action("cancel","Termin absagen","Folgen und Nachricht zuerst prüfen"):""}</div>`,`<button class="button" data-close>Schliessen</button>`);else if(state.panelMode==="reschedule")renderReschedule(a);else if(state.panelMode==="cancel")renderCancel(a);else if(state.panelMode==="arrival")renderArrival(a);else if(state.panelMode==="visit")renderVisit(a);}
+      function action(mode,title,copy){return `<button class="action" data-panel="${mode}"><span><strong>${title}</strong><small>${copy}</small></span><span>›</span></button>`;}
+      function panelFrame(title,content,footer){return `<div class="panel-head"><div><div class="eyebrow">Termin im Salonalltag</div><h2 id="panelTitle">${title}</h2></div><button class="button icon" data-close>×</button></div><div class="panel-body">${content}</div><div class="panel-footer">${footer}</div>`;}
+      function renderReschedule(a){const p=person(a.staff),slots=[["14:15","Heute, 14:15",p[1]],["09:30","Freitag, 21. August · 09:30",p[1]],["11:15","Freitag, 21. August · 11:15","Sofia"]];panel.innerHTML=panelFrame("Termin verschieben",`<div class="appointment-summary"><span class="status ${a.status}">Bisher</span><h3>${a.customer}</h3><p>Heute, ${a.start} · ${a.service}</p></div><div class="notice"><strong>Was erhalten bleibt</strong><br>Kundschaft, Leistung, Dauer und Salonnotiz werden übernommen. Der bisherige Termin bleibt bis zur Bestätigung bestehen.</div><div class="slot-list">${slots.map((s,i)=>`<button class="slot ${state.slot===i?"selected":""}" data-slot="${i}" data-time="${s[0]}" data-staff="${s[2]}"><span><strong>${s[1]}</strong><small>${s[2]} · passend für ${a.duration} Minuten</small></span><span>Wählen</span></button>`).join("")}</div><div class="field"><label>Oder Uhrzeit direkt wählen</label><input id="directTime" type="time" value="14:15"></div>`,`<button class="button" data-panel="details">Zurück</button><button class="button primary" data-commit="reschedule" ${state.slot===null?"disabled":""}>Verschieben simulieren</button>`);}
+      function renderCancel(a){panel.innerHTML=panelFrame("Termin absagen",`<div class="appointment-summary"><span class="status ${a.status}">${statusLabel(a.status)}</span><h3>${a.customer}</h3><p>Heute, ${a.start} · ${a.service}</p></div><div class="notice danger"><strong>Der Termin wird als abgesagt markiert.</strong><br>${a.duration} Minuten werden im Tagesplan wieder frei. Der Termin bleibt in der Historie sichtbar.</div><label class="choice"><input type="radio" name="message" checked> SMS an Kundin vorbereiten</label><label class="choice"><input type="radio" name="message"> Telefonisch informiert</label><label class="choice"><input id="cancelCheck" type="checkbox"> Folgen und Kommunikation geprüft</label>`,`<button class="button" data-panel="details">Zurück</button><button class="button danger" id="cancelCommit" data-commit="cancel" disabled>Absage simulieren</button>`);}
+      function renderArrival(a){panel.innerHTML=panelFrame("Ankunft bestätigen",`<div class="appointment-summary"><span class="status confirmed">Bestätigt</span><h3>${a.customer}</h3><p>${a.start} · ${a.service}</p></div><div class="notice"><strong>Schon erfasst?</strong><br>Auch bei erneutem Tippen wird die Ankunft nur einmal übernommen. Dauert die Aktualisierung länger, bleibt der Zwischenstand sichtbar.</div><div class="facts"><div class="fact"><span>Danach</span><strong>Im Salon</strong></div><div class="fact"><span>Erster Schritt</span><strong>Beratung</strong></div></div>`,`<button class="button" data-panel="details">Zurück</button><button class="button primary" data-commit="arrival">Ankunft simulieren</button>`);}
+      function visitLabel(a){return ["Beratung beginnen","Waschen abschliessen","Schnitt beginnen","Styling abschliessen"][a.visitStep]||"Besuch abschliessen";}
+      function renderVisit(a){const phases=["Beratung","Waschen","Schnitt","Styling & Abschluss"];panel.innerHTML=panelFrame("Besuch führen",`<div class="appointment-summary"><span class="status visit">In Arbeit</span><h3>${a.customer}</h3><p>${a.service}</p></div><div class="visit-list">${phases.map((name,i)=>`<div class="visit-step ${i<a.visitStep?"done":""} ${i===a.visitStep?"current":""}"><span class="step-dot">${i<a.visitStep?"✓":i+1}</span><span><strong>${name}</strong><br><small class="muted">${i<a.visitStep?"Abgeschlossen":i===a.visitStep?"Jetzt als Nächstes":"Danach"}</small></span></div>`).join("")}</div>${a.visitStep===1?`<div class="notice warning"><strong>Waschplatz noch nicht fest zugeteilt</strong><br>Die genaue Platzplanung wird gemeinsam mit dem Salonteam festgelegt.</div>`:""}`,`<button class="button" data-panel="details">Zum Termin</button><button class="button primary" data-commit="visit">${a.visitStep>=3?"Besuch abschliessen":`${phases[a.visitStep]} abschliessen`}</button>`);}
+      function success(title,copy){panel.innerHTML=panelFrame("Ergebnis",`<div class="success"><div><div class="success-mark">✓</div><h3>${title}</h3><p class="muted">${copy}</p><div class="notice"><strong>Du bleibst im gleichen Arbeitsmoment.</strong><br>Tag, Suche und Ausgangsseite bleiben für die Rückkehr erhalten.</div></div></div>`,`<button class="button" data-return>Zum Ausgangspunkt</button><button class="button primary" data-show-appointment>Im Tagesplan zeigen</button>`);}
+      function commit(kind){const a=appointment(state.selectedId);if(kind==="reschedule"){const chosen=panel.querySelector(".slot.selected");a.start=chosen?.dataset.time||"14:15";if(chosen?.dataset.staff==="Sofia")a.staff="sofia";success("Termin verschoben",`${a.customer} ist neu um ${a.start} eingeplant. Die Nachricht wurde im Prototyp als zugestellt markiert.`);}if(kind==="cancel"){a.status="cancelled";success("Termin abgesagt",`${a.customer} ist als abgesagt markiert. Die freie Zeit ist im Tagesplan wieder sichtbar.`);}if(kind==="arrival"){a.status="arrived";a.visitStep=0;success("Ankunft bestätigt",`${a.customer} ist im Salon. Beratung ist der nächste Schritt.`);}if(kind==="visit"){if(a.visitStep<3){a.visitStep++;renderVisit(a);toast("Besuch aktualisiert",visitLabel(a));}else{a.status="done";success("Besuch abgeschlossen",`${a.customer} ist abgeschlossen und bleibt im Tagesverlauf sichtbar.`);}}}
+      function closePanel(restore=true){panel.classList.remove("open");backdrop.classList.remove("open");if(restore)requestAnimationFrame(()=>document.querySelector(`[data-appointment="${state.selectedId}"]`)?.focus());}
+      function returnOrigin(showDay=false){const origin=state.origin,id=state.selectedId;closePanel(false);state.screen=showDay?"day":origin.screen;state.query=origin.query;state.returnedId=id;state.selectedId=null;$("screenSelect").value=state.screen;render();requestAnimationFrame(()=>{body.scrollTop=origin.bodyScroll||0;const vp=$("dayViewport");if(vp){vp.scrollLeft=origin.dayLeft||0;vp.scrollTop=origin.dayTop||0;}const card=$(`appointment-${id}`);if(card){card.scrollIntoView({block:"center",inline:"center"});card.focus({preventScroll:true});}updateScrollCues();});setTimeout(()=>state.returnedId=null,1400);}
+
+      function updateScrollCues(){const vp=$("dayViewport");if(!vp)return;const wrap=vp.closest(".day-viewport-wrap"),left=wrap.querySelector(".scroll-cue.left"),right=wrap.querySelector(".scroll-cue.right"),hiddenLeft=vp.scrollLeft>6,hiddenRight=vp.scrollWidth-vp.clientWidth-vp.scrollLeft>6;left.classList.toggle("show",hiddenLeft);right.classList.toggle("show",hiddenRight);const total=visibleStaff().length,width=(vp.scrollWidth-70)/total,first=Math.max(1,Math.floor(Math.max(0,vp.scrollLeft-70)/width)+1),count=Math.max(1,Math.floor((vp.clientWidth-70)/width)),last=Math.min(total,first+count-1);const label=$("staffRange");if(label)label.textContent=hiddenLeft||hiddenRight?`${first}–${last} von ${total} Mitarbeitenden`:`${total} Mitarbeitende`;if(!vp.dataset.bound){vp.dataset.bound="1";vp.addEventListener("scroll",updateScrollCues,{passive:true});wrap.querySelectorAll("[data-scroll]").forEach(b=>b.addEventListener("click",()=>vp.scrollBy({left:Number(b.dataset.scroll)*Math.max(244,vp.clientWidth*.72),behavior:"smooth"})));}}
+      function go(screen){state.screen=screen;state.selectedId=null;state.panelMode="details";$("screenSelect").value=screen;render();body.scrollTop=0;}
+      function toast(title,copy){const n=document.createElement("div");n.className="toast";n.innerHTML=`<strong>${title}</strong><br><small class="muted">${copy}</small>`;$("toastArea").append(n);setTimeout(()=>n.remove(),3200);}
+
+      document.addEventListener("click",event=>{const target=event.target.closest("button,tr");if(!target)return;if(target.dataset.nav){go(target.dataset.nav);return;}if(target.dataset.appointment){openAppointment(target.dataset.appointment,target);return;}if(target.dataset.density){state.density=target.dataset.density;state.query="";state.appointments=baseAppointments.map(toAppointment);document.querySelectorAll("[data-density]").forEach(b=>b.classList.toggle("is-active",b===target));render();return;}if(target.dataset.period){state.dayPart=target.dataset.period;render();return;}if(target.dataset.customer){state.customerIndex=Number(target.dataset.customer);render();return;}if(target.dataset.step){state.onboardingStep=Number(target.dataset.step);render();return;}if(target.hasAttribute("data-step-back")){state.onboardingStep=Math.max(0,state.onboardingStep-1);render();return;}if(target.hasAttribute("data-step-next")){if(state.onboardingStep>=4)go("today");else{state.onboardingStep++;render();}return;}if(target.dataset.panel){state.panelMode=target.dataset.panel;renderPanel();return;}if(target.dataset.slot!==undefined){state.slot=Number(target.dataset.slot);renderReschedule(appointment(state.selectedId));return;}if(target.dataset.commit){commit(target.dataset.commit);return;}if(target.hasAttribute("data-close")){closePanel();return;}if(target.hasAttribute("data-return")){returnOrigin(false);return;}if(target.hasAttribute("data-show-appointment")){returnOrigin(true);return;}if(target.dataset.primary){toast("Im Designprototyp",`${target.textContent.trim()} ist als lokaler Ablauf vorbereitet und verändert keine Echtdaten.`);return;}if(target.dataset.labAction){toast("Im Designprototyp",`${target.dataset.labAction} verändert keine Echtdaten.`);return;}if(target.dataset.day){toast("Tagesnavigation",`${target.textContent.trim()} wurde lokal ausgewählt.`);return;}});
+      document.addEventListener("change",event=>{if(event.target.id==="cancelCheck")$("cancelCommit").disabled=!event.target.checked;});
+      $("globalSearch").addEventListener("input",event=>{state.query=event.target.value;if(state.query.length>=2&&state.screen!=="day"){state.screen="day";$("screenSelect").value="day";render();requestAnimationFrame(()=>$("globalSearch").focus());}else if(state.screen==="day")render();});
+      $("globalSearch").addEventListener("keydown",event=>{if(event.key==="Enter"&&state.query){const hit=state.appointments.find(a=>`${a.customer} ${a.service}`.toLocaleLowerCase("de-CH").includes(state.query.toLocaleLowerCase("de-CH")));if(hit){state.screen="day";state.selectedId=hit.id;render();requestAnimationFrame(()=>$(`appointment-${hit.id}`)?.scrollIntoView({block:"center",inline:"center"}));}}});
+      $("screenSelect").addEventListener("change",event=>go(event.target.value));
+      $("themeButton").addEventListener("click",()=>{state.theme=state.theme==="light"?"evening":"light";document.documentElement.dataset.theme=state.theme;$("themeButton").textContent=state.theme==="light"?"Abendatelier":"Tagesatelier";});
+      backdrop.addEventListener("click",()=>closePanel());
+      document.addEventListener("submit",event=>{if(event.target.id==="loginForm"){event.preventDefault();go("today");toast("Willkommen bei Coiffure Sonnegg","Die Anmeldung wurde nur lokal simuliert.");}});
+      document.addEventListener("keydown",event=>{if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==="k"){event.preventDefault();$("globalSearch").focus();}if(event.key==="Escape"&&panel.classList.contains("open"))closePanel();});
+      render();
+    })();
+  </script>
+</body>
+</html>

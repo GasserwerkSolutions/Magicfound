@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="de-CH">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DEL FINO — Buchungssystem &amp; Analytics für Schweizer KMU</title>
+<meta name="description" content="Online-Buchung, Kundenverwaltung, Cookie-freie Analytics und Website in einem System. KI-Einrichtung per Website-Scan. Schweizer Hosting. Kostenlos starten.">
+<link rel="canonical" href="https://del-fino.ch/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="de_CH">
+<meta property="og:url" content="https://del-fino.ch/">
+<meta property="og:title" content="DEL FINO — Buchungssystem &amp; Analytics für Schweizer KMU">
+<meta property="og:description" content="Online-Buchung, Kundenverwaltung, Cookie-freie Analytics und Website in einem System. KI-Einrichtung per Website-Scan.">
+<meta property="og:image" content="https://del-fino.ch/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://del-fino.ch/assets/og-image.png">
+<meta name="twitter:title" content="DEL FINO — Buchungssystem &amp; Analytics für Schweizer KMU">
+<meta name="twitter:description" content="Online-Buchung, Kundenverwaltung, Cookie-freie Analytics und Website in einem System.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "name": "DEL FINO",
+      "url": "https://del-fino.ch/",
+      "description": "Schweizer All-in-One-Plattform für Dienstleistungsbetriebe: Online-Buchung, Kundenverwaltung, Analytics und Website aus einem System."
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "DEL FINO",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "Web",
+      "offers": [
+        {"@type": "Offer", "name": "Free", "price": "0", "priceCurrency": "CHF"},
+        {"@type": "Offer", "name": "Basis", "price": "49", "priceCurrency": "CHF"},
+        {"@type": "Offer", "name": "Pro", "price": "99", "priceCurrency": "CHF"},
+        {"@type": "Offer", "name": "Business", "price": "199", "priceCurrency": "CHF"}
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {"@type":"Question","name":"Brauche ich technische Kenntnisse?","acceptedAnswer":{"@type":"Answer","text":"Nein. Sie geben Ihre Website-Adresse ein, prüfen den Vorschlag und passen ihn an. Das Buchungswidget fügen Sie mit einem kurzen Code-Schnipsel ein — oder Sie lassen die Website direkt aus DEL FINO erstellen."}},
+        {"@type":"Question","name":"Was passiert mit meiner bestehenden Website?","acceptedAnswer":{"@type":"Answer","text":"Sie bleibt, wie sie ist. DEL FINO liest sie nur aus und ergänzt sie um das Buchungswidget. Der Website-Check meldet zusätzlich, wenn Preise auf der Website vom Buchungskatalog abweichen."}},
+        {"@type":"Question","name":"Wo liegen meine Daten?","acceptedAnswer":{"@type":"Answer","text":"In der Schweiz. DEL FINO wird in der Schweiz entwickelt und gehostet, die Verarbeitung richtet sich nach dem revidierten Schweizer Datenschutzgesetz (revDSG)."}},
+        {"@type":"Question","name":"Warum kein Cookie-Banner?","acceptedAnswer":{"@type":"Answer","text":"Die Analytics von DEL FINO arbeiten ohne Cookies und ohne personenbezogenes Tracking. Darum braucht es keinen Consent-Banner — Sie sehen Besucherzahlen, Herkunft und Buchungs-Funnel trotzdem."}},
+        {"@type":"Question","name":"Kann ich jederzeit kündigen?","acceptedAnswer":{"@type":"Answer","text":"Ja, die Bezahlpläne sind monatlich kündbar. Der Free-Plan hat kein Ablaufdatum. Ihre Daten können Sie bei einer Kündigung exportieren."}},
+        {"@type":"Question","name":"Übernimmt die KI einfach alles?","acceptedAnswer":{"@type":"Answer","text":"Nein. Die KI liest Ihre Website aus und macht einen Vorschlag — Services, Preise, Team. Nichts wird ungefragt übernommen. Sie prüfen jeden Eintrag, passen ihn an und entscheiden, was live geht."}},
+        {"@type":"Question","name":"Was kostet der Einstieg?","acceptedAnswer":{"@type":"Answer","text":"Nichts. Der Free-Plan ist kostenlos und ohne Ablaufdatum. Sie starten ohne Risiko und wechseln erst auf einen Bezahlplan, wenn Sie mehr brauchen."}},
+        {"@type":"Question","name":"Funktioniert das für meine Branche?","acceptedAnswer":{"@type":"Answer","text":"DEL FINO ist für Betriebe mit Termingeschäft gebaut: Coiffeur- und Kosmetikstudios, Therapie- und Gesundheitspraxen, Handwerk mit Beratungsterminen, Musikschulen und Kursanbieter. Fragen Sie eine Demo an — wir zeigen den Scan mit Ihrer eigenen Website."}}
+      ]
+    }
+  ]
+}
+</script>
+<style>
+:root{
+  --c-primary:#0284c7;
+  --c-primary-dark:#026aa3;
+  --c-accent:#0ea5e9;
+  --c-bg:#f7fbfe;
+  --c-ink:#0f172a;
+  --c-muted:#46566b;
+  --c-line:#dce9f4;
+  --c-card:#ffffff;
+  --c-soft:#eaf4fb;
+  --radius:12px;
+  --radius-lg:18px;
+  --shadow:0 1px 2px rgba(15,23,42,.05),0 10px 30px -12px rgba(2,132,199,.14);
+  --shadow-lg:0 2px 4px rgba(15,23,42,.05),0 24px 60px -20px rgba(2,132,199,.22);
+  --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  --maxw:1140px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+body{font-family:var(--font);background:var(--c-bg);color:var(--c-ink);line-height:1.6;font-size:1rem;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+img,svg{max-width:100%;height:auto;display:block}
+a{color:var(--c-primary)}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid var(--c-accent);outline-offset:2px;border-radius:4px}
+.skip-link{position:absolute;left:-9999px;top:0;background:var(--c-ink);color:#fff;padding:.75rem 1.25rem;z-index:200;border-radius:0 0 var(--radius) 0;text-decoration:none}
+.skip-link:focus{left:0}
+.container{max-width:var(--maxw);margin:0 auto;padding:0 1.25rem}
+.kicker{display:inline-block;font-size:.75rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--c-primary);background:var(--c-soft);padding:.35rem .85rem;border-radius:999px;margin-bottom:1rem}
+h1,h2,h3{line-height:1.18;letter-spacing:-.015em;font-weight:800}
+h2{font-size:clamp(1.6rem,3.4vw,2.3rem);margin-bottom:.75rem}
+.section{padding:4.5rem 0}
+.section-head{max-width:680px;margin-bottom:2.75rem}
+.section-head p{color:var(--c-muted);font-size:1.05rem}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;min-height:48px;padding:.8rem 1.6rem;border-radius:var(--radius);font-weight:700;font-size:1rem;text-decoration:none;border:2px solid transparent;cursor:pointer;transition:background-color .18s ease,border-color .18s ease,color .18s ease,transform .18s ease}
+.btn-primary{background:var(--c-primary);color:#fff}
+.btn-primary:hover{background:var(--c-primary-dark)}
+.btn-ghost{background:transparent;color:var(--c-primary);border-color:var(--c-primary)}
+.btn-ghost:hover{background:var(--c-soft)}
+.btn-quiet{background:transparent;color:var(--c-primary);border-color:var(--c-line)}
+.btn-quiet:hover{border-color:var(--c-primary)}
+/* Header */
+.site-header{position:sticky;top:0;z-index:100;background:rgba(247,251,254,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--c-line)}
+.header-inner{display:flex;align-items:center;justify-content:space-between;gap:1rem;min-height:72px}
+.brand{display:flex;align-items:center;gap:.6rem;text-decoration:none;color:var(--c-ink);font-weight:800;font-size:1.15rem;letter-spacing:.04em}
+.brand svg{flex:0 0 auto}
+.main-nav ul{display:flex;align-items:center;gap:.25rem;list-style:none}
+.main-nav a{display:inline-flex;align-items:center;min-height:44px;padding:.5rem .9rem;border-radius:8px;text-decoration:none;color:var(--c-ink);font-weight:600;font-size:.95rem}
+.main-nav a:hover{background:var(--c-soft);color:var(--c-primary)}
+.main-nav .nav-cta{margin-left:.5rem}
+.burger{display:none;background:none;border:1px solid var(--c-line);border-radius:10px;width:48px;height:48px;align-items:center;justify-content:center;cursor:pointer}
+.burger svg{width:24px;height:24px}
+@media (max-width:840px){
+  .burger{display:inline-flex}
+  .main-nav{position:absolute;top:100%;left:0;right:0;background:#fff;border-bottom:1px solid var(--c-line);box-shadow:var(--shadow-lg);display:none}
+  .main-nav.open{display:block}
+  .main-nav ul{flex-direction:column;align-items:stretch;gap:0;padding:.75rem 1.25rem 1.25rem}
+  .main-nav a{width:100%;min-height:48px}
+  .main-nav .nav-cta{margin:.5rem 0 0}
+}
+/* Hero */
+.hero{padding:4.5rem 0 4rem;background:
+  radial-gradient(900px 480px at 85% -10%,rgba(14,165,233,.14),transparent 60%),
+  radial-gradient(700px 420px at -10% 30%,rgba(2,132,199,.08),transparent 55%)}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:3.5rem;align-items:center}
+.hero h1{font-size:clamp(2rem,4.6vw,3.1rem);margin-bottom:1.1rem}
+.hero h1 .hl{color:var(--c-primary)}
+.hero .sub{font-size:1.15rem;color:var(--c-muted);margin-bottom:1.75rem;max-width:34rem}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:.85rem;margin-bottom:1.25rem}
+.trustline{display:flex;flex-wrap:wrap;gap:.4rem 1.25rem;color:var(--c-muted);font-size:.9rem;font-weight:600}
+.trustline li{display:flex;align-items:center;gap:.4rem;list-style:none}
+.trustline svg{width:16px;height:16px;flex:0 0 auto}
+.hero-visual{background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius-lg);box-shadow:var(--shadow-lg);padding:.75rem}
+@media (max-width:920px){.hero-grid{grid-template-columns:1fr;gap:2.5rem}.hero{padding-top:3rem}}
+/* Problem */
+.cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+@media (max-width:840px){.cards-3{grid-template-columns:1fr}}
+.card{background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius-lg);padding:1.75rem;box-shadow:var(--shadow)}
+.card h3{font-size:1.1rem;margin:.85rem 0 .5rem}
+.card p{color:var(--c-muted);font-size:.97rem}
+.icon-chip{width:44px;height:44px;border-radius:12px;background:var(--c-soft);display:flex;align-items:center;justify-content:center}
+.icon-chip svg{width:22px;height:22px}
+.bridge{margin-top:2.25rem;padding:1.25rem 1.5rem;border-left:4px solid var(--c-primary);background:var(--c-soft);border-radius:0 var(--radius) var(--radius) 0;font-weight:700;font-size:1.05rem}
+/* Scan section */
+.scan{background:linear-gradient(180deg,#0b2a44 0%,#0d3a5f 100%);color:#eaf4fb;border-radius:0}
+.scan .kicker{background:rgba(14,165,233,.18);color:#7dd3fc}
+.scan h2{color:#fff}
+.scan .section-head p{color:#b9d4e8}
+.scan-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+@media (max-width:920px){.scan-grid{grid-template-columns:1fr}}
+.steps{list-style:none;display:grid;gap:1.25rem;counter-reset:step}
+.steps li{display:flex;gap:1.1rem;align-items:flex-start}
+.step-num{counter-increment:step;flex:0 0 auto;width:44px;height:44px;border-radius:12px;background:var(--c-accent);color:#06283f;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.steps h3{font-size:1.08rem;margin-bottom:.25rem;color:#fff}
+.steps p{color:#b9d4e8;font-size:.97rem}
+.scan-visual{background:rgba(255,255,255,.04);border:1px solid rgba(125,211,252,.25);border-radius:var(--radius-lg);padding:.75rem}
+.control-note{margin-top:1.75rem;display:inline-flex;align-items:center;gap:.6rem;background:rgba(14,165,233,.14);border:1px solid rgba(125,211,252,.35);padding:.85rem 1.25rem;border-radius:var(--radius);font-weight:700;color:#e0f2fe}
+.control-note svg{width:20px;height:20px;flex:0 0 auto}
+/* Tabs */
+.tabs{margin-top:1rem}
+.tablist{display:flex;flex-wrap:wrap;gap:.5rem;border-bottom:2px solid var(--c-line);padding-bottom:.75rem;margin-bottom:2rem}
+.tab{min-height:48px;padding:.6rem 1.2rem;border-radius:999px;border:1px solid var(--c-line);background:#fff;font-weight:700;font-size:.95rem;color:var(--c-muted);cursor:pointer;font-family:inherit}
+.tab[aria-selected="true"]{background:var(--c-primary);border-color:var(--c-primary);color:#fff}
+.tab:hover:not([aria-selected="true"]){border-color:var(--c-primary);color:var(--c-primary)}
+.tabpanel{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
+.tabpanel[hidden]{display:none}
+@media (max-width:920px){.tabpanel{grid-template-columns:1fr;gap:2rem}}
+.tabpanel h3{font-size:1.45rem;margin-bottom:.75rem}
+.tabpanel .lead{color:var(--c-muted);margin-bottom:1.25rem}
+.featlist{list-style:none;display:grid;gap:.7rem}
+.featlist li{display:flex;gap:.65rem;align-items:flex-start;font-size:.97rem;color:var(--c-ink)}
+.featlist svg{width:20px;height:20px;flex:0 0 auto;margin-top:.15rem}
+.panel-visual{background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius-lg);box-shadow:var(--shadow);padding:.75rem}
+.badge-new{display:inline-block;font-size:.7rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;background:#fff7ed;color:#b45309;border:1px solid #fcd9a8;padding:.2rem .55rem;border-radius:999px;vertical-align:middle;margin-left:.5rem}
+/* How */
+.how-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem}
+@media (max-width:840px){.how-grid{grid-template-columns:1fr}}
+.how-card{position:relative;background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius-lg);padding:2rem 1.75rem 1.75rem;box-shadow:var(--shadow)}
+.how-num{position:absolute;top:-1rem;left:1.5rem;width:44px;height:44px;border-radius:12px;background:var(--c-primary);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.how-card h3{margin:.75rem 0 .5rem;font-size:1.1rem}
+.how-card p{color:var(--c-muted);font-size:.97rem}
+/* Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.1rem;align-items:stretch}
+@media (max-width:1020px){.pricing-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:620px){.pricing-grid{grid-template-columns:1fr}}
+.plan{background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius-lg);padding:1.75rem 1.5rem;display:flex;flex-direction:column;box-shadow:var(--shadow)}
+.plan.featured{border:2px solid var(--c-primary);position:relative}
+.plan-flag{position:absolute;top:-0.85rem;left:50%;transform:translateX(-50%);background:var(--c-primary);color:#fff;font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:.25rem .8rem;border-radius:999px;white-space:nowrap}
+.plan h3{font-size:1.05rem}
+.plan .price{font-size:2rem;font-weight:800;margin:.5rem 0 .15rem;letter-spacing:-.02em}
+.plan .price small{font-size:.85rem;font-weight:600;color:var(--c-muted)}
+.plan .plan-sub{color:var(--c-muted);font-size:.88rem;margin-bottom:1.1rem}
+.plan ul{list-style:none;display:grid;gap:.55rem;margin-bottom:1.5rem;flex:1}
+.plan li{display:flex;gap:.5rem;align-items:flex-start;font-size:.92rem;color:var(--c-ink)}
+.plan li svg{width:18px;height:18px;flex:0 0 auto;margin-top:.2rem}
+.plan .btn{width:100%}
+.pricing-note{margin-top:1.75rem;color:var(--c-muted);font-size:.92rem;text-align:center}
+.pricing-note a{font-weight:700}
+/* FAQ */
+.faq-list{max-width:780px;display:grid;gap:.85rem}
+.faq-item{background:var(--c-card);border:1px solid var(--c-line);border-radius:var(--radius);overflow:hidden}
+.faq-item summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:1rem;padding:1.1rem 1.4rem;font-weight:700;min-height:48px;color:var(--c-ink)}
+.faq-item summary::-webkit-details-marker{display:none}
+.faq-item summary::after{content:"+";font-size:1.5rem;font-weight:400;color:var(--c-primary);line-height:1;flex:0 0 auto}
+.faq-item[open] summary::after{content:"–"}
+.faq-item .faq-body{padding:0 1.4rem 1.25rem;color:var(--c-muted);font-size:.97rem}
+/* Final CTA */
+.final-cta{background:linear-gradient(135deg,var(--c-primary) 0%,#036399 100%);color:#fff;border-radius:var(--radius-lg);padding:3.25rem 2rem;text-align:center;box-shadow:var(--shadow-lg)}
+.final-cta h2{color:#fff;margin-bottom:.75rem}
+.final-cta p{color:#d4ecfa;max-width:42rem;margin:0 auto 1.75rem;font-size:1.08rem}
+.final-cta .btn{background:#fff;color:var(--c-primary)}
+.final-cta .btn:hover{background:#eaf4fb}
+/* Footer */
+.site-footer{background:#0b2236;color:#b9d4e8;padding:3.5rem 0 2rem;margin-top:4.5rem}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1.4fr;gap:2.25rem;margin-bottom:2.5rem}
+@media (max-width:840px){.footer-grid{grid-template-columns:1fr 1fr}}
+@media (max-width:560px){.footer-grid{grid-template-columns:1fr}}
+.site-footer .brand{color:#fff;margin-bottom:.85rem}
+.site-footer p{font-size:.92rem}
+.site-footer h3{color:#fff;font-size:.85rem;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.85rem}
+.site-footer ul{list-style:none;display:grid;gap:.45rem}
+.site-footer a{color:#b9d4e8;text-decoration:none;font-size:.95rem;display:inline-flex;min-height:30px;align-items:center}
+.site-footer a:hover{color:#fff;text-decoration:underline}
+.footer-bottom{border-top:1px solid rgba(185,212,232,.2);padding-top:1.5rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:.75rem;font-size:.88rem}
+.footer-bottom span{display:inline-flex;align-items:center;gap:.45rem}
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">Direkt zum Inhalt</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="DEL FINO Startseite">
+      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="2" y="2" width="30" height="30" rx="8" fill="#0284c7"/><path d="M10 23V11h5.2c3.8 0 6.3 2.4 6.3 6s-2.5 6-6.3 6H10zm3-2.6h2.1c2 0 3.3-1.3 3.3-3.4s-1.3-3.4-3.3-3.4H13v6.8z" fill="#fff"/><circle cx="25.5" cy="10.5" r="2.5" fill="#7dd3fc"/></svg>
+      DEL&nbsp;FINO
+    </a>
+    <button class="burger" id="navToggle" aria-expanded="false" aria-controls="mainNav" aria-label="Menü öffnen">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#0f172a" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    </button>
+    <nav class="main-nav" id="mainNav" aria-label="Hauptnavigation">
+      <ul>
+        <li><a href="#funktionen">Funktionen</a></li>
+        <li><a href="#so-funktionierts">So funktioniert's</a></li>
+        <li><a href="#preise">Preise</a></li>
+        <li><a href="#faq">FAQ</a></li>
+        <li class="nav-cta"><a class="btn btn-primary" href="kontakt.html">Demo anfragen</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="kicker">Schweizer All-in-One-Plattform</span>
+        <h1>Buchungen, Kunden und Website. <span class="hl">Ein System, in Minuten eingerichtet.</span></h1>
+        <p class="sub">DEL FINO liest Ihre bestehende Website, erkennt Services, Preise und Team — und schlägt Ihnen das fertige Buchungssystem vor. Sie prüfen, passen an, gehen live. Gehostet in der Schweiz, ohne Cookie-Banner.</p>
+        <div class="hero-ctas">
+          <a class="btn btn-primary" href="kontakt.html">Demo anfragen</a>
+          <a class="btn btn-ghost" href="#funktionen">Funktionen ansehen</a>
+        </div>
+        <ul class="trustline">
+          <li><svg viewBox="0 0 16 16" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>Schweizer Hosting</li>
+          <li><svg viewBox="0 0 16 16" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>Kein Cookie-Banner nötig</li>
+          <li><svg viewBox="0 0 16 16" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 8.5l3 3 7-7"/></svg>Kostenloser Einstiegsplan</li>
+        </ul>
+      </div>
+      <div class="hero-visual">
+        <svg viewBox="0 0 560 400" role="img" aria-label="Illustration des DEL FINO Dashboards mit Terminübersicht, Kennzahlen und Wochenstatistik" width="560" height="400">
+          <rect width="560" height="400" rx="12" fill="#fff"/>
+          <rect width="560" height="36" rx="12" fill="#eaf4fb"/>
+          <rect y="24" width="560" height="12" fill="#eaf4fb"/>
+          <circle cx="20" cy="18" r="5" fill="#fda4af"/><circle cx="38" cy="18" r="5" fill="#fcd34d"/><circle cx="56" cy="18" r="5" fill="#86efac"/>
+          <rect x="0" y="36" width="120" height="364" fill="#0b2a44"/>
+          <rect x="16" y="56" width="88" height="10" rx="5" fill="#7dd3fc"/>
+          <rect x="16" y="86" width="88" height="8" rx="4" fill="#2e567a"/>
+          <rect x="16" y="108" width="70" height="8" rx="4" fill="#2e567a"/>
+          <rect x="16" y="130" width="80" height="8" rx="4" fill="#2e567a"/>
+          <rect x="16" y="152" width="62" height="8" rx="4" fill="#2e567a"/>
+          <rect x="140" y="56" width="125" height="78" rx="10" fill="#f7fbfe" stroke="#dce9f4"/>
+          <rect x="154" y="72" width="60" height="8" rx="4" fill="#94a3b8"/>
+          <rect x="154" y="92" width="48" height="16" rx="4" fill="#0284c7"/>
+          <rect x="278" y="56" width="125" height="78" rx="10" fill="#f7fbfe" stroke="#dce9f4"/>
+          <rect x="292" y="72" width="60" height="8" rx="4" fill="#94a3b8"/>
+          <rect x="292" y="92" width="56" height="16" rx="4" fill="#0ea5e9"/>
+          <rect x="416" y="56" width="125" height="78" rx="10" fill="#f7fbfe" stroke="#dce9f4"/>
+          <rect x="430" y="72" width="60" height="8" rx="4" fill="#94a3b8"/>
+          <rect x="430" y="92" width="40" height="16" rx="4" fill="#38bdf8"/>
+          <rect x="140" y="152" width="263" height="228" rx="10" fill="#f7fbfe" stroke="#dce9f4"/>
+          <rect x="156" y="168" width="90" height="9" rx="4" fill="#475569"/>
+          <rect x="170" y="320" width="26" height="44" rx="4" fill="#bae0f4"/>
+          <rect x="206" y="290" width="26" height="74" rx="4" fill="#7cc8ec"/>
+          <rect x="242" y="260" width="26" height="104" rx="4" fill="#38a8e0"/>
+          <rect x="278" y="236" width="26" height="128" rx="4" fill="#0284c7"/>
+          <rect x="314" y="270" width="26" height="94" rx="4" fill="#38a8e0"/>
+          <rect x="350" y="222" width="26" height="142" rx="4" fill="#026aa3"/>
+          <rect x="416" y="152" width="125" height="228" rx="10" fill="#f7fbfe" stroke="#dce9f4"/>
+          <rect x="430" y="168" width="70" height="9" rx="4" fill="#475569"/>
+          <rect x="430" y="192" width="97" height="34" rx="6" fill="#e0f2fe"/>
+          <rect x="438" y="203" width="60" height="8" rx="4" fill="#0284c7"/>
+          <rect x="430" y="234" width="97" height="34" rx="6" fill="#e0f2fe"/>
+          <rect x="438" y="245" width="50" height="8" rx="4" fill="#0284c7"/>
+          <rect x="430" y="276" width="97" height="34" rx="6" fill="#e0f2fe"/>
+          <rect x="438" y="287" width="66" height="8" rx="4" fill="#0284c7"/>
+          <rect x="430" y="318" width="97" height="34" rx="6" fill="#dcfce7"/>
+          <rect x="438" y="329" width="56" height="8" rx="4" fill="#16a34a"/>
+        </svg>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PROBLEM ===== -->
+  <section class="section" aria-labelledby="problem-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Der Alltag heute</span>
+        <h2 id="problem-title">Drei Probleme, die jeden Terminbetrieb Zeit und Umsatz kosten</h2>
+      </div>
+      <div class="cards-3">
+        <article class="card">
+          <div class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 2 .7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.2a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg></div>
+          <h3>Telefon-Pingpong für Termine</h3>
+          <p>Anrufe während der Behandlung, Rückrufe nach Feierabend, WhatsApp-Nachrichten am Wochenende. Jeder Termin kostet drei Kontaktversuche, bevor er steht.</p>
+        </article>
+        <article class="card">
+          <div class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M12 7v5l3 3"/></svg></div>
+          <h3>No-Shows kosten stillen Umsatz</h3>
+          <p>Ein nicht erschienener Kunde ist eine leere Stunde, die niemand bezahlt. Ohne Erinnerung und ohne Risiko-Einschätzung passiert das immer wieder — und fällt in keiner Abrechnung auf.</p>
+        </article>
+        <article class="card">
+          <div class="icon-chip"><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="14" rx="2"/><path d="M2 9h20M8 21h8M12 18v3"/></svg></div>
+          <h3>Die Website zeigt alte Preise</h3>
+          <p>Die Preisliste wurde im Salon längst angepasst — online steht noch die alte. Niemand hat Zeit, die Website nachzupflegen, und Kunden stehen mit falschen Erwartungen im Geschäft.</p>
+        </article>
+      </div>
+      <p class="bridge">DEL FINO löst alle drei — mit einem System statt drei Abos.</p>
+    </div>
+  </section>
+
+  <!-- ===== KI-SCAN ===== -->
+  <section class="section scan" id="ki-scan" aria-labelledby="scan-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Einrichtung per KI-Scan</span>
+        <h2 id="scan-title">Ihre Website ist das Formular. Sie müssen nichts abtippen.</h2>
+        <p>Statt einem Formularmarathon liest DEL FINO Ihre bestehende Website aus und baut daraus einen vollständigen Konfigurationsvorschlag — Services, Preise, Mitarbeitende.</p>
+      </div>
+      <div class="scan-grid">
+        <ol class="steps">
+          <li>
+            <span class="step-num" aria-hidden="true">1</span>
+            <div>
+              <h3>Website-Adresse eingeben</h3>
+              <p>Der Scan liest Ihre Seite aus und erkennt Services, Preise und Mitarbeitende — automatisch, ohne dass Sie etwas vorbereiten müssen.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">2</span>
+            <div>
+              <h3>Vorschlag prüfen</h3>
+              <p>Jeder erkannte Eintrag ist editierbar. Nichts wird ungefragt übernommen: Sie korrigieren, ergänzen oder löschen, bis alles stimmt.</p>
+            </div>
+          </li>
+          <li>
+            <span class="step-num" aria-hidden="true">3</span>
+            <div>
+              <h3>Live gehen</h3>
+              <p>Das Buchungswidget setzen Sie per Code-Schnipsel auf jeder Website ein — egal, womit sie gebaut ist. Ab dann buchen Ihre Kunden selbst.</p>
+            </div>
+          </li>
+        </ol>
+        <div class="scan-visual">
+          <svg viewBox="0 0 520 360" role="img" aria-label="Illustration des Website-Scans: Aus einer Website-Adresse entsteht ein prüfbarer Konfigurationsvorschlag mit Services und Preisen" width="520" height="360">
+            <rect width="520" height="360" rx="12" fill="#0d3050"/>
+            <rect x="40" y="36" width="440" height="48" rx="10" fill="#0b2a44" stroke="#2e567a"/>
+            <circle cx="68" cy="60" r="10" fill="none" stroke="#7dd3fc" stroke-width="2.5"/>
+            <path d="M75 67l8 8" stroke="#7dd3fc" stroke-width="2.5" stroke-linecap="round"/>
+            <rect x="96" y="54" width="220" height="12" rx="6" fill="#2e567a"/>
+            <rect x="372" y="48" width="92" height="24" rx="6" fill="#0ea5e9"/>
+            <path d="M260 92v28" stroke="#7dd3fc" stroke-width="2" stroke-dasharray="4 5"/>
+            <path d="M253 113l7 9 7-9" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="40" y="134" width="210" height="88" rx="10" fill="#10395f" stroke="#2e567a"/>
+            <rect x="56" y="150" width="92" height="9" rx="4" fill="#7dd3fc"/>
+            <rect x="56" y="172" width="150" height="8" rx="4" fill="#3d6b91"/>
+            <rect x="56" y="190" width="120" height="8" rx="4" fill="#3d6b91"/>
+            <rect x="270" y="134" width="210" height="88" rx="10" fill="#10395f" stroke="#2e567a"/>
+            <rect x="286" y="150" width="70" height="9" rx="4" fill="#7dd3fc"/>
+            <rect x="286" y="172" width="130" height="8" rx="4" fill="#3d6b91"/>
+            <rect x="286" y="190" width="100" height="8" rx="4" fill="#3d6b91"/>
+            <rect x="40" y="238" width="210" height="88" rx="10" fill="#10395f" stroke="#2e567a"/>
+            <rect x="56" y="254" width="84" height="9" rx="4" fill="#7dd3fc"/>
+            <circle cx="68" cy="292" r="11" fill="#2e567a"/>
+            <circle cx="98" cy="292" r="11" fill="#3d6b91"/>
+            <circle cx="128" cy="292" r="11" fill="#4d7da3"/>
+            <rect x="270" y="238" width="210" height="88" rx="10" fill="#0e4d33" stroke="#22c55e"/>
+            <path d="M292 282l10 10 20-22" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            <rect x="336" y="262" width="120" height="9" rx="4" fill="#86efac"/>
+            <rect x="336" y="284" width="90" height="8" rx="4" fill="#3f8a5f"/>
+            <rect x="336" y="302" width="104" height="8" rx="4" fill="#3f8a5f"/>
+          </svg>
+        </div>
+      </div>
+      <p class="control-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="M9 12l2 2 4-4"/></svg>
+        Die KI macht den Vorschlag — Sie behalten die Kontrolle.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===== FUNKTIONEN ===== -->
+  <section class="section" id="funktionen" aria-labelledby="funktionen-title">
+    <div class="container">
+      <div class="section-head">
+        <span class="kicker">Funktionen</span>
+        <h2 id="funktionen-title">Vier Bausteine. Ein System. Keine Abstimmungsarbeit.</h2>
+        <p>Buchung, Kundenverwaltung, Analytics und Website greifen ineinander, weil sie aus derselben Quelle arbeiten — Ihrem Buchungskatalog.</p>
+      </div>
+
+      <div class="tabs">
+        <div class="tablist" role="tablist" aria-label="Funktionsbereiche">
+          <button class="tab" role="tab" id="tab-a" aria-selected="true" aria-controls="panel-a">Buchung &amp; Kalender</button>
+          <button class="tab" role="tab" id="tab-b" aria-selected="false" aria-controls="panel-b" tabindex="-1">Kunden &amp; No-Show-Schutz</button>
+          <button class="tab" role="tab" id="tab-c" aria-selected="false" aria-controls="panel-c" tabindex="-1">Analytics ohne Cookie-Banner</button>
+          <button class="tab" role="tab" id="tab-d" aria-selected="false" aria-controls="panel-d" tabindex="-1">Website &amp; Website-Check</button>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-a" aria-labelledby="tab-a">
+          <div>
+            <h3>Buchung &amp; Kalender</h3>
+            <p class="lead">Ihre Kunden buchen online, rund um die Uhr — auch dann, wenn bei Ihnen niemand ans Telefon kann. Sie behalten in der Tages- und Wochenübersicht alle Termine im Blick. Bestätigungen und Erinnerungen verschickt das System automatisch.</p>
+            <ul class="featlist">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Online-Buchung rund um die Uhr — Termine entstehen, ohne dass jemand telefoniert.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Tages- und Wochenübersicht mit blockierten Zeiten für Pausen, Ferien und Unterhalt.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Erinnerungs-SMS vor dem Termin — weniger vergessene Termine, ohne dass jemand telefonieren muss.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Automatische Bestätigungen — Ihre Kunden wissen sofort, dass der Termin steht.</li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <svg viewBox="0 0 480 320" role="img" aria-label="Illustration der Kalenderansicht mit Wochenraster und Terminblöcken" width="480" height="320">
+              <rect width="480" height="320" rx="12" fill="#fff"/>
+              <rect x="24" y="20" width="130" height="12" rx="6" fill="#0f172a"/>
+              <rect x="380" y="14" width="76" height="24" rx="6" fill="#0284c7"/>
+              <g stroke="#dce9f4"><path d="M24 56h432M24 108h432M24 160h432M24 212h432M24 264h432"/><path d="M110 48v252M196 48v252M282 48v252M368 48v252"/></g>
+              <rect x="116" y="62" width="74" height="40" rx="6" fill="#bae0f4"/>
+              <rect x="202" y="62" width="74" height="92" rx="6" fill="#0284c7"/>
+              <rect x="30" y="114" width="74" height="40" rx="6" fill="#7cc8ec"/>
+              <rect x="288" y="114" width="74" height="40" rx="6" fill="#bae0f4"/>              <rect x="374" y="166" width="74" height="64" rx="6" fill="#7cc8ec"/>
+              <rect x="116" y="218" width="74" height="40" rx="6" fill="#bae0f4"/>
+              <rect x="202" y="270" width="74" height="36" rx="6" fill="#0284c7"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-b" aria-labelledby="tab-b" hidden>
+          <div>
+            <h3>Kunden &amp; No-Show-Schutz</h3>
+            <p class="lead">Jeder Kunde hat eine Historie: vergangene Termine, Notizen, Zuverlässigkeit. Das System schätzt für jede Buchung das Risiko ein, dass der Termin nicht wahrgenommen wird — und Sie entscheiden, wie Sie bei Risikofällen vorgehen.</p>
+            <ul class="featlist">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Kundenverwaltung mit Terminhistorie — Sie wissen beim Anruf sofort, wen Sie vor sich haben.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>No-Show-Einschätzung pro Buchung — das System schätzt das Risiko ein, es entscheidet nicht über Ihre Kunden.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Erinnerungs-SMS gezielt dort, wo sie am meisten bringen — bei den Terminen mit dem höchsten Ausfallrisiko.</li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <svg viewBox="0 0 480 320" role="img" aria-label="Illustration einer Kundenliste mit Risikoeinschätzung pro Buchung" width="480" height="320">
+              <rect width="480" height="320" rx="12" fill="#fff"/>
+              <rect x="24" y="20" width="150" height="12" rx="6" fill="#0f172a"/>
+              <g>
+                <rect x="24" y="56" width="432" height="52" rx="8" fill="#f7fbfe" stroke="#dce9f4"/>
+                <circle cx="52" cy="82" r="14" fill="#bae0f4"/>
+                <rect x="78" y="70" width="110" height="9" rx="4" fill="#334155"/>
+                <rect x="78" y="88" width="70" height="7" rx="3" fill="#94a3b8"/>
+                <rect x="372" y="72" width="64" height="20" rx="10" fill="#dcfce7"/>
+              </g>
+              <g>
+                <rect x="24" y="120" width="432" height="52" rx="8" fill="#f7fbfe" stroke="#dce9f4"/>
+                <circle cx="52" cy="146" r="14" fill="#bae0f4"/>
+                <rect x="78" y="134" width="92" height="9" rx="4" fill="#334155"/>
+                <rect x="78" y="152" width="80" height="7" rx="3" fill="#94a3b8"/>
+                <rect x="372" y="136" width="64" height="20" rx="10" fill="#fef9c3"/>
+              </g>
+              <g>
+                <rect x="24" y="184" width="432" height="52" rx="8" fill="#f7fbfe" stroke="#dce9f4"/>
+                <circle cx="52" cy="210" r="14" fill="#bae0f4"/>
+                <rect x="78" y="198" width="120" height="9" rx="4" fill="#334155"/>
+                <rect x="78" y="216" width="64" height="7" rx="3" fill="#94a3b8"/>
+                <rect x="372" y="200" width="64" height="20" rx="10" fill="#fee2e2"/>
+              </g>
+              <rect x="24" y="256" width="200" height="36" rx="8" fill="#0284c7"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-c" aria-labelledby="tab-c" hidden>
+          <div>
+            <h3>Analytics ohne Cookie-Banner</h3>
+            <p class="lead">Besucherzahlen, Herkunft und der komplette Buchungs-Funnel: Sie sehen, wie viele Personen Ihre Seite besuchen, woher sie kommen und an welcher Stelle sie abspringen — von «Seite besucht» bis «Termin gebucht». Sie sehen, welche Werbung Buchungen bringt, nicht nur Klicks.</p>
+            <ul class="featlist">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Cookie-freies Tracking — kein Consent-Banner nötig, die Statistik funktioniert trotzdem.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Buchungs-Funnel mit Absprungstellen — Sie sehen, wo Interessenten verloren gehen.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Herkunft der Besucher — Google, Instagram, Empfehlung: Sie wissen, was wirkt.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Gehostet in der Schweiz, ausgerichtet auf das revidierte Datenschutzgesetz (revDSG).</li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <svg viewBox="0 0 480 320" role="img" aria-label="Illustration eines Buchungs-Funnels mit vier Stufen und Besucherstatistik" width="480" height="320">
+              <rect width="480" height="320" rx="12" fill="#fff"/>
+              <rect x="24" y="20" width="140" height="12" rx="6" fill="#0f172a"/>
+              <rect x="40" y="56" width="400" height="34" rx="6" fill="#0284c7"/>
+              <rect x="70" y="102" width="340" height="34" rx="6" fill="#38aede"/>
+              <rect x="100" y="148" width="280" height="34" rx="6" fill="#7cc8ec"/>
+              <rect x="130" y="194" width="220" height="34" rx="6" fill="#bae0f4"/>
+              <g stroke="#dce9f4"><path d="M24 252h432"/></g>
+              <rect x="24" y="268" width="90" height="28" rx="6" fill="#f7fbfe" stroke="#dce9f4"/>
+              <rect x="126" y="268" width="90" height="28" rx="6" fill="#f7fbfe" stroke="#dce9f4"/>
+              <rect x="228" y="268" width="90" height="28" rx="6" fill="#f7fbfe" stroke="#dce9f4"/>
+            </svg>
+          </div>
+        </div>
+
+        <div class="tabpanel" role="tabpanel" id="panel-d" aria-labelledby="tab-d" hidden>
+          <div>
+            <h3>Website &amp; Website-Check</h3>
+            <p class="lead">Zwei Stufen, je nachdem, wo Sie stehen. Haben Sie bereits eine Website, überwacht der Website-Check, ob die Preise dort noch mit Ihrem Buchungskatalog übereinstimmen — und meldet Abweichungen. Lassen Sie Ihre Website direkt aus DEL FINO erstellen, ziehen Seite und Buchung aus derselben Quelle: Abweichungen können dann gar nicht erst entstehen.</p>
+            <ul class="featlist">
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Website-Check für Ihre bestehende Seite — meldet, wenn Preise von Ihrem Katalog abweichen.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Website aus DEL FINO <span class="badge-new">Neu</span> — erstellt mit eigenem Design-System, Preise direkt aus dem Buchungskatalog.</li>
+              <li><svg viewBox="0 0 24 24" fill="none" stroke="#0284c7" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 13l4 4 10-10"/></svg>Eine Quelle für alles — was Sie im Katalog ändern, stimmt überall.</li>
+            </ul>
+          </div>
+          <div class="panel-visual">
+            <svg viewBox="0 0 480 320" role="img" aria-label="Illustration des Website-Checks: Vergleich zwischen Website-Preisen und Buchungskatalog" width="480" height="320">
+              <rect width="480" height="320" rx="12" fill="#fff"/>
+              <rect x="24" y="24" width="196" height="240" rx="10" fill="#f7fbfe" stroke="#dce9f4"/>
+              <rect x="40" y="40" width="90" height="10" rx="5" fill="#0f172a"/>
+              <rect x="40" y="68" width="164" height="8" rx="4" fill="#94a3b8"/>
+              <rect x="40" y="88" width="140" height="8" rx="4" fill="#94a3b8"/>
+              <rect x="40" y="116" width="164" height="22" rx="5" fill="#dcfce7"/>
+              <rect x="40" y="148" width="164" height="22" rx="5" fill="#fee2e2"/>
+              <rect x="40" y="180" width="164" height="22" rx="5" fill="#dcfce7"/>
+              <rect x="260" y="24" width="196" height="240" rx="10" fill="#0b2a44"/>
+              <rect x="276" y="40" width="100" height="10" rx="5" fill="#7dd3fc"/>
+              <rect x="276" y="68" width="164" height="8" rx="4" fill="#2e567a"/>
+              <rect x="276" y="116" width="164" height="22" rx="5" fill="#155e75"/>
+              <rect x="276" y="148" width="164" height="22" rx="5" fill="#155e75"/>
+              <rect x="276" y="180" width="164" height="22" rx="5" fill="#155e75"/>
+              <path d="M226 142h28" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+              <rect x="120" y="276" width="240" height="28" rx="14" fill="#0284c7"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      </div>
+    </section>
+
+    <section class="section" id="so-funktionierts" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="kicker">So funktioniert's</p>
+          <h2 id="how-title">Drei Schritte bis zur ersten Online-Buchung</h2>
+        </div>
+        <div class="how-grid">
+          <div class="how-card">
+            <span class="how-num" aria-hidden="true">1</span>
+            <h3>Website scannen</h3>
+            <p>Sie nennen uns Ihre Website-Adresse. Der Scan liest Services, Preise und Team aus und stellt daraus den Vorschlag für Ihr Buchungssystem zusammen.</p>
+          </div>
+          <div class="how-card">
+            <span class="how-num" aria-hidden="true">2</span>
+            <h3>Prüfen &amp; anpassen</h3>
+            <p>Sie gehen den Vorschlag durch — jeder Service, jeder Preis, jede Person ist anpassbar. Nichts geht live, was Sie nicht freigegeben haben.</p>
+          </div>
+          <div class="how-card">
+            <span class="how-num" aria-hidden="true">3</span>
+            <h3>Live gehen</h3>
+            <p>Das Buchungswidget kommt per kurzem Code-Schnipsel auf Ihre bestehende Website — oder Sie lassen die Website gleich aus DEL FINO erstellen.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section scan" id="zusammenarbeit" aria-labelledby="zusammenarbeit-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="kicker">Zusammenarbeit</p>
+          <h2 id="zusammenarbeit-title">Sie müssen das nicht selbst machen</h2>
+          <p>DEL FINO können Sie selbst einrichten — die meisten unserer Kunden lassen sich aber begleiten. Wir übernehmen Einrichtung, Website und laufende Pflege, Sie konzentrieren sich auf Ihren Betrieb.</p>
+        </div>
+        <div class="cards-3">
+          <div class="card">
+            <h3>Begleitete Einrichtung</h3>
+            <p>Wir richten Buchungskatalog, Team und Widget gemeinsam mit Ihnen ein — auf Basis des Scans Ihrer Website. Sie geben jeden Schritt frei.</p>
+          </div>
+          <div class="card">
+            <h3>Website aus einer Hand</h3>
+            <p>Wir erstellen und betreiben Ihre Website direkt aus DEL FINO. Preise und Angebote kommen aus Ihrem Buchungskatalog — die Seite ist nie veraltet.</p>
+          </div>
+          <div class="card">
+            <h3>Laufende Betreuung</h3>
+            <p>Anpassungen, neue Inhalte, Fragen: Sie haben eine direkte Ansprechperson statt eines anonymen Supports. Den Umfang legen wir gemeinsam fest.</p>
+          </div>
+        </div>
+        <p class="control-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 22s8-4 8-10V6l-8-3-8 3v6c0 6 8 10 8 10z"/></svg>Konditionen für Einrichtung und Betreuung besprechen wir persönlich — fragen Sie eine Demo an, wir zeigen den Scan live mit Ihrer eigenen Website.</p>
+      </div>
+    </section>
+
+    <section class="section" id="preise" aria-labelledby="preise-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="kicker">Preise</p>
+          <h2 id="preise-title">Transparent und monatlich kündbar</h2>
+          <p>Alle Pläne in CHF pro Monat. Der Free-Plan hat kein Ablaufdatum — Sie starten ohne Risiko.</p>
+        </div>
+        <div class="pricing-grid">
+          <div class="plan">
+            <h3>Free</h3>
+            <p class="price">0<small> CHF/Mt.</small></p>
+            <p class="plan-sub">Zum Ausprobieren — ohne Ablaufdatum, ohne Karte.</p>
+            <a class="btn btn-primary" href="https://space.del-fino.ch/register">Kostenlos starten</a>
+          </div>
+          <div class="plan">
+            <h3>Basis</h3>
+            <p class="price">49<small> CHF/Mt.</small></p>
+            <p class="plan-sub">Für den einzelnen Betrieb mit Online-Buchung.</p>
+            <a class="btn btn-quiet" href="kontakt.html">Demo anfragen</a>
+          </div>
+          <div class="plan featured">
+            <span class="plan-flag">Beliebt</span>
+            <h3>Pro</h3>
+            <p class="price">99<small> CHF/Mt.</small></p>
+            <p class="plan-sub">Für Betriebe mit Team, Analytics und No-Show-Schutz.</p>
+            <a class="btn btn-primary" href="kontakt.html">Demo anfragen</a>
+          </div>
+          <div class="plan">
+            <h3>Business</h3>
+            <p class="price">199<small> CHF/Mt.</small></p>
+            <p class="plan-sub">Für Betriebe mit Website aus DEL FINO und voller Betreuung.</p>
+            <a class="btn btn-quiet" href="kontakt.html">Demo anfragen</a>
+          </div>
+        </div>
+        <p class="pricing-note">Welcher Plan zu Ihrem Betrieb passt — und was eine begleitete Einrichtung kostet — klären wir im Gespräch. <a href="kontakt.html">Demo anfragen</a></p>
+      </div>
+    </section>
+
+    <section class="section scan" id="faq" aria-labelledby="faq-title">
+      <div class="container">
+        <div class="section-head">
+          <p class="kicker">Häufige Fragen</p>
+          <h2 id="faq-title">Was Betriebe uns am Anfang fragen</h2>
+        </div>
+        <div class="faq-list">
+          <details class="faq-item">
+            <summary>Brauche ich technische Kenntnisse?</summary>
+            <p class="faq-body">Nein. Sie geben Ihre Website-Adresse ein, prüfen den Vorschlag und passen ihn an. Das Buchungswidget fügen Sie mit einem kurzen Code-Schnipsel ein — oder Sie lassen die Website direkt aus DEL FINO erstellen. Und wenn Sie es gar nicht selbst machen wollen: Wir begleiten Sie.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Was passiert mit meiner bestehenden Website?</summary>
+            <p class="faq-body">Sie bleibt, wie sie ist. DEL FINO liest sie nur aus und ergänzt sie um das Buchungswidget. Der Website-Check meldet zusätzlich, wenn Preise auf der Website vom Buchungskatalog abweichen.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Wo liegen meine Daten?</summary>
+            <p class="faq-body">In der Schweiz. DEL FINO wird in der Schweiz entwickelt und gehostet, die Verarbeitung richtet sich nach dem revidierten Schweizer Datenschutzgesetz (revDSG).</p>
+          </details>
+          <details class="faq-item">
+            <summary>Warum kein Cookie-Banner?</summary>
+            <p class="faq-body">Die Analytics von DEL FINO arbeiten ohne Cookies und ohne personenbezogenes Tracking. Darum braucht es keinen Consent-Banner — Sie sehen Besucherzahlen, Herkunft und Buchungs-Funnel trotzdem.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Kann ich jederzeit kündigen?</summary>
+            <p class="faq-body">Ja, die Bezahlpläne sind monatlich kündbar. Der Free-Plan hat kein Ablaufdatum. Ihre Daten können Sie bei einer Kündigung exportieren.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Übernimmt die KI einfach alles?</summary>
+            <p class="faq-body">Nein. Die KI liest Ihre Website aus und macht einen Vorschlag — Services, Preise, Team. Nichts wird ungefragt übernommen. Sie prüfen jeden Eintrag, passen ihn an und entscheiden, was live geht.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Was kostet der Einstieg?</summary>
+            <p class="faq-body">Nichts. Der Free-Plan ist kostenlos und ohne Ablaufdatum. Sie starten ohne Risiko und wechseln erst auf einen Bezahlplan, wenn Sie mehr brauchen.</p>
+          </details>
+          <details class="faq-item">
+            <summary>Funktioniert das für meine Branche?</summary>
+            <p class="faq-body">DEL FINO ist für Betriebe mit Termingeschäft gebaut: Coiffeur- und Kosmetikstudios, Therapie- und Gesundheitspraxen, Handwerk mit Beratungsterminen, Musikschulen und Kursanbieter. Fragen Sie eine Demo an — wir zeigen den Scan mit Ihrer eigenen Website.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta" aria-labelledby="cta-title">
+      <div class="container">
+        <h2 id="cta-title">Sehen Sie DEL FINO mit Ihren eigenen Daten</h2>
+        <p>Geben Sie bei der Demo-Anfrage Ihre Website-Adresse an — wir zeigen Ihnen den Scan live, mit Ihren Services, Ihren Preisen, Ihrem Team.</p>
+        <a class="btn" href="kontakt.html">Demo anfragen</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <p class="brand"><svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true"><rect x="2" y="2" width="30" height="30" rx="8" fill="#0284c7"/><path d="M10 23V11h5.2c3.8 0 6.3 2.4 6.3 6s-2.5 6-6.3 6H10zm3-2.6h2.1c2 0 3.3-1.3 3.3-3.4s-1.3-3.4-3.3-3.4H13v6.8z" fill="#fff"/><circle cx="25.5" cy="10.5" r="2.5" fill="#7dd3fc"/></svg>DEL FINO</p>
+          <p>Buchung, Kunden, Analytics und Website aus einem System. Entwickelt und gehostet in der Schweiz.</p>
+        </div>
+        <div>
+          <h3>Navigation</h3>
+          <ul>
+            <li><a href="#funktionen">Funktionen</a></li>
+            <li><a href="#so-funktionierts">So funktioniert's</a></li>
+            <li><a href="#preise">Preise</a></li>
+            <li><a href="#faq">Häufige Fragen</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Rechtliches</h3>
+          <ul>
+            <li><a href="impressum.html">Impressum</a></li>
+            <li><a href="datenschutz.html">Datenschutz</a></li>
+            <li><a href="agb.html">AGB</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Kontakt</h3>
+          <ul>
+            <li><a href="kontakt.html">Demo anfragen</a></li>
+            <li><a href="https://space.del-fino.ch/login">Anmelden</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <span>© 2026 DEL FINO — ein Produkt von Gasserwerk</span>
+        <span>Entwickelt und gehostet in der Schweiz</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+  (function () {
+    "use strict";
+
+    /* Mobile navigation */
+    var burger = document.querySelector(".burger");
+    var nav = document.querySelector(".main-nav");
+    if (burger && nav) {
+      burger.addEventListener("click", function () {
+        var open = burger.getAttribute("aria-expanded") === "true";
+        burger.setAttribute("aria-expanded", String(!open));
+        nav.classList.toggle("open", !open);
+      });
+      nav.addEventListener("click", function (e) {
+        if (e.target.closest("a")) {
+          burger.setAttribute("aria-expanded", "false");
+          nav.classList.remove("open");
+        }
+      });
+    }
+
+    /* Tabs: full WAI-ARIA pattern with roving tabindex + arrow keys */
+    var tablist = document.querySelector('[role="tablist"]');
+    if (tablist) {
+      var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+
+      function activate(tab, focus) {
+        tabs.forEach(function (t) {
+          var selected = t === tab;
+          t.setAttribute("aria-selected", String(selected));
+          t.tabIndex = selected ? 0 : -1;
+          var panel = document.getElementById(t.getAttribute("aria-controls"));
+          if (panel) panel.hidden = !selected;
+        });
+        if (focus) tab.focus();
+      }
+
+      tabs.forEach(function (tab) {
+        tab.addEventListener("click", function () { activate(tab, false); });
+      });
+
+      tablist.addEventListener("keydown", function (e) {
+        var idx = tabs.indexOf(document.activeElement);
+        if (idx === -1) return;
+        var next = null;
+        if (e.key === "ArrowRight" || e.key === "ArrowDown") next = tabs[(idx + 1) % tabs.length];
+        else if (e.key === "ArrowLeft" || e.key === "ArrowUp") next = tabs[(idx - 1 + tabs.length) % tabs.length];
+        else if (e.key === "Home") next = tabs[0];
+        else if (e.key === "End") next = tabs[tabs.length - 1];
+        if (next) { e.preventDefault(); activate(next, true); }
+      });
+    }
+
+    /* Header shadow on scroll */
+    var header = document.querySelector(".site-header");
+    if (header) {
+      var ticking = false;
+      window.addEventListener("scroll", function () {
+        if (!ticking) {
+          window.requestAnimationFrame(function () {
+            header.classList.toggle("scrolled", window.scrollY > 4);
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+  })();
+  </script>
+</body>
+</html>

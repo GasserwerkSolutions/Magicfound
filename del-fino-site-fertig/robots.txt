@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://del-fino.ch/sitemap.xml

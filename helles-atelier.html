@@ -1,0 +1,1140 @@
+<!doctype html>
+<html lang="de-CH" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Helles Atelier · Gasserwerk Designprototyp</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --font-ui: "Aptos", "Trebuchet MS", sans-serif;
+      --font-display: Georgia, "Times New Roman", serif;
+      --canvas: #f5f4ef;
+      --shell: #fbfaf7;
+      --paper: #fffefa;
+      --paper-soft: #f1efe7;
+      --paper-strong: #e8e5db;
+      --ink: #1f2925;
+      --ink-soft: #66706b;
+      --line: #d8d9d2;
+      --line-strong: #b9c0ba;
+      --brand: #0b5b49;
+      --brand-strong: #074639;
+      --brand-soft: #dcece5;
+      --blue: #315f9e;
+      --blue-soft: #e5edf8;
+      --red: #a23e35;
+      --red-soft: #f7e6e2;
+      --amber: #9a6a21;
+      --amber-soft: #f4ead5;
+      --violet: #735a87;
+      --violet-soft: #eee8f2;
+      --shadow: 0 10px 30px rgba(38, 47, 42, .07);
+      --sidebar: 218px;
+      --topbar: 70px;
+      --radius-xl: 24px;
+      --radius-lg: 18px;
+      --radius-md: 12px;
+      --ease: cubic-bezier(.2, .8, .2, 1);
+    }
+
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --canvas: #151b18;
+      --shell: #1b231f;
+      --paper: #222b27;
+      --paper-soft: #29322e;
+      --paper-strong: #333d38;
+      --ink: #f1f2ed;
+      --ink-soft: #aeb8b2;
+      --line: #3d4842;
+      --line-strong: #59665f;
+      --brand: #80b9a3;
+      --brand-strong: #a7d2c1;
+      --brand-soft: #24483b;
+      --blue: #9ab8e0;
+      --blue-soft: #283b55;
+      --red: #ef9d93;
+      --red-soft: #522f2c;
+      --amber: #e0bc7d;
+      --amber-soft: #4a3c25;
+      --violet: #c8aed7;
+      --violet-soft: #44364d;
+      --shadow: 0 12px 34px rgba(0, 0, 0, .22);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: var(--canvas);
+      color: var(--ink);
+      font-family: var(--font-ui);
+      font-size: 15px;
+      line-height: 1.4;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--blue) 58%, transparent);
+      outline-offset: 2px;
+    }
+    button:disabled { cursor: not-allowed; opacity: .48; }
+
+    .prototype-ribbon {
+      position: fixed;
+      z-index: 100;
+      right: 18px;
+      bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: color-mix(in srgb, var(--paper) 92%, transparent);
+      box-shadow: var(--shadow);
+      color: var(--ink-soft);
+      font-size: 12px;
+      backdrop-filter: blur(10px);
+    }
+    .prototype-ribbon::before {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--amber);
+      content: "";
+    }
+
+    .app { display: grid; grid-template-columns: var(--sidebar) minmax(0, 1fr); height: 100%; }
+    .sidebar {
+      position: relative;
+      z-index: 10;
+      display: flex;
+      min-height: 0;
+      flex-direction: column;
+      border-right: 1px solid var(--line);
+      background: var(--shell);
+    }
+    .product-mark {
+      height: var(--topbar);
+      display: flex;
+      align-items: center;
+      padding: 0 22px;
+      border-bottom: 1px solid var(--line);
+      color: var(--brand-strong);
+      font-family: var(--font-display);
+      font-size: 23px;
+      font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .salon-identity {
+      margin: 18px 14px 10px;
+      padding: 15px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: var(--paper);
+    }
+    .salon-monogram {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      float: left;
+      margin-right: 10px;
+      border-radius: 50%;
+      background: #dde8df;
+      color: #294b3b;
+      font-family: var(--font-display);
+      font-weight: 700;
+    }
+    .salon-identity strong { display: block; font-family: var(--font-display); font-size: 17px; }
+    .salon-identity small { color: var(--ink-soft); }
+    .salon-identity::after { display: block; clear: both; content: ""; }
+
+    .nav { min-height: 0; padding: 6px 10px; overflow-y: auto; }
+    .nav-group-label {
+      padding: 10px 11px 5px;
+      color: var(--ink-soft);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .nav-button {
+      width: 100%;
+      min-height: 42px;
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin: 2px 0;
+      padding: 0 12px;
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      cursor: pointer;
+      text-align: left;
+      transition: background .18s var(--ease), color .18s var(--ease);
+    }
+    .nav-button:hover { background: var(--paper-soft); }
+    .nav-button.is-active { background: var(--brand-soft); color: var(--brand-strong); font-weight: 750; }
+    .nav-icon { width: 22px; text-align: center; font-size: 17px; }
+    .sidebar-foot {
+      margin-top: auto;
+      padding: 12px 14px 18px;
+      border-top: 1px solid var(--line);
+    }
+    .role-chip { display: flex; align-items: center; gap: 10px; color: var(--ink-soft); font-size: 12px; }
+    .avatar {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--brand);
+      color: var(--shell);
+      font-weight: 800;
+    }
+    .role-chip strong { display: block; color: var(--ink); font-size: 13px; }
+
+    .workspace { min-width: 0; min-height: 0; display: grid; grid-template-rows: var(--topbar) minmax(0, 1fr); }
+    .topbar {
+      position: relative;
+      z-index: 9;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 0 22px;
+      border-bottom: 1px solid var(--line);
+      background: color-mix(in srgb, var(--shell) 94%, transparent);
+      backdrop-filter: blur(12px);
+    }
+    .page-kicker { min-width: 150px; }
+    .page-kicker span { display: block; color: var(--ink-soft); font-size: 10px; font-weight: 800; letter-spacing: .15em; text-transform: uppercase; }
+    .page-kicker strong { font-family: var(--font-display); font-size: 22px; font-weight: 600; }
+    .global-search {
+      position: relative;
+      max-width: 590px;
+      margin-left: auto;
+      flex: 1;
+    }
+    .global-search input {
+      width: 100%;
+      height: 40px;
+      padding: 0 92px 0 38px;
+      border: 1px solid var(--line-strong);
+      border-radius: 999px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .global-search .search-glyph { position: absolute; left: 14px; top: 9px; color: var(--ink-soft); }
+    .global-search kbd { position: absolute; right: 10px; top: 9px; padding: 2px 7px; border-radius: 6px; background: var(--paper-soft); color: var(--ink-soft); font-size: 11px; }
+    .tool-group { display: flex; gap: 7px; }
+    .icon-button, .quiet-button, .primary-button, .danger-button, .chip-button {
+      min-height: 40px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: var(--paper);
+      cursor: pointer;
+      font-weight: 720;
+      transition: transform .15s var(--ease), background .15s var(--ease), border-color .15s var(--ease);
+    }
+    .icon-button { width: 42px; padding: 0; font-size: 17px; }
+    .quiet-button, .primary-button, .danger-button { padding: 0 15px; }
+    .icon-button:hover, .quiet-button:hover, .chip-button:hover { background: var(--paper-soft); }
+    .primary-button { border-color: var(--brand); background: var(--brand); color: #fff; }
+    .primary-button:hover { background: var(--brand-strong); }
+    .danger-button { border-color: color-mix(in srgb, var(--red) 55%, var(--line)); background: var(--red-soft); color: var(--red); }
+    .primary-button:active, .quiet-button:active, .danger-button:active { transform: translateY(1px); }
+
+    .content {
+      position: relative;
+      min-height: 0;
+      overflow: auto;
+      padding: 22px;
+      background:
+        radial-gradient(circle at 82% 12%, color-mix(in srgb, var(--brand-soft) 48%, transparent), transparent 28%),
+        var(--canvas);
+    }
+    .screen { display: none; min-height: 100%; animation: reveal .24s var(--ease); }
+    .screen.is-active { display: block; }
+    @keyframes reveal { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .screen-frame { width: min(1460px, 100%); margin: 0 auto; }
+    .screen-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; margin: 0 0 18px; }
+    .screen-heading h1 { margin: 0; font-family: var(--font-display); font-size: clamp(28px, 2.5vw, 40px); font-weight: 500; letter-spacing: -.03em; }
+    .screen-heading p { max-width: 620px; margin: 4px 0 0; color: var(--ink-soft); }
+    .heading-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .paper {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .paper-flat { border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--paper); }
+    .eyebrow { color: var(--brand); font-size: 10px; font-weight: 850; letter-spacing: .16em; text-transform: uppercase; }
+    .muted { color: var(--ink-soft); }
+    .tiny { font-size: 12px; }
+    .tabular { font-variant-numeric: tabular-nums; }
+    .status-pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 8px; border-radius: 999px; background: var(--paper-soft); font-size: 11px; font-weight: 750; }
+    .status-pill::before { width: 7px; height: 7px; border-radius: 50%; background: currentColor; content: ""; }
+    .status-confirmed { color: var(--brand); }
+    .status-visit { color: var(--violet); }
+    .status-requested { color: var(--amber); }
+    .status-cancelled { color: var(--red); }
+
+    /* Login */
+    .auth-screen { min-height: calc(100vh - var(--topbar) - 44px); display: grid; grid-template-columns: minmax(240px, .8fr) minmax(440px, 1.6fr); overflow: hidden; }
+    .auth-story {
+      position: relative;
+      display: flex;
+      min-height: 590px;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 44px;
+      border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+      overflow: hidden;
+      background: #e8eee8;
+      color: #17382e;
+    }
+    html[data-theme="dark"] .auth-story { background: #24352e; color: #eef4f0; }
+    .auth-story::after {
+      position: absolute;
+      right: -10%;
+      bottom: -90px;
+      width: 120%;
+      height: 270px;
+      border-radius: 50% 48% 0 0;
+      background:
+        radial-gradient(circle at 25% 35%, #f8faf6 0 2px, transparent 3px),
+        linear-gradient(145deg, #9db9a7, #ced8c9 52%, #a2b7a7);
+      opacity: .75;
+      content: "";
+      transform: rotate(-4deg);
+    }
+    .auth-story h1 { position: relative; z-index: 1; max-width: 330px; margin: 18px 0; font-family: var(--font-display); font-size: 43px; font-weight: 500; line-height: 1.08; }
+    .auth-story p { position: relative; z-index: 1; max-width: 340px; }
+    .auth-form-wrap { display: grid; place-items: center; padding: 34px; background: var(--paper-soft); }
+    .auth-card { width: min(460px, 100%); padding: 34px; }
+    .auth-card h2 { margin: 5px 0; font-family: var(--font-display); font-size: 30px; font-weight: 500; }
+    .form-field { display: grid; gap: 6px; margin: 18px 0; }
+    .form-field label { font-size: 13px; font-weight: 750; }
+    .form-field input, .form-field select, .form-field textarea {
+      width: 100%;
+      min-height: 45px;
+      padding: 10px 12px;
+      border: 1px solid var(--line-strong);
+      border-radius: 10px;
+      background: var(--paper);
+      color: var(--ink);
+    }
+    .full-button { width: 100%; }
+    .prototype-note { margin-top: 16px; padding: 10px 12px; border-radius: 10px; background: var(--amber-soft); color: var(--ink); font-size: 12px; }
+
+    /* Onboarding */
+    .onboarding-grid { display: grid; grid-template-columns: 270px minmax(0, 1fr); gap: 18px; }
+    .setup-steps { padding: 12px; align-self: start; }
+    .setup-step { display: grid; grid-template-columns: 28px 1fr; gap: 10px; padding: 12px; border-radius: 12px; }
+    .setup-step.is-current { background: var(--brand-soft); }
+    .setup-number { display: grid; width: 27px; height: 27px; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; font-size: 12px; font-weight: 800; }
+    .setup-step.is-done .setup-number { border-color: var(--brand); background: var(--brand); color: #fff; }
+    .setup-step strong, .setup-step small { display: block; }
+    .setup-step small { margin-top: 2px; color: var(--ink-soft); }
+    .setup-main { padding: 28px; }
+    .readiness { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 22px 0; }
+    .readiness-card { padding: 16px; border: 1px solid var(--line); border-radius: 14px; background: var(--paper-soft); }
+    .readiness-card strong { display: block; margin-top: 6px; }
+    .readiness-card.is-missing { border-color: color-mix(in srgb, var(--amber) 45%, var(--line)); background: var(--amber-soft); }
+
+    /* Today */
+    .metric-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
+    .metric { min-height: 118px; padding: 17px; }
+    .metric-label { color: var(--ink-soft); font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .metric-value { margin-top: 10px; font-family: var(--font-display); font-size: 31px; }
+    .today-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(290px, .7fr); gap: 16px; }
+    .agenda-card { padding: 22px; }
+    .agenda-row { display: grid; grid-template-columns: 64px 10px minmax(0, 1fr) auto; gap: 12px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line); }
+    .agenda-row:last-child { border-bottom: 0; }
+    .status-dot { width: 9px; height: 9px; border-radius: 50%; background: var(--brand); }
+    .priority-list { padding: 20px; }
+    .priority-item { display: flex; gap: 10px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+    .priority-icon { display: grid; width: 30px; height: 30px; flex: 0 0 auto; place-items: center; border-radius: 50%; background: var(--amber-soft); color: var(--amber); }
+
+    /* Day plan */
+    .day-screen .screen-frame { width: 100%; height: 100%; display: flex; flex-direction: column; }
+    .day-screen .screen-heading { flex: 0 0 auto; margin-bottom: 12px; align-items: center; }
+    .date-cluster { display: flex; align-items: center; gap: 8px; }
+    .date-button { min-height: 40px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 10px; background: var(--paper); cursor: pointer; font-weight: 800; }
+    .day-layout { min-height: 0; flex: 1; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; transition: grid-template-columns .25s var(--ease); }
+    .day-layout.has-panel { grid-template-columns: minmax(590px, 1fr) 350px; }
+    .calendar-paper { min-width: 0; min-height: 560px; display: flex; flex-direction: column; overflow: hidden; background: var(--paper-soft); }
+    .calendar-meta { display: flex; align-items: center; gap: 12px; min-height: 52px; padding: 8px 13px; border-bottom: 1px solid var(--line); background: var(--paper); }
+    .day-search { position: relative; flex: 1; max-width: 580px; }
+    .day-search input { width: 100%; height: 38px; padding: 0 36px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--shell); color: var(--ink); }
+    .day-search::before { position: absolute; left: 13px; top: 8px; content: "⌕"; color: var(--ink-soft); }
+    .search-help { margin-left: auto; color: var(--ink-soft); font-size: 12px; white-space: nowrap; }
+    .calendar-scroll { min-height: 0; flex: 1; overflow: auto; }
+    .calendar-grid {
+      --people: 6;
+      position: relative;
+      display: grid;
+      min-width: max(100%, calc(var(--people) * 138px + 64px));
+      grid-template-columns: 64px repeat(var(--people), minmax(138px, 1fr));
+      grid-template-rows: 62px repeat(20, 36px);
+      background: var(--paper);
+    }
+    .calendar-grid::before {
+      position: absolute;
+      top: 62px;
+      right: 0;
+      bottom: 0;
+      left: 64px;
+      z-index: 0;
+      background: repeating-linear-gradient(to bottom, transparent 0 71px, var(--line) 71px 72px);
+      pointer-events: none;
+      content: "";
+    }
+    .time-head, .person-head, .time-label, .lane { position: relative; z-index: 1; border-right: 1px solid var(--line); }
+    .time-head { display: grid; place-items: center; grid-column: 1; grid-row: 1; border-bottom: 1px solid var(--line); color: var(--ink-soft); font-size: 10px; font-weight: 800; letter-spacing: .1em; }
+    .person-head { display: grid; min-width: 0; place-content: center; padding: 8px; border-bottom: 1px solid var(--line); text-align: center; }
+    .person-head strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
+    .person-head small { color: var(--ink-soft); font-size: 10px; }
+    .lane { grid-row: 2 / span 20; background: color-mix(in srgb, var(--paper) 96%, var(--brand-soft)); }
+    .lane.alt { background: color-mix(in srgb, var(--paper-soft) 72%, var(--paper)); }
+    .time-label { padding: 7px 9px 0 0; border-right: 1px solid var(--line); color: var(--ink-soft); text-align: right; font-size: 11px; font-variant-numeric: tabular-nums; }
+    .appointment {
+      position: relative;
+      z-index: 3;
+      min-width: 0;
+      margin: 3px 5px;
+      padding: 7px 8px 6px 10px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--brand);
+      border-radius: 9px;
+      background: var(--paper);
+      box-shadow: 0 2px 5px rgba(28, 36, 32, .06);
+      cursor: pointer;
+      text-align: left;
+      transition: opacity .18s var(--ease), transform .18s var(--ease), box-shadow .18s var(--ease);
+    }
+    .appointment:hover { transform: translateY(-1px); box-shadow: 0 5px 12px rgba(28, 36, 32, .12); }
+    .appointment strong, .appointment span { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .appointment strong { font-size: 12px; line-height: 1.15; }
+    .appointment span { margin-top: 2px; color: var(--ink-soft); font-size: 10px; }
+    .appointment[data-status="visit"] { border-left-color: var(--violet); }
+    .appointment[data-status="requested"] { border-left-color: var(--amber); }
+    .appointment[data-status="cancelled"] { border-left-color: var(--red); background: var(--red-soft); }
+    .appointment[data-status="done"] { border-left-color: var(--ink-soft); opacity: .78; }
+    .appointment.is-dimmed { opacity: .2; }
+    .appointment.is-match {
+      z-index: 5;
+      border-color: var(--blue);
+      border-left-color: var(--blue);
+      box-shadow: 0 0 0 3px var(--blue-soft), 0 8px 18px rgba(28, 56, 90, .18);
+      transform: translateY(-1px);
+    }
+    .appointment.is-returned { animation: returned 1.4s var(--ease); }
+    @keyframes returned { 0%, 45% { box-shadow: 0 0 0 4px var(--brand-soft), 0 8px 18px rgba(11, 91, 73, .18); } 100% { box-shadow: 0 2px 5px rgba(28, 36, 32, .06); } }
+    .block-time { position: relative; z-index: 2; display: grid; place-items: center; margin: 4px 5px; border: 1px dashed var(--line-strong); border-radius: 8px; background: repeating-linear-gradient(135deg, transparent, transparent 6px, color-mix(in srgb, var(--paper-strong) 55%, transparent) 6px, color-mix(in srgb, var(--paper-strong) 55%, transparent) 12px); color: var(--ink-soft); font-size: 10px; font-weight: 750; }
+    .empty-day { position: absolute; z-index: 3; inset: 150px 30px auto 94px; display: grid; place-items: center; text-align: center; pointer-events: none; }
+    .empty-day-mark { width: 90px; height: 54px; border-bottom: 2px solid var(--line-strong); border-radius: 50%; opacity: .75; }
+    .empty-day h3 { margin: 12px 0 3px; font-family: var(--font-display); font-size: 23px; font-weight: 500; }
+
+    .context-panel {
+      position: relative;
+      min-height: 0;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--paper);
+      box-shadow: var(--shadow);
+      animation: panel-in .28s var(--ease);
+    }
+    @keyframes panel-in { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
+    .panel-head { position: sticky; top: 0; z-index: 2; display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 18px; border-bottom: 1px solid var(--line); background: color-mix(in srgb, var(--paper) 94%, transparent); backdrop-filter: blur(10px); }
+    .panel-head h2 { margin: 2px 0 0; font-family: var(--font-display); font-size: 24px; font-weight: 500; }
+    .panel-body { padding: 18px; }
+    .fact-list { display: grid; gap: 0; margin: 12px 0 18px; }
+    .fact { display: grid; grid-template-columns: 92px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+    .fact span { color: var(--ink-soft); font-size: 12px; }
+    .fact strong { font-size: 13px; }
+    .customer-note { padding: 12px; border-left: 3px solid var(--amber); border-radius: 0 9px 9px 0; background: var(--amber-soft); font-size: 12px; }
+    .panel-section { margin-top: 20px; }
+    .panel-section h3 { margin: 0 0 10px; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; }
+    .action-stack { display: grid; gap: 8px; }
+    .action-stack button { width: 100%; justify-content: center; }
+    .slot-list { display: grid; gap: 8px; }
+    .slot-button { display: grid; grid-template-columns: 1fr auto; gap: 8px; width: 100%; padding: 11px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--paper); cursor: pointer; text-align: left; }
+    .slot-button.is-selected { border-color: var(--blue); background: var(--blue-soft); }
+    .confirm-box { padding: 14px; border: 1px solid color-mix(in srgb, var(--red) 40%, var(--line)); border-radius: 12px; background: var(--red-soft); }
+    .progress-line { height: 3px; margin: -18px -18px 16px; overflow: hidden; background: var(--brand-soft); }
+    .progress-line::after { display: block; width: 45%; height: 100%; background: var(--brand); content: ""; animation: loading 1s infinite var(--ease); }
+    @keyframes loading { from { transform: translateX(-100%); } to { transform: translateX(260%); } }
+    .visit-steps { display: grid; gap: 8px; }
+    .visit-step { display: grid; grid-template-columns: 24px 1fr; gap: 9px; padding: 9px; border-radius: 9px; background: var(--paper-soft); }
+    .visit-step.is-current { background: var(--violet-soft); }
+    .visit-step-number { display: grid; width: 23px; height: 23px; place-items: center; border: 1px solid var(--line-strong); border-radius: 50%; font-size: 11px; }
+    .success-card { padding: 16px; border: 1px solid color-mix(in srgb, var(--brand) 50%, var(--line)); border-radius: 13px; background: var(--brand-soft); }
+    .success-card h3 { margin: 0 0 5px; font-family: var(--font-display); font-size: 22px; }
+
+    /* Lists and management */
+    .list-layout { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(300px, .65fr); gap: 16px; }
+    .list-paper { overflow: hidden; }
+    .list-toolbar { display: flex; gap: 8px; padding: 13px; border-bottom: 1px solid var(--line); }
+    .filter-chip { min-height: 34px; padding: 0 11px; border: 1px solid var(--line); border-radius: 999px; background: var(--paper); cursor: pointer; }
+    .filter-chip.is-active { border-color: var(--blue); background: var(--blue-soft); color: var(--blue); font-weight: 750; }
+    .data-row { display: grid; align-items: center; gap: 12px; min-height: 62px; padding: 10px 15px; border-bottom: 1px solid var(--line); cursor: pointer; }
+    .data-row:hover { background: var(--paper-soft); }
+    .booking-row { grid-template-columns: 76px minmax(130px, 1.2fr) minmax(130px, 1fr) 120px 100px; }
+    .customer-row { grid-template-columns: minmax(170px, 1.2fr) 130px 100px minmax(150px, 1fr); }
+    .data-row strong, .data-row span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .side-summary { align-self: start; padding: 20px; }
+    .summary-number { margin: 8px 0; font-family: var(--font-display); font-size: 38px; }
+    .empty-state { min-height: 340px; display: grid; place-items: center; padding: 36px; text-align: center; }
+    .empty-state h2 { font-family: var(--font-display); font-size: 27px; font-weight: 500; }
+
+    .people-grid, .service-grid, .admin-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .person-card, .service-card, .admin-card { min-height: 190px; padding: 20px; }
+    .person-card .avatar { width: 48px; height: 48px; margin-bottom: 18px; }
+    .person-card h3, .service-card h3, .admin-card h3 { margin: 0 0 4px; font-family: var(--font-display); font-size: 21px; font-weight: 500; }
+    .person-card footer, .service-card footer { display: flex; justify-content: space-between; margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); color: var(--ink-soft); font-size: 12px; }
+    .service-price { margin-top: 18px; color: var(--brand); font-family: var(--font-display); font-size: 25px; }
+    .admin-card { display: flex; flex-direction: column; }
+    .admin-card .quiet-button { margin-top: auto; align-self: flex-start; }
+
+    /* Prototype controls */
+    .lab-controls { display: flex; align-items: center; gap: 7px; }
+    .segmented { display: flex; padding: 3px; border: 1px solid var(--line); border-radius: 11px; background: var(--paper-soft); }
+    .chip-button { min-height: 32px; padding: 0 10px; border: 0; background: transparent; font-size: 12px; }
+    .chip-button.is-active { background: var(--paper); box-shadow: 0 1px 4px rgba(25, 34, 30, .1); }
+    .toast {
+      position: fixed;
+      z-index: 80;
+      left: calc(var(--sidebar) + 50%);
+      bottom: 24px;
+      width: min(470px, calc(100vw - 32px));
+      padding: 13px 16px;
+      border: 1px solid var(--line-strong);
+      border-radius: 12px;
+      background: var(--ink);
+      color: var(--paper);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translate(-50%, 14px);
+      transition: .25s var(--ease);
+    }
+    .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+    .mobile-nav { display: none; }
+
+    @media (max-width: 1180px) {
+      :root { --sidebar: 188px; }
+      .content { padding: 16px; }
+      .day-layout.has-panel { grid-template-columns: minmax(520px, 1fr) 330px; }
+      .people-grid, .service-grid, .admin-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .lab-controls .segmented:first-child { display: none; }
+    }
+
+    @media (max-width: 820px) {
+      :root { --sidebar: 0px; --topbar: 58px; }
+      body { overflow: hidden; }
+      .app { display: block; }
+      .sidebar { display: none; }
+      .workspace { height: 100%; grid-template-rows: var(--topbar) minmax(0, 1fr) 60px; }
+      .topbar { padding: 0 12px; gap: 8px; }
+      .page-kicker { min-width: 0; }
+      .page-kicker span { display: none; }
+      .page-kicker strong { font-size: 18px; }
+      .global-search { display: none; }
+      .lab-controls { margin-left: auto; }
+      .lab-controls .segmented { display: none; }
+      .tool-group .primary-button { display: none; }
+      .content { padding: 12px; padding-bottom: 20px; }
+      .mobile-nav { display: grid; grid-template-columns: repeat(5, 1fr); border-top: 1px solid var(--line); background: var(--shell); }
+      .mobile-nav button { border: 0; background: transparent; color: var(--ink-soft); font-size: 10px; }
+      .mobile-nav button.is-active { color: var(--brand); font-weight: 800; }
+      .mobile-nav span { display: block; font-size: 17px; }
+      .screen-heading { align-items: flex-start; }
+      .heading-actions { justify-content: flex-end; }
+      .screen-heading h1 { font-size: 29px; }
+      .today-grid, .list-layout, .onboarding-grid { grid-template-columns: 1fr; }
+      .metric-grid { grid-template-columns: repeat(2, 1fr); }
+      .metric { min-height: 96px; }
+      .setup-steps { display: flex; overflow-x: auto; }
+      .setup-step { min-width: 180px; }
+      .readiness { grid-template-columns: 1fr; }
+      .auth-screen { grid-template-columns: 1fr; }
+      .auth-story { display: none; }
+      .auth-form-wrap { min-height: 620px; padding: 18px; }
+      .people-grid, .service-grid, .admin-grid { grid-template-columns: 1fr; }
+      .day-screen .screen-heading { align-items: flex-start; }
+      .date-cluster .quiet-button { display: none; }
+      .day-layout, .day-layout.has-panel { grid-template-columns: minmax(0, 1fr); }
+      .calendar-paper { min-height: 540px; }
+      .context-panel {
+        position: fixed;
+        z-index: 60;
+        right: 0;
+        bottom: 60px;
+        left: 0;
+        max-height: min(78vh, 690px);
+        border-radius: 22px 22px 0 0;
+        box-shadow: 0 -18px 50px rgba(0,0,0,.22);
+      }
+      .context-panel::before { display: block; width: 42px; height: 4px; margin: 8px auto -5px; border-radius: 99px; background: var(--line-strong); content: ""; }
+      .booking-row { grid-template-columns: 58px minmax(130px, 1fr) 90px; }
+      .booking-row > :nth-child(3), .booking-row > :nth-child(4) { display: none; }
+      .customer-row { grid-template-columns: minmax(150px, 1fr) 100px; }
+      .customer-row > :nth-child(2), .customer-row > :nth-child(4) { display: none; }
+      .prototype-ribbon { right: 8px; bottom: 66px; }
+      .toast { left: 50%; bottom: 74px; }
+    }
+
+    @media (max-width: 520px) {
+      .metric-grid { grid-template-columns: 1fr 1fr; }
+      .metric { padding: 13px; }
+      .metric-value { font-size: 25px; }
+      .calendar-meta .search-help { display: none; }
+      .screen-heading { display: block; }
+      .heading-actions { margin-top: 10px; justify-content: flex-start; }
+      .prototype-ribbon { max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar" aria-label="Hauptnavigation">
+      <div class="product-mark">Gasserwerk</div>
+      <div class="salon-identity" aria-label="Aktiver Salon">
+        <span class="salon-monogram">CS</span>
+        <strong>Coiffure Sonnegg</strong>
+        <small>Thun · Hauptstandort</small>
+      </div>
+      <nav class="nav" id="desktopNav"></nav>
+      <div class="sidebar-foot">
+        <div class="role-chip">
+          <span class="avatar">MS</span>
+          <span><strong>Melanie Schneider</strong>Inhaberin · alle Rechte</span>
+        </div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <header class="topbar">
+        <div class="page-kicker"><span>Arbeitsbereich</span><strong id="topbarTitle">Heute</strong></div>
+        <label class="global-search">
+          <span class="search-glyph">⌕</span>
+          <input id="globalSearch" type="search" placeholder="Kundin, Termin oder freie Zeit suchen" aria-label="Globale Suche">
+          <kbd>Strg K</kbd>
+        </label>
+        <div class="lab-controls" aria-label="Prototypzustände">
+          <div class="segmented" id="stateSwitch">
+            <button class="chip-button" data-state="empty">Leer</button>
+            <button class="chip-button is-active" data-state="normal">Normal</button>
+            <button class="chip-button" data-state="stress">Stress</button>
+          </div>
+          <button class="icon-button" id="themeToggle" type="button" aria-label="Darstellung wechseln" title="Light/Dark wechseln">◐</button>
+        </div>
+        <div class="tool-group">
+          <button class="primary-button" id="quickBooking" type="button">+ Buchung</button>
+        </div>
+      </header>
+
+      <div class="content" id="content">
+        <section class="screen" data-screen="login" id="screen-login"></section>
+        <section class="screen" data-screen="onboarding" id="screen-onboarding"></section>
+        <section class="screen is-active" data-screen="today" id="screen-today"></section>
+        <section class="screen day-screen" data-screen="day" id="screen-day"></section>
+        <section class="screen" data-screen="bookings" id="screen-bookings"></section>
+        <section class="screen" data-screen="customers" id="screen-customers"></section>
+        <section class="screen" data-screen="team" id="screen-team"></section>
+        <section class="screen" data-screen="offer" id="screen-offer"></section>
+        <section class="screen" data-screen="admin" id="screen-admin"></section>
+      </div>
+
+      <nav class="mobile-nav" id="mobileNav" aria-label="Mobile Navigation"></nav>
+    </main>
+  </div>
+
+  <div class="prototype-ribbon">Interaktiver Designprototyp · keine Echtdaten</div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      'use strict';
+
+      const navItems = [
+        { id: 'login', label: 'Login', icon: '↪', group: 'Einstieg' },
+        { id: 'onboarding', label: 'Onboarding', icon: '◇', group: 'Einstieg' },
+        { id: 'today', label: 'Heute', icon: '⌂', group: 'Salonalltag' },
+        { id: 'day', label: 'Tagesplan', icon: '▦', group: 'Salonalltag' },
+        { id: 'bookings', label: 'Buchungen', icon: '▤', group: 'Salonalltag' },
+        { id: 'customers', label: 'Kundschaft', icon: '◯', group: 'Beziehungen' },
+        { id: 'team', label: 'Team', icon: '♙', group: 'Buchbarkeit' },
+        { id: 'offer', label: 'Angebot', icon: '✂', group: 'Buchbarkeit' },
+        { id: 'admin', label: 'Verwaltung', icon: '⚙', group: 'Buchbarkeit' }
+      ];
+
+      const staff = [
+        ['melanie', 'Melanie', 'Schneider', 'MS'],
+        ['sofia', 'Sofia', 'Marti', 'SM'],
+        ['lea', 'Lea', 'Bühler', 'LB'],
+        ['nina', 'Nina', 'Aeschlimann', 'NA'],
+        ['jasmin', 'Jasmin', 'Frei', 'JF'],
+        ['carmen', 'Carmen', 'Zurbrügg', 'CZ'],
+        ['alina', 'Alina', 'Zurbuchen', 'AZ'],
+        ['ramona', 'Ramona', 'Lüscher', 'RL'],
+        ['silvia', 'Silvia', 'Rüfenacht', 'SR'],
+        ['yves', 'Yves', 'Portmann', 'YP']
+      ];
+
+      const baseAppointments = [
+        { id:'a1', staff:'melanie', start:'08:30', duration:90, customer:'Mia Frei', service:'Schnitt & Föhnen', status:'confirmed', phone:'079 412 08 17', note:'Empfindliche Kopfhaut. Fransen bitte zuerst besprechen.' },
+        { id:'a2', staff:'sofia', start:'09:00', duration:45, customer:'Lara Baumann', service:'Beratung', status:'requested', phone:'078 771 31 09', note:'Ersttermin, wünscht eine ruhige Beratung.' },
+        { id:'a3', staff:'lea', start:'08:30', duration:90, customer:'Lynn Schneider', service:'Schnitt & Föhnen', status:'visit', phone:'076 531 48 20', note:'Ist bereits im Salon. Keine Duftprodukte verwenden.' },
+        { id:'a4', staff:'nina', start:'09:00', duration:90, customer:'Sabrina Lutz', service:'Farbe & Pflege', status:'confirmed', phone:'079 655 43 10', note:'Rezeptur 7.31 / 7.0 aus letztem Besuch.' },
+        { id:'a5', staff:'jasmin', start:'09:00', duration:90, customer:'Petra Hofer', service:'Balayage', status:'confirmed', phone:'078 555 02 88', note:'Fotoreferenz im Kundenprofil.' },
+        { id:'a6', staff:'melanie', start:'10:30', duration:90, customer:'Anna Keller', service:'Schnitt & Föhnen', status:'confirmed', phone:'079 145 72 63', note:'Nächster Termin bevorzugt an einem Donnerstag.' },
+        { id:'a7', staff:'sofia', start:'10:00', duration:90, customer:'Julia Schmid', service:'Farbe', status:'confirmed', phone:'076 819 06 31', note:'Kontakt per SMS erlaubt.' },
+        { id:'a8', staff:'lea', start:'10:15', duration:90, customer:'Chiara Bianchi', service:'Farbe & Glossing', status:'visit', phone:'079 310 28 74', note:'Einwirkzeit 35 Minuten.' },
+        { id:'a9', staff:'nina', start:'11:00', duration:90, customer:'Vanessa Meier', service:'Farbe', status:'visit', phone:'078 449 38 21', note:'Kommt häufig fünf Minuten früher.' },
+        { id:'a10', staff:'jasmin', start:'11:00', duration:90, customer:'Corinne Zbinden', service:'Farbe', status:'confirmed', phone:'076 710 39 42', note:'Keine Marketingnachrichten.' },
+        { id:'a11', staff:'melanie', start:'13:00', duration:75, customer:'Céline Rufer', service:'Balayage', status:'confirmed', phone:'079 377 50 88', note:'Lange Haare, zusätzliche Produktmenge einplanen.' },
+        { id:'a12', staff:'sofia', start:'12:30', duration:60, customer:'Sara Vogel', service:'Schnitt', status:'requested', phone:'078 175 42 61', note:'Anfrage noch telefonisch bestätigen.' },
+        { id:'a13', staff:'lea', start:'12:00', duration:75, customer:'Elena Weber', service:'Schnitt', status:'visit', phone:'079 683 99 02', note:'Mitarbeiterwechsel nach Waschen möglich.' },
+        { id:'a14', staff:'nina', start:'13:30', duration:75, customer:'Tobias Egger', service:'Herrenhaarschnitt', status:'done', phone:'076 234 50 91', note:'Kurzer Übergang, Kontur natürlich.' },
+        { id:'a15', staff:'jasmin', start:'13:00', duration:75, customer:'Reto Gfeller', service:'Schnitt', status:'requested', phone:'079 591 07 33', note:'Wartet auf Terminbestätigung.' }
+      ];
+
+      const stressExtra = [
+        { id:'s1', staff:'carmen', start:'08:15', duration:30, customer:'Elisabeth von Allmen', service:'Fransenservice', status:'confirmed', phone:'079 101 22 80', note:'Sehr langer Kundenname als Layouttest.' },
+        { id:'s2', staff:'alina', start:'08:45', duration:15, customer:'Walk-in', service:'Kontur', status:'requested', phone:'–', note:'Ohne Kundenprofil.' },
+        { id:'s3', staff:'ramona', start:'09:15', duration:120, customer:'Nora Stalder', service:'Foliensträhnen & Pflege', status:'confirmed', phone:'078 410 85 43', note:'Waschplatz ab 10:40 erforderlich.' },
+        { id:'s4', staff:'silvia', start:'09:30', duration:30, customer:'Ueli Zaugg', service:'Waschen & Föhnen', status:'confirmed', phone:'076 820 11 42', note:'Termin wurde bereits einmal verschoben.' },
+        { id:'s5', staff:'yves', start:'10:00', duration:45, customer:'Vreni Schmid', service:'Haarschnitt', status:'cancelled', phone:'079 330 51 90', note:'Absage bestätigt, SMS versendet.' },
+        { id:'s6', staff:'carmen', start:'11:15', duration:15, customer:'Ohne Namen', service:'Telefonisch reserviert', status:'requested', phone:'079 000 00 00', note:'Kundenname beim Eintreffen ergänzen.' },
+        { id:'s7', staff:'alina', start:'12:45', duration:150, customer:'Monika Rüegsegger', service:'Farbkorrektur · 2 Leistungen', status:'visit', phone:'076 115 24 93', note:'Mehrphasiger Besuch mit Einwirkplatz.' },
+        { id:'s8', staff:'silvia', start:'13:45', duration:15, customer:'Rita Schnyder', service:'Pony schneiden', status:'confirmed', phone:'079 555 20 14', note:'15-Minuten-Termin.' }
+      ];
+
+      const state = {
+        screen: 'today',
+        theme: 'light',
+        density: 'normal',
+        search: '',
+        selectedId: null,
+        panelMode: 'details',
+        selectedSlot: null,
+        returningId: null,
+        visitStep: 1,
+        changed: {},
+        previousFocusId: null,
+        toastTimer: null
+      };
+
+      const el = id => document.getElementById(id);
+      const escapeHtml = value => String(value).replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+      const person = id => staff.find(item => item[0] === id) || staff[0];
+      const appointments = () => {
+        if (state.density === 'empty') return [];
+        const all = state.density === 'stress' ? baseAppointments.concat(stressExtra) : baseAppointments;
+        return all.map(item => ({ ...item, ...(state.changed[item.id] || {}) }));
+      };
+      const appointmentById = id => appointments().find(item => item.id === id);
+      const activeStaff = () => state.density === 'stress' ? staff : staff.slice(0, 6);
+      const statusLabel = status => ({confirmed:'Bestätigt', requested:'Angefragt', visit:'Im Salon', done:'Abgeschlossen', cancelled:'Abgesagt'}[status] || status);
+      const minutesFromStart = time => {
+        const [hour, minute] = time.split(':').map(Number);
+        return (hour * 60 + minute) - 8 * 60;
+      };
+      const gridRow = time => 2 + Math.floor(minutesFromStart(time) / 30);
+      const gridSpan = duration => Math.max(1, Math.ceil(duration / 30));
+
+      function showToast(message) {
+        const toast = el('toast');
+        toast.textContent = message;
+        toast.classList.add('is-visible');
+        clearTimeout(state.toastTimer);
+        state.toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 3200);
+      }
+
+      function renderNavigation() {
+        let lastGroup = '';
+        el('desktopNav').innerHTML = navItems.map(item => {
+          const group = item.group !== lastGroup ? `<div class="nav-group-label">${item.group}</div>` : '';
+          lastGroup = item.group;
+          return `${group}<button class="nav-button ${state.screen === item.id ? 'is-active' : ''}" data-nav="${item.id}"><span class="nav-icon">${item.icon}</span>${item.label}</button>`;
+        }).join('');
+        const mobileItems = navItems.filter(item => ['today','day','bookings','customers','team'].includes(item.id));
+        el('mobileNav').innerHTML = mobileItems.map(item => `<button class="${state.screen === item.id ? 'is-active' : ''}" data-nav="${item.id}"><span>${item.icon}</span>${item.label}</button>`).join('');
+      }
+
+      function screenHeading(title, description, actions = '') {
+        return `<header class="screen-heading"><div><div class="eyebrow">Coiffure Sonnegg · Thun</div><h1>${title}</h1><p>${description}</p></div>${actions ? `<div class="heading-actions">${actions}</div>` : ''}</header>`;
+      }
+
+      function renderLogin() {
+        el('screen-login').innerHTML = `<div class="screen-frame"><div class="auth-screen paper">
+          <div class="auth-story">
+            <div><div class="eyebrow">Gasserwerk · Salonssoftware aus der Schweiz</div><h1>Mehr Ruhe im Salonalltag.</h1><p>Präzise organisiert, damit die persönliche Betreuung im Mittelpunkt bleibt.</p></div>
+            <p class="tiny">Die Identität deines Salons bleibt deine eigene. Gasserwerk begleitet den Ablauf.</p>
+          </div>
+          <div class="auth-form-wrap">
+            <form class="auth-card paper" id="loginForm">
+              <div class="eyebrow">Sicherer Zugang</div><h2>Willkommen zurück</h2><p class="muted">Melde dich an, um deinen Salonalltag zu organisieren.</p>
+              <div class="form-field"><label for="loginEmail">E-Mail</label><input id="loginEmail" type="email" value="melanie@coiffure-sonnegg.ch"></div>
+              <div class="form-field"><label for="loginPassword">Passwort</label><input id="loginPassword" type="password" value="prototyp"></div>
+              <button class="primary-button full-button" type="submit">Anmelden</button>
+              <div class="prototype-note"><strong>Designprototyp:</strong> Die Anmeldung wird nur lokal simuliert und verarbeitet keine Zugangsdaten.</div>
+            </form>
+          </div>
+        </div></div>`;
+      }
+
+      function renderOnboarding() {
+        const missing = state.density === 'empty';
+        el('screen-onboarding').innerHTML = `<div class="screen-frame">
+          ${screenHeading('Salon einrichten', 'Ein klarer Weg von den Salonangaben bis zum ersten buchbaren Termin.', '<button class="quiet-button" data-nav="today">Später fortsetzen</button>')}
+          <div class="onboarding-grid">
+            <aside class="setup-steps paper-flat">
+              ${[['Salonprofil','Name und Standort'],['Angebot','12 Leistungen geprüft'],['Team', missing ? 'Noch keine Person' : '6 Personen'],['Arbeitszeiten', missing ? 'Noch offen' : 'Vollständig']].map((step, index) => `<div class="setup-step ${index < (missing ? 2 : 3) ? 'is-done' : ''} ${index === (missing ? 2 : 3) ? 'is-current' : ''}"><span class="setup-number">${index < (missing ? 2 : 3) ? '✓' : index + 1}</span><span><strong>${step[0]}</strong><small>${step[1]}</small></span></div>`).join('')}
+            </aside>
+            <div class="setup-main paper">
+              <div class="eyebrow">Schritt ${missing ? '3' : '4'} von 4</div><h2>${missing ? 'Wer arbeitet im Salon?' : 'Wann ist dein Team verfügbar?'}</h2>
+              <p class="muted">${missing ? 'Mindestens eine Person wird benötigt, bevor Termine buchbar werden.' : 'Arbeitszeiten bestimmen die freien Fenster im Tagesplan und in der Online-Buchung.'}</p>
+              <div class="readiness">
+                <div class="readiness-card"><span class="muted tiny">Angebot</span><strong>12 Leistungen bereit</strong><small class="muted">Dauer und Preise geprüft</small></div>
+                <div class="readiness-card ${missing ? 'is-missing' : ''}"><span class="muted tiny">Team</span><strong>${missing ? 'Person fehlt' : '6 Personen bereit'}</strong><small class="muted">${missing ? 'Nächster notwendiger Schritt' : 'Leistungen zugeordnet'}</small></div>
+                <div class="readiness-card ${missing ? 'is-missing' : ''}"><span class="muted tiny">Buchbarkeit</span><strong>${missing ? 'Noch nicht aktiv' : 'Ab morgen aktiv'}</strong><small class="muted">${missing ? 'Team und Zeiten ergänzen' : 'Alle Voraussetzungen erfüllt'}</small></div>
+              </div>
+              <div class="form-field"><label>${missing ? 'Name' : 'Montag bis Freitag'}</label><input value="${missing ? 'Vor- und Nachname' : '08:00–18:00'}"></div>
+              <div class="form-field"><label>${missing ? 'Rolle' : 'Samstag'}</label><input value="${missing ? 'Mitarbeiterin' : '08:00–15:00'}"></div>
+              <div class="heading-actions"><button class="quiet-button" type="button">Zurück</button><button class="primary-button" type="button" data-prototype-action="setup">${missing ? 'Person hinzufügen' : 'Einrichtung abschliessen'}</button></div>
+            </div>
+          </div>
+        </div>`;
+      }
+
+      function renderToday() {
+        const appts = appointments();
+        const next = appts.slice(0, state.density === 'stress' ? 7 : 4);
+        const empty = !appts.length;
+        el('screen-today').innerHTML = `<div class="screen-frame">
+
+          <div class="metric-grid">
+            <div class="metric paper-flat"><div class="metric-label">Termine</div><div class="metric-value">${appts.length}</div><div class="muted tiny">${empty ? 'Der Tag ist noch frei' : state.density === 'stress' ? 'Hohe Auslastung' : '2 noch angefragt'}</div></div>
+            <div class="metric paper-flat"><div class="metric-label">Gebucht</div><div class="metric-value">CHF ${empty ? '0' : state.density === 'stress' ? '3’840' : '2’190'}</div><div class="muted tiny">inklusive bestätigter Termine</div></div>
+            <div class="metric paper-flat"><div class="metric-label">Freie Zeit</div><div class="metric-value">${empty ? '42 Std.' : state.density === 'stress' ? '1 Std.' : '6,5 Std.'}</div><div class="muted tiny">im gesamten Team</div></div>
+            <div class="metric paper-flat"><div class="metric-label">Im Salon</div><div class="metric-value">${empty ? '0' : appts.filter(a => a.status === 'visit').length}</div><div class="muted tiny">laufende Besuche</div></div>
+          </div>
+          ${empty ? `<div class="empty-state paper"><div><div class="eyebrow">Ruhiger Tag</div><h2>Heute bleibt der Kalender frei.</h2><p class="muted">Füge einen Termin hinzu oder nutze die Zeit für die Salonpflege.</p><button class="primary-button" data-prototype-action="booking">Termin eintragen</button></div></div>` : `<div class="today-grid">
+            <div class="agenda-card paper"><div class="eyebrow">Nächste Termine</div>${next.map(a => `<div class="agenda-row" data-open-appointment="${a.id}"><strong class="tabular">${a.start}</strong><span class="status-dot"></span><span><strong>${escapeHtml(a.customer)}</strong><small class="muted">${escapeHtml(a.service)} · ${person(a.staff)[1]}</small></span><button class="quiet-button">Öffnen</button></div>`).join('')}</div>
+            <aside class="priority-list paper"><div class="eyebrow">Aufmerksamkeit</div>
+              <div class="priority-item"><span class="priority-icon">!</span><span><strong>${state.density === 'stress' ? 'Waschplatz ab 10:40 knapp' : '2 Anfragen bestätigen'}</strong><small class="muted">Vor dem nächsten Termin prüfen</small></span></div>
+              <div class="priority-item"><span class="priority-icon">↗</span><span><strong>Einwirkzeit bei Chiara</strong><small class="muted">Nächster Visit-Schritt um 10:50</small></span></div>
+              <div class="priority-item"><span class="priority-icon">○</span><span><strong>${state.density === 'stress' ? 'Walk-in ohne Kundenprofil' : '6,5 Stunden freie Zeit'}</strong><small class="muted">Im Tagesplan sichtbar</small></span></div>
+            </aside>
+          </div>`}
+        </div>`;
+      }
+
+      function renderCalendarGrid() {
+        const people = activeStaff();
+        const appts = appointments();
+        const query = state.search.trim().toLocaleLowerCase('de-CH');
+        const rows = Array.from({length: 11}, (_, i) => {
+          const hour = 8 + Math.floor(i / 2);
+          const minute = i % 2 ? '30' : '00';
+          return `<div class="time-label" style="grid-column:1;grid-row:${2 + i * 2}">${String(hour).padStart(2,'0')}:${minute}</div>`;
+        }).join('');
+        const heads = people.map((p, index) => `<div class="person-head" style="grid-column:${index + 2};grid-row:1"><strong>${p[1]} ${p[2]}</strong><small>${index % 3 === 0 ? 'Top Stylistin' : 'Stylistin'}</small></div>`).join('');
+        const lanes = people.map((p, index) => `<div class="lane ${index % 2 ? 'alt' : ''}" style="grid-column:${index + 2}"></div>`).join('');
+        const cards = appts.filter(a => people.some(p => p[0] === a.staff)).map(a => {
+          const col = people.findIndex(p => p[0] === a.staff) + 2;
+          const match = query && `${a.customer} ${a.service} ${person(a.staff).slice(1,3).join(' ')}`.toLocaleLowerCase('de-CH').includes(query);
+          const dim = query && !match;
+          const changed = state.changed[a.id];
+          return `<button id="appointment-${a.id}" class="appointment ${match ? 'is-match' : ''} ${dim ? 'is-dimmed' : ''} ${state.returningId === a.id ? 'is-returned' : ''}" data-open-appointment="${a.id}" data-status="${a.status}" style="grid-column:${col};grid-row:${gridRow(a.start)} / span ${gridSpan(a.duration)}" aria-label="${escapeHtml(a.customer)}, ${a.start}, ${statusLabel(a.status)}"><strong>${a.start} · ${escapeHtml(a.customer)}</strong><span>${escapeHtml(a.service)}</span>${changed ? '<span>✓ Aktualisiert</span>' : ''}</button>`;
+        }).join('');
+        const blocks = state.density === 'stress' ? `<div class="block-time" style="grid-column:3;grid-row:10/span 2">Mittagspause</div><div class="block-time" style="grid-column:8;grid-row:15/span 2">Interne Aufgabe</div>` : '';
+        const empty = !appts.length ? `<div class="empty-day"><div><div class="empty-day-mark"></div><h3>Dein Tag ist noch frei.</h3><p class="muted">Füge einen Termin hinzu oder geniesse die Aussicht.</p></div></div>` : '';
+        return `<div class="calendar-grid" style="--people:${people.length}"><div class="time-head">ZEIT</div>${heads}${lanes}${rows}${cards}${blocks}${empty}</div>`;
+      }
+
+      function renderPanel() {
+        const a = appointmentById(state.selectedId);
+        if (!a) return '';
+        const p = person(a.staff);
+        const close = `<button class="icon-button" data-close-panel aria-label="Panel schliessen">×</button>`;
+        if (state.panelMode === 'reschedule') {
+          const slots = [
+            { id:'slot1', label:'Heute · 14:30', person:`${p[1]} ${p[2]}`, note:'Gleiche Person · direkt frei' },
+            { id:'slot2', label:'Freitag · 09:15', person:'Sofia Marti', note:'Früher Termin · Mitarbeiterwechsel' },
+            { id:'slot3', label:'Samstag · 11:00', person:`${p[1]} ${p[2]}`, note:'Gleiche Person · 90 Minuten' }
+          ];
+          return `<aside class="context-panel" aria-label="Termin verschieben"><div class="panel-head"><div><div class="eyebrow">Geführter Vorgang</div><h2>Termin verschieben</h2></div>${close}</div><div class="panel-body">
+            <p><strong>${escapeHtml(a.customer)}</strong><br><span class="muted">${a.start} · ${escapeHtml(a.service)} · ${p[1]}</span></p>
+            <div class="panel-section"><h3>Passende freie Zeiten</h3><div class="slot-list">${slots.map(slot => `<button class="slot-button ${state.selectedSlot === slot.id ? 'is-selected' : ''}" data-slot="${slot.id}" data-slot-time="${slot.label}" data-slot-person="${slot.person}"><span><strong>${slot.label}</strong><small class="muted">${slot.note}</small></span><span>${state.selectedSlot === slot.id ? '✓' : '›'}</span></button>`).join('')}</div></div>
+            <div class="form-field"><label for="clockChoice">Oder Uhrzeit direkt wählen</label><input id="clockChoice" type="time" value="14:30"></div>
+            <div class="prototype-note">Simuliert eine engine-validierte Slotwahl. Es werden keine echten Termine verändert oder Nachrichten versendet.</div>
+            <div class="panel-section action-stack"><button class="primary-button" data-commit-reschedule ${state.selectedSlot ? '' : 'disabled'}>Ausgewählte Zeit übernehmen</button><button class="quiet-button" data-panel-mode="details">Zurück zum Termin</button></div>
+          </div></aside>`;
+        }
+        if (state.panelMode === 'cancel') {
+          return `<aside class="context-panel" aria-label="Termin absagen"><div class="panel-head"><div><div class="eyebrow">Bestätigung</div><h2>Termin absagen?</h2></div>${close}</div><div class="panel-body">
+            <div class="confirm-box"><strong>${escapeHtml(a.customer)} · ${a.start}</strong><p>Der Termin wird als abgesagt markiert. Die frei werdende Zeit erscheint wieder im Tagesplan.</p><label><input type="checkbox" id="notifyCustomer" checked> SMS-Bestätigung simulieren</label></div>
+            <div class="panel-section"><h3>Auswirkung</h3><div class="fact-list"><div class="fact"><span>Kapazität</span><strong>${a.duration} Minuten werden frei</strong></div><div class="fact"><span>Kommunikation</span><strong>Ausgang wird im Termin protokolliert</strong></div><div class="fact"><span>Rückkehr</span><strong>Fokus bleibt bei diesem Termin</strong></div></div></div>
+            <div class="prototype-note">Designsimulation ohne Persistenz oder echten SMS-Versand.</div>
+            <div class="panel-section action-stack"><button class="danger-button" data-commit-cancel>Absage bestätigen</button><button class="quiet-button" data-panel-mode="details">Nicht absagen</button></div>
+          </div></aside>`;
+        }
+        if (state.panelMode === 'working') {
+          return `<aside class="context-panel"><div class="panel-head"><div><div class="eyebrow">Ereignis wird simuliert</div><h2>Änderung läuft</h2></div></div><div class="panel-body"><div class="progress-line"></div><p>Der aktuelle Termin bleibt sichtbar, bis ein eindeutiger Ausgang vorliegt.</p><div class="prototype-note">Doppelte Auslösung ist in diesem Prototyp gesperrt.</div></div></aside>`;
+        }
+        if (state.panelMode === 'success') {
+          const change = state.changed[a.id] || {};
+          return `<aside class="context-panel"><div class="panel-head"><div><div class="eyebrow">Erfolgreich simuliert</div><h2>Änderung bestätigt</h2></div>${close}</div><div class="panel-body">
+            <div class="success-card"><h3>${change.status === 'cancelled' ? 'Termin abgesagt' : change.status === 'visit' ? 'Ankunft erfasst' : change.start ? 'Termin verschoben' : 'Visit aktualisiert'}</h3><p>${change.start ? `Neu: ${change.start} bei ${person(change.staff || a.staff)[1]}` : change.status === 'cancelled' ? 'Die Zeit ist wieder verfügbar. SMS-Ausgang: simuliert.' : change.status === 'visit' ? 'Der Besuch ist jetzt im Salonkontext geöffnet.' : 'Der nächste Arbeitsschritt ist sichtbar.'}</p></div>
+            <div class="panel-section"><h3>Erhaltener Kontext</h3><div class="fact-list"><div class="fact"><span>Suche</span><strong>${state.search || 'Keine Suche aktiv'}</strong></div><div class="fact"><span>Tag</span><strong>Donnerstag, 20. August</strong></div><div class="fact"><span>Rückkehr</span><strong>Zum aktualisierten Termin</strong></div></div></div>
+            <div class="action-stack"><button class="primary-button" data-return-to-appointment>Im Tagesplan zeigen</button><button class="quiet-button" data-close-panel>Panel schliessen</button></div>
+          </div></aside>`;
+        }
+        if (state.panelMode === 'visit') {
+          return `<aside class="context-panel"><div class="panel-head"><div><div class="eyebrow">Visit · laufender Besuch</div><h2>${escapeHtml(a.customer)}</h2></div>${close}</div><div class="panel-body">
+            <span class="status-pill status-visit">Im Salon</span><div class="panel-section"><h3>Behandlungsablauf</h3><div class="visit-steps">
+              ${[['Beratung','Wunsch und Ausgangslage'],['Waschen','Waschplatz 2'],['Schnitt & Föhnen','Bei '+p[1]],['Abschluss','Ergebnis und Nachpflege']].map((step,index) => `<div class="visit-step ${index === state.visitStep ? 'is-current' : ''}"><span class="visit-step-number">${index < state.visitStep ? '✓' : index + 1}</span><span><strong>${step[0]}</strong><small class="muted">${step[1]}</small></span></div>`).join('')}
+            </div></div><div class="prototype-note">Die Schritte simulieren das Interaktionsdesign. Planzeiten werden nicht als tatsächliche Ereigniszeiten dargestellt.</div>
+            <div class="panel-section action-stack"><button class="primary-button" data-next-visit>${state.visitStep >= 3 ? 'Visit abschliessen' : 'Nächsten Schritt starten'}</button><button class="quiet-button" data-panel-mode="details">Zurück zum Termin</button></div>
+          </div></aside>`;
+        }
+        return `<aside class="context-panel" aria-label="Terminaktionen"><div class="panel-head"><div><div class="eyebrow">Termin · ${statusLabel(a.status)}</div><h2>${escapeHtml(a.customer)}</h2></div>${close}</div><div class="panel-body">
+          <span class="status-pill status-${a.status}">${statusLabel(a.status)}</span>
+          <div class="fact-list"><div class="fact"><span>Zeit</span><strong class="tabular">${a.start} · ${a.duration} Min.</strong></div><div class="fact"><span>Leistung</span><strong>${escapeHtml(a.service)}</strong></div><div class="fact"><span>Person</span><strong>${p[1]} ${p[2]}</strong></div><div class="fact"><span>Standort</span><strong>Thun</strong></div><div class="fact"><span>Kontakt</span><strong>${a.phone}</strong></div></div>
+          <div class="customer-note"><strong>Kundschaftshinweis</strong><br>${escapeHtml(a.note)}</div>
+          <div class="panel-section"><h3>Jetzt möglich</h3><div class="action-stack">
+            ${a.status !== 'cancelled' ? '<button class="primary-button" data-panel-mode="reschedule">Termin verschieben</button>' : ''}
+            ${a.status === 'confirmed' || a.status === 'requested' ? '<button class="quiet-button" data-arrival>Ankunft bestätigen</button>' : ''}
+            ${a.status === 'visit' ? '<button class="quiet-button" data-panel-mode="visit">Visit öffnen</button>' : ''}
+            <button class="quiet-button" data-nav="customers">Kundschaft öffnen</button>
+            ${a.status !== 'cancelled' ? '<button class="danger-button" data-panel-mode="cancel">Termin absagen</button>' : ''}
+          </div></div>
+          <div class="prototype-note"><strong>Designprototyp:</strong> Handlungen werden lokal simuliert. Die Produktionsfunktion Verschieben ist damit nicht als implementiert belegt.</div>
+        </div></aside>`;
+      }
+
+      function renderDay() {
+        const hasPanel = Boolean(state.selectedId);
+        el('screen-day').innerHTML = `<div class="screen-frame">
+
+          <div class="day-layout ${hasPanel ? 'has-panel' : ''}">
+            <div class="calendar-paper paper">
+              <div class="calendar-meta"><div class="date-cluster"><button class="icon-button" title="Vorheriger Tag">‹</button><button class="date-button">Do, 20. August 2026</button><button class="icon-button" title="Nächster Tag">›</button><button class="quiet-button">Heute</button></div><span class="search-help">${state.search ? `Treffer für „${escapeHtml(state.search)}“ · Kontext bleibt erhalten` : 'Position = wer/wann · Farbe = Status'}</span></div>
+              <div class="calendar-scroll">${renderCalendarGrid()}</div>
+            </div>
+            ${hasPanel ? renderPanel() : ''}
+          </div>
+        </div>`;
+      }
+
+      function renderBookings() {
+        const appts = appointments();
+        el('screen-bookings').innerHTML = `<div class="screen-frame">
+          ${screenHeading('Buchungen', 'Termine über Zeitraum und Status verwalten. Jede Zeile öffnet dieselbe Terminaktionsfläche.', '<button class="primary-button" data-prototype-action="booking">+ Buchung</button>')}
+          ${!appts.length ? `<div class="empty-state paper"><div><h2>Noch keine Buchungen</h2><p class="muted">Sobald ein Termin eingetragen ist, erscheint er hier und im Tagesplan.</p><button class="primary-button" data-prototype-action="booking">Erste Buchung</button></div></div>` : `<div class="list-layout"><div class="list-paper paper"><div class="list-toolbar"><button class="filter-chip is-active">Alle</button><button class="filter-chip">Bestätigt</button><button class="filter-chip">Im Salon</button><button class="filter-chip">Abgesagt</button></div>${appts.slice(0, state.density === 'stress' ? 18 : 8).map(a => `<div class="data-row booking-row" data-open-appointment="${a.id}"><strong class="tabular">${a.start}</strong><span><strong>${escapeHtml(a.customer)}</strong><small class="muted">${a.phone}</small></span><span>${escapeHtml(a.service)}</span><span>${person(a.staff)[1]}</span><span class="status-pill status-${a.status}">${statusLabel(a.status)}</span></div>`).join('')}</div><aside class="side-summary paper"><div class="eyebrow">Diese Woche</div><div class="summary-number">${state.density === 'stress' ? '84' : '47'}</div><p class="muted">Buchungen · 91 % bestätigt</p><hr style="border:0;border-top:1px solid var(--line)"><p><strong>Ein Aktionsmodell</strong></p><p class="muted tiny">Termine öffnen dieselben Handlungen wie im Tagesplan. Der Ausgangsscreen wird bei Rückkehr erhalten.</p></aside></div>`}
+        </div>`;
+      }
+
+      function renderCustomers() {
+        const customers = appointments().filter((a,index,arr) => arr.findIndex(x => x.customer === a.customer) === index);
+        el('screen-customers').innerHTML = `<div class="screen-frame">
+          ${screenHeading('Kundschaft', 'Beziehungen pflegen und direkt in denselben Buchungsablauf wechseln.', '<button class="primary-button" data-prototype-action="customer">+ Kundschaft</button>')}
+          ${!customers.length ? `<div class="empty-state paper"><div><h2>Deine Kundschaft wächst hier.</h2><p class="muted">Profile verbinden Notizen, Besuche, Kontakt und nächste Termine.</p><button class="primary-button" data-prototype-action="customer">Erstes Profil</button></div></div>` : `<div class="list-layout"><div class="list-paper paper"><div class="list-toolbar"><button class="filter-chip is-active">Alle</button><button class="filter-chip">Ohne Folgetermin</button><button class="filter-chip">Kontakt offen</button></div>${customers.slice(0, state.density === 'stress' ? 16 : 8).map((a,index) => `<div class="data-row customer-row"><span><strong>${escapeHtml(a.customer)}</strong><small class="muted">${a.phone}</small></span><span>${index % 3 ? 'Stammkundschaft' : 'Neu'}</span><strong>CHF ${index % 2 ? '680' : '1’240'}</strong><span class="muted">${index % 4 ? 'Nächster Termin '+a.start : 'Folgetermin offen'}</span></div>`).join('')}</div><aside class="side-summary paper"><div class="eyebrow">Ausgewähltes Profil</div><h2 style="font-family:var(--font-display);font-weight:500">Mia Frei</h2><p class="muted">Letzter Besuch: 7. August<br>Kontakt per SMS erlaubt</p><div class="customer-note">Empfindliche Kopfhaut. Fransen vor dem Schnitt besprechen.</div><div class="action-stack" style="margin-top:16px"><button class="primary-button" data-prototype-action="booking">Termin für Mia buchen</button><button class="quiet-button">Notiz bearbeiten</button></div></aside></div>`}
+        </div>`;
+      }
+
+      function renderTeam() {
+        const people = state.density === 'empty' ? [] : activeStaff();
+        el('screen-team').innerHTML = `<div class="screen-frame">
+          ${screenHeading('Team', 'Ein Pflegeort für Person, Rolle, Standort und Arbeitszeit.', '<button class="primary-button" data-prototype-action="team">+ Person</button>')}
+          ${!people.length ? `<div class="empty-state paper"><div><h2>Wer arbeitet im Salon?</h2><p class="muted">Mit der ersten Person werden Arbeitszeiten und buchbare Leistungen verbunden.</p><button class="primary-button" data-prototype-action="team">Person hinzufügen</button></div></div>` : `<div class="people-grid">${people.map((p,index) => `<article class="person-card paper"><span class="avatar">${p[3]}</span><h3>${p[1]} ${p[2]}</h3><p class="muted">${index === 0 ? 'Inhaberin · Top Stylistin' : index % 3 === 0 ? 'Coloristin' : 'Stylistin'}<br>Hauptstandort Thun</p><footer><span>${index % 2 ? 'Di–Sa' : 'Mo–Fr'}</span><span>${index % 3 ? '6' : '8'} Leistungen</span></footer></article>`).join('')}</div>`}
+        </div>`;
+      }
+
+      function renderOffer() {
+        const services = state.density === 'empty' ? [] : [
+          ['Schnitt & Föhnen','75 Min.','CHF 98','6 Personen'],['Farbe & Pflege','90 Min.','CHF 148','4 Personen'],['Balayage','150 Min.','CHF 245','3 Personen'],['Herrenhaarschnitt','45 Min.','CHF 58','5 Personen'],['Beratung','30 Min.','CHF 0','6 Personen'],['Waschen & Föhnen','45 Min.','CHF 62','5 Personen']
+        ];
+        el('screen-offer').innerHTML = `<div class="screen-frame">
+          ${screenHeading('Angebot', 'Leistungen, Dauer, Preis und Zuordnung zu bestehenden Personen.', '<button class="primary-button" data-prototype-action="service">+ Leistung</button>')}
+          ${!services.length ? `<div class="empty-state paper"><div><h2>Was bietet dein Salon an?</h2><p class="muted">Dauer, Preis und Teamzuordnung machen eine Leistung buchbar.</p><button class="primary-button" data-prototype-action="service">Erste Leistung</button></div></div>` : `<div class="service-grid">${services.map(service => `<article class="service-card paper"><div class="eyebrow">Aktive Leistung</div><h3>${service[0]}</h3><p class="muted">${service[1]} · ${service[3]}</p><div class="service-price">${service[2]}</div><footer><span>Online buchbar</span><span>Bearbeiten ›</span></footer></article>`).join('')}</div>`}
+        </div>`;
+      }
+
+      function renderAdmin() {
+        const cards = [
+          ['Salonprofil','Name, Adresse, Kontakt und Öffnungszeiten','Vollständig'],
+          ['Salonmarke','Logo und ruhige Akzente für Kundschaftsflächen','Coiffure Sonnegg'],
+          ['Standorte','Hauptstandort Thun und Kapazitäten','1 Standort'],
+          ['Integrationen','Website, Kalender und Kommunikation','2 verbunden'],
+          ['Rollen & Rechte','Owner, Manager, Mitarbeitende und Gast','Prüfung offen'],
+          ['Plan & Abrechnung','Eigentümergebundene Vertragsdaten','Pilot']
+        ];
+        el('screen-admin').innerHTML = `<div class="screen-frame">
+          ${screenHeading('Verwaltung', 'Salon organisatorisch konfigurieren, ohne tägliche Arbeit hierher zu verschieben.')}
+          <div class="admin-grid">${cards.map((card,index) => `<article class="admin-card paper"><div class="eyebrow">${card[2]}</div><h3>${card[0]}</h3><p class="muted">${card[1]}</p><button class="quiet-button" data-prototype-action="admin" ${index === 5 ? 'title="Nur für Inhaberinnen"' : ''}>Öffnen</button></article>`).join('')}</div>
+        </div>`;
+      }
+
+      function renderAll() {
+        renderNavigation();
+        renderLogin();
+        renderOnboarding();
+        renderToday();
+        renderDay();
+        renderBookings();
+        renderCustomers();
+        renderTeam();
+        renderOffer();
+        renderAdmin();
+        document.querySelectorAll('.screen').forEach(screen => screen.classList.toggle('is-active', screen.dataset.screen === state.screen));
+        const item = navItems.find(item => item.id === state.screen);
+        el('topbarTitle').textContent = item ? item.label : 'Gasserwerk';
+        document.querySelectorAll('[data-state]').forEach(button => button.classList.toggle('is-active', button.dataset.state === state.density));
+      }
+
+      function navigate(screen) {
+        state.screen = screen;
+        if (screen !== 'day' && screen !== 'bookings') {
+          state.selectedId = null;
+          state.panelMode = 'details';
+        }
+        renderAll();
+        el('content').scrollTop = 0;
+      }
+
+      function openAppointment(id) {
+        state.previousFocusId = id;
+        state.selectedId = id;
+        state.panelMode = 'details';
+        state.selectedSlot = null;
+        if (state.screen !== 'day' && state.screen !== 'bookings') state.screen = 'day';
+        if (state.screen === 'bookings') state.screen = 'day';
+        renderAll();
+      }
+
+      function simulate(kind) {
+        state.panelMode = 'working';
+        renderDay();
+        setTimeout(() => {
+          const a = appointmentById(state.selectedId);
+          if (!a) return;
+          if (kind === 'reschedule') {
+            const slotMap = {slot1:{start:'14:30'},slot2:{start:'09:15',staff:'sofia'},slot3:{start:'11:00'}};
+            state.changed[a.id] = { ...(state.changed[a.id] || {}), ...(slotMap[state.selectedSlot] || {start:'14:30'}), status:'confirmed' };
+          } else if (kind === 'cancel') {
+            state.changed[a.id] = { ...(state.changed[a.id] || {}), status:'cancelled' };
+          } else if (kind === 'arrival') {
+            state.changed[a.id] = { ...(state.changed[a.id] || {}), status:'visit' };
+          } else if (kind === 'visit') {
+            state.changed[a.id] = { ...(state.changed[a.id] || {}), status: state.visitStep >= 3 ? 'done' : 'visit' };
+          }
+          state.panelMode = 'success';
+          state.returningId = a.id;
+          renderAll();
+          showToast('Simulation erfolgreich. Tag, Suche und Terminkontext wurden erhalten.');
+        }, 720);
+      }
+
+      document.addEventListener('click', event => {
+        const target = event.target.closest('button, [data-open-appointment], .agenda-row');
+        if (!target) return;
+        if (target.dataset.nav) { navigate(target.dataset.nav); return; }
+        if (target.dataset.state) { state.density = target.dataset.state; state.selectedId = null; state.search = ''; state.changed = {}; renderAll(); showToast(`Zustand „${target.textContent.trim()}“ ist aktiv.`); return; }
+        if (target.dataset.openAppointment) { openAppointment(target.dataset.openAppointment); return; }
+        if (target.hasAttribute('data-close-panel')) { state.selectedId = null; state.panelMode = 'details'; renderAll(); return; }
+        if (target.dataset.panelMode) { state.panelMode = target.dataset.panelMode; state.selectedSlot = null; renderDay(); return; }
+        if (target.dataset.slot) { state.selectedSlot = target.dataset.slot; renderDay(); return; }
+        if (target.hasAttribute('data-commit-reschedule')) { simulate('reschedule'); return; }
+        if (target.hasAttribute('data-commit-cancel')) { simulate('cancel'); return; }
+        if (target.hasAttribute('data-arrival')) { simulate('arrival'); return; }
+        if (target.hasAttribute('data-next-visit')) {
+          if (state.visitStep < 3) { state.visitStep += 1; renderDay(); showToast('Nächster Visit-Schritt lokal simuliert.'); }
+          else simulate('visit');
+          return;
+        }
+        if (target.hasAttribute('data-return-to-appointment')) {
+          const id = state.selectedId;
+          state.panelMode = 'details';
+          state.selectedId = null;
+          state.screen = 'day';
+          state.returningId = id;
+          renderAll();
+          requestAnimationFrame(() => {
+            const card = el(`appointment-${id}`);
+            if (card) { card.scrollIntoView({block:'center', inline:'center', behavior:'smooth'}); card.focus({preventScroll:true}); }
+          });
+          setTimeout(() => { state.returningId = null; }, 1600);
+          return;
+        }
+        if (target.dataset.prototypeAction) {
+          showToast('Diese Handlung ist als Designprototyp markiert und verändert keine Echtdaten.');
+        }
+      });
+
+      document.addEventListener('input', event => {
+        if (event.target.id === 'daySearch') {
+          state.search = event.target.value;
+          const position = event.target.selectionStart;
+          renderDay();
+          const input = el('daySearch');
+          if (input) { input.focus(); input.setSelectionRange(position, position); }
+        }
+        if (event.target.id === 'globalSearch') {
+          state.search = event.target.value;
+          if (state.search.length >= 2) {
+            state.screen = 'day';
+            renderAll();
+            requestAnimationFrame(() => el('globalSearch')?.focus());
+          }
+        }
+      });
+
+      document.addEventListener('submit', event => {
+        if (event.target.id === 'loginForm') {
+          event.preventDefault();
+          state.screen = 'today';
+          renderAll();
+          showToast('Anmeldung lokal simuliert. Willkommen bei Coiffure Sonnegg.');
+        }
+      });
+
+      el('themeToggle').addEventListener('click', () => {
+        state.theme = state.theme === 'light' ? 'dark' : 'light';
+        document.documentElement.dataset.theme = state.theme;
+        showToast(`${state.theme === 'light' ? 'Light' : 'Dark'} Mode aus denselben semantischen Tokens.`);
+      });
+
+      el('quickBooking').addEventListener('click', () => showToast('Buchungseinstieg simuliert: Tag und Standort würden erhalten bleiben.'));
+
+      document.addEventListener('keydown', event => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+          event.preventDefault();
+          el('globalSearch').focus();
+        }
+        if (event.key === 'Escape' && state.selectedId) {
+          state.selectedId = null;
+          state.panelMode = 'details';
+          renderAll();
+          requestAnimationFrame(() => el(`appointment-${state.previousFocusId}`)?.focus());
+        }
+      });
+
+      renderAll();
+    })();
+  </script>
+</body>
+</html>
