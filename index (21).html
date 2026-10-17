@@ -1,0 +1,1013 @@
+<!doctype html>
+<html lang="de" data-mode="light" data-tone="studio">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gasserwerk Dashboard – vollständige lokale Demo</title>
+<style>
+:root{
+  --bg:#f4f3ef;--bg-2:#efeee9;--surface:#fff;--surface-subtle:#f8f8f5;--surface-hover:#f2f2ed;
+  --text:#20231f;--text-2:#555e55;--text-3:#687168;--border:#dfe3dc;--border-light:#e8ebe5;--border-dark:#c9d0c6;
+  --brand:#955f18;--brand-dark:#6d430e;--brand-light:#f5ead7;--brand-soft:#fbf6ed;
+  --daily:#425f55;--daily-bg:#edf3f0;--online:#60768d;--online-bg:#eff3f7;--ops:#7a664c;--ops-bg:#f5f1e9;
+  --warning:#8a5a00;--warning-bg:#fff8e6;--warning-border:#d99a1a;
+  --danger:#9f1d1d;--danger-bg:#fff1f1;--danger-border:#dc2626;
+  --success:#17663c;--success-bg:#edf8f1;--success-border:#54a478;
+  --info:#1e4f73;--info-bg:#eef6fb;--info-border:#8eb7d0;
+  --shadow:0 8px 26px rgba(35,40,35,.055);--shadow-lg:0 24px 80px rgba(20,28,22,.22);
+  --radius:14px;--radius-sm:10px;--sidebar:246px;
+}
+*{box-sizing:border-box}
+html{color-scheme:light;scroll-behavior:smooth}
+body{margin:0;min-width:320px;background:var(--bg);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.45}
+button,input,select,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transparent}
+a{color:inherit}
+.app{min-height:100vh;display:grid;grid-template-columns:var(--sidebar) minmax(0,1fr)}
+.sidebar{position:sticky;top:0;height:100vh;overflow:hidden;display:flex;flex-direction:column;background:#202923;color:#f6f6f1;padding:18px 13px;border-right:1px solid rgba(255,255,255,.07);z-index:60}
+.brand{display:flex;align-items:center;gap:10px;padding:5px 8px 21px;font-weight:780;letter-spacing:-.02em}
+.brand-mark{width:31px;height:31px;border-radius:9px;display:grid;place-items:center;background:#f1dfbd;color:#3d2a10;font-weight:900}
+.nav-group{margin:12px 0 18px}
+.nav-label{padding:0 10px 7px;color:#9cac9f;font-size:12px;font-weight:800;letter-spacing:.1em;text-transform:uppercase}
+.nav-item{display:flex;align-items:center;gap:10px;min-height:41px;margin:2px 0;padding:9px 10px;border:0;width:100%;border-radius:10px;background:transparent;color:#dbe2dc;text-decoration:none;font-size:13px;font-weight:620;cursor:pointer;text-align:left}
+.nav-item:hover{background:rgba(255,255,255,.06)}
+.nav-item.active{background:#f1dfbd;color:#322413}
+.nav-icon{width:18px;text-align:center;opacity:.92;flex:0 0 auto}
+.nav-item>span:nth-child(2){min-width:0}
+.nav-meta{margin-left:auto;min-width:19px;padding:1px 5px;border-radius:999px;background:rgba(255,255,255,.09);font-size:12px;text-align:center}
+.nav-item.active .nav-meta{background:rgba(50,36,19,.09)}
+#navigation{flex:1;min-height:0}
+.sidebar-footer{margin-top:auto;padding:13px 10px;border-top:1px solid rgba(255,255,255,.1);color:#aebbb1;font-size:12px}
+.mobile-topbar{display:none}
+.main{min-width:0}
+.topbar{height:64px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.88);backdrop-filter:blur(14px);position:sticky;top:0;z-index:30}
+.crumb{color:var(--text-3);font-size:13px}
+.top-actions{display:flex;align-items:center;gap:10px}
+.search-wrap{position:relative}
+.search{width:250px;padding:9px 34px 9px 12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-subtle);color:var(--text-2)}
+.search-key{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--text-3);border:1px solid var(--border);border-radius:5px;padding:1px 4px;background:white}
+.avatar{width:34px;height:34px;border:0;border-radius:50%;display:grid;place-items:center;background:#ded9cc;color:#4a4437;font-size:12px;font-weight:800;cursor:pointer}
+.content{max-width:1500px;margin:0 auto;padding:32px 34px 72px}
+.page-head{display:flex;gap:20px;align-items:flex-start;justify-content:space-between;margin-bottom:23px}
+.page-head-copy{min-width:0}
+h1{margin:0;font-size:clamp(25px,3vw,34px);letter-spacing:-.035em;line-height:1.15}
+.subhead{margin:8px 0 0;color:var(--text-3);font-size:14px;max-width:760px}
+.head-actions{display:flex;flex-wrap:wrap;gap:9px;justify-content:flex-end}
+.btn{min-height:41px;border-radius:10px;border:1px solid transparent;display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:9px 14px;font-weight:720;font-size:13px;cursor:pointer;text-decoration:none;transition:transform .15s ease,background .15s ease,border-color .15s ease}
+.btn:active{transform:translateY(1px)}
+.btn-primary{background:var(--brand);color:white;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 2px 5px rgba(74,42,8,.18)}
+.btn-primary:hover{background:var(--brand-dark)}
+.btn-secondary{color:var(--text-2);background:var(--surface);border-color:var(--border)}
+.btn-secondary:hover{background:var(--surface-hover);border-color:var(--border-dark)}
+.btn-ghost{color:var(--text-2);background:transparent;border-color:transparent}
+.btn-ghost:hover{background:var(--surface-hover)}
+.btn-danger{background:var(--danger-bg);color:var(--danger);border-color:#e7b3b3}
+.btn-sm{min-height:35px;padding:7px 10px;font-size:12px}
+.icon-btn{width:39px;padding:0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.card-padded{padding:19px}
+.card-title{margin:0;font-size:15px;letter-spacing:-.01em}
+.card-subtitle{margin:5px 0 0;color:var(--text-3);font-size:12px}
+.section-head{padding:18px 19px;display:flex;align-items:center;justify-content:space-between;gap:14px;border-bottom:1px solid var(--border-light)}
+.section-head h2{margin:0;font-size:16px;letter-spacing:-.015em}
+.section-head p{margin:5px 0 0;color:var(--text-3);font-size:12px}
+.section-actions{display:flex;flex-wrap:wrap;gap:8px}
+.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:9px;padding:13px 16px;border-bottom:1px solid var(--border-light);background:var(--surface-subtle)}
+.toolbar-group{display:flex;flex-wrap:wrap;align-items:center;gap:7px}
+.toolbar-spacer{flex:1}
+.input,.select,.textarea{border:1px solid var(--border);border-radius:9px;background:white;color:var(--text);padding:9px 10px;min-height:39px}
+.input:focus,.select:focus,.textarea:focus{outline:2px solid color-mix(in srgb,var(--brand) 32%,transparent);border-color:var(--brand)}
+.input-search{min-width:230px}
+.chip{min-height:34px;border:1px solid var(--border);border-radius:999px;background:white;color:var(--text-2);padding:6px 10px;font-size:12px;font-weight:700;cursor:pointer;white-space:nowrap}
+.chip:hover{background:var(--surface-hover)}
+.chip.active{background:var(--brand-light);color:var(--brand-dark);border-color:#dfc28a}
+.chip--attention.active{background:var(--warning-bg);color:var(--warning);border-color:var(--warning-border)}
+.badge{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--border);background:var(--surface-subtle);color:var(--text-2);border-radius:999px;padding:4px 8px;font-size:12px;font-weight:800;white-space:nowrap}
+.badge.warning{border-color:var(--warning-border);background:var(--warning-bg);color:var(--warning)}
+.badge.danger{border-color:var(--danger-border);background:var(--danger-bg);color:var(--danger)}
+.badge.success{border-color:var(--success-border);background:var(--success-bg);color:var(--success)}
+.badge.info{border-color:var(--info-border);background:var(--info-bg);color:var(--info)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--brand);flex:0 0 auto}
+.dot.daily{background:var(--daily)}.dot.online{background:var(--online)}.dot.warn{background:var(--warning-border)}.dot.danger{background:var(--danger-border)}.dot.success{background:var(--success-border)}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:18px 19px 17px;min-width:0}
+.stat.warning{border-color:#ead7a8;background:linear-gradient(180deg,#fff 0%,#fffdf7 100%)}
+.stat-label{color:var(--text-3);font-size:12px;font-weight:820;text-transform:uppercase;letter-spacing:.08em}
+.stat-value{margin-top:9px;font-variant-numeric:tabular-nums;font-size:28px;font-weight:770;letter-spacing:-.035em}
+.stat-detail{margin-top:4px;color:var(--text-2);font-size:12px}
+.stat.warning .stat-detail{color:var(--warning)}
+.grid-2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.golden{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+.stack{display:grid;gap:15px}
+.area-card{background:white;border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;text-decoration:none;color:inherit;transition:transform .16s ease}
+.area-card:hover{transform:translateY(-2px)}
+.area-card.online{border-left:5px solid var(--online)}
+.area-card.daily{border-left:5px solid var(--daily)}
+.area-card.ops{border-left:5px solid var(--ops)}
+.area-head{display:flex;justify-content:space-between;align-items:center;padding:11px 15px;font-size:12px;font-weight:840;letter-spacing:.08em;text-transform:uppercase}
+.online .area-head{background:var(--online-bg);color:#42576b}.daily .area-head{background:var(--daily-bg);color:#345047}.ops .area-head{background:var(--ops-bg);color:#654f35}
+.area-body{display:flex;gap:13px;align-items:center;padding:17px 16px}
+.area-copy{min-width:0;flex:1}.area-copy strong{display:block;font-size:14px}.area-copy span{display:block;color:var(--text-2);font-size:12px;margin-top:4px}
+.area-attention-icon{width:41px;height:41px;border-radius:12px;flex:0 0 auto;display:grid;place-items:center;background:var(--warning-bg);color:var(--warning);font-weight:900}
+.arrow{color:var(--text-2);font-size:12px;font-weight:760;white-space:nowrap}
+.callouts{margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.callout{border-radius:12px;border:1px solid;padding:15px 16px;display:flex;align-items:center;justify-content:space-between;gap:15px;text-decoration:none}
+.callout.info{background:var(--info-bg);color:var(--info);border-color:var(--info-border)}
+.callout.warning{background:var(--warning-bg);color:var(--warning);border-color:var(--warning-border)}
+.callout.danger{background:var(--danger-bg);color:var(--danger);border-color:#ebb0b0}
+.callout.success{background:var(--success-bg);color:var(--success);border-color:var(--success-border)}
+.callout strong{font-size:13px;display:block}.callout p{margin:4px 0 0;font-size:12px;opacity:.86}.callout .cta{font-size:12px;font-weight:800;white-space:nowrap}
+.table-wrap{overflow:auto}
+.table{width:100%;border-collapse:collapse;min-width:760px}
+.table th{padding:10px 14px;text-align:left;color:var(--text-3);font-size:12px;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border-light);background:var(--surface-subtle);white-space:nowrap}
+.table td{padding:13px 14px;border-bottom:1px solid var(--border-light);font-size:12px;vertical-align:middle}
+.table tr:last-child td{border-bottom:0}.table tbody tr{cursor:pointer}.table tbody tr:hover{background:var(--surface-hover)}
+.primary-cell strong{display:block;font-size:13px}.primary-cell span{display:block;color:var(--text-3);font-size:12px;margin-top:2px}
+.row-actions{display:flex;justify-content:flex-end;gap:6px}
+.empty{padding:48px 24px;text-align:center;color:var(--text-2)}
+.empty-icon{width:57px;height:57px;border-radius:18px;display:grid;place-items:center;margin:0 auto 14px;background:var(--surface-subtle);border:1px solid var(--border);font-size:24px}
+.empty strong{display:block;color:var(--text);font-size:15px}.empty p{max-width:480px;margin:7px auto 16px;font-size:13px;color:var(--text-3)}
+.list-row{display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:12px;padding:13px 16px;border-bottom:1px solid var(--border-light);cursor:pointer}
+.list-row:last-child{border-bottom:0}.list-row:hover{background:var(--surface-hover)}
+.list-time{font-size:13px;font-weight:770;color:var(--text-2);display:flex;align-items:center;gap:7px}
+.list-main{min-width:0}.list-main strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.list-main span{display:block;color:var(--text-3);font-size:12px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-tags{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;border-top:1px solid var(--border-light);color:var(--text-3);font-size:12px}
+.calendar-shell{display:grid;grid-template-columns:72px repeat(6,minmax(150px,1fr));min-width:1070px}
+.calendar-corner,.calendar-day-head{position:sticky;top:0;z-index:3;background:var(--surface-subtle);border-bottom:1px solid var(--border);padding:11px;text-align:center}
+.calendar-corner{left:0;z-index:4}.calendar-day-head strong{font-size:12px;display:block}.calendar-day-head span{font-size:12px;color:var(--text-3)}
+.calendar-time{position:sticky;left:0;z-index:2;background:white;border-right:1px solid var(--border-light);border-bottom:1px solid var(--border-light);padding:10px 8px;color:var(--text-3);font-size:12px;text-align:right;height:76px}
+.calendar-cell{position:relative;height:76px;border-right:1px solid var(--border-light);border-bottom:1px solid var(--border-light);padding:5px}
+.cal-event{height:100%;border-radius:8px;padding:7px 8px;font-size:12px;overflow:hidden;border-left:4px solid var(--daily);background:#eef5f2;color:#29463c;cursor:pointer}
+.cal-event strong{display:block;font-size:12px}.cal-event span{display:block;margin-top:2px;opacity:.8}
+.cal-event.open{background:#fff7e8;color:#704b09;border-left-color:var(--warning-border);border:1px dashed var(--warning-border);border-left-width:4px}
+.cal-event.block{background:#f1f1ef;color:#60655f;border-left-color:#8b918a;background-image:repeating-linear-gradient(-45deg,transparent,transparent 5px,rgba(100,105,100,.07) 5px,rgba(100,105,100,.07) 10px)}
+.mobile-agenda{display:none}
+.agenda-day{margin-bottom:15px}.agenda-day h3{font-size:12px;color:var(--text-3);text-transform:uppercase;letter-spacing:.07em;margin:0 0 7px}
+.agenda-item{display:grid;grid-template-columns:56px 1fr;gap:10px;padding:11px 0;border-bottom:1px solid var(--border-light)}
+.agenda-item:last-child{border-bottom:0}.agenda-time{font-weight:770;font-size:12px}.agenda-copy strong{font-size:13px;display:block}.agenda-copy span{font-size:12px;color:var(--text-3);display:block;margin-top:2px}
+.profile-card{display:flex;gap:13px;align-items:flex-start;padding:17px}
+.profile-avatar{width:46px;height:46px;border-radius:13px;display:grid;place-items:center;background:var(--brand-light);color:var(--brand-dark);font-weight:850;flex:0 0 auto}
+.profile-main{min-width:0;flex:1}.profile-main h3{margin:0;font-size:14px}.profile-main p{margin:3px 0;color:var(--text-3);font-size:12px}.profile-meta{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.progress{height:8px;border-radius:999px;background:var(--bg-2);overflow:hidden}.progress>span{display:block;height:100%;border-radius:inherit;background:var(--brand)}
+.check-list{display:grid;gap:9px}.check-row{display:flex;align-items:flex-start;gap:9px;font-size:12px}.check-icon{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);font-size:12px;flex:0 0 auto}.check-icon.open{background:var(--warning-bg);color:var(--warning);border-color:var(--warning-border)}
+.service-row{display:grid;grid-template-columns:minmax(0,1fr) 90px 90px auto;gap:10px;align-items:center;padding:12px 15px;border-bottom:1px solid var(--border-light)}
+.service-row:last-child{border-bottom:0}.service-row strong{font-size:13px}.service-row span{font-size:12px;color:var(--text-3)}
+.schedule-grid{display:grid;grid-template-columns:150px repeat(5,minmax(120px,1fr));min-width:800px}
+.schedule-head,.schedule-staff,.schedule-cell{padding:11px;border-right:1px solid var(--border-light);border-bottom:1px solid var(--border-light)}
+.schedule-head{background:var(--surface-subtle);font-size:12px;color:var(--text-3);text-transform:uppercase;letter-spacing:.06em;font-weight:800}
+.schedule-staff{font-size:12px;font-weight:740;background:white}
+.schedule-cell{font-size:12px;color:var(--text-2);background:white}
+.time-block{display:inline-block;border:1px solid var(--border);border-radius:7px;padding:4px 6px;background:var(--surface-subtle)}
+.preview-shell{background:#eceae3;border-radius:16px;padding:18px}
+.browser{background:white;border:1px solid #d7d9d3;border-radius:13px;overflow:hidden;box-shadow:0 12px 40px rgba(30,35,30,.12)}
+.browser-bar{height:34px;background:#f2f2ef;border-bottom:1px solid #dedfd9;display:flex;align-items:center;gap:5px;padding:0 10px}.browser-dot{width:8px;height:8px;border-radius:50%;background:#d2d2cd}.browser-url{margin-left:8px;flex:1;height:19px;border-radius:6px;background:white;border:1px solid #dddeda;color:var(--text-3);font-size:12px;padding:3px 8px}
+.site-preview{padding:30px;min-height:320px;background:linear-gradient(135deg,#f5efe6,#fbfaf7)}.site-preview h3{font-family:Georgia,serif;font-size:28px;margin:0 0 8px;color:#3b3023}.site-preview p{max-width:430px;color:#776958;font-size:12px}.site-cta{display:inline-block;margin-top:13px;border:0;border-radius:999px;background:#7b4d20;color:white;padding:10px 15px;font-weight:760;font-size:12px}
+.widget-preview{max-width:380px;margin:0 auto;background:white;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}.widget-head{padding:20px;background:#27332b;color:white}.widget-head h3{margin:0}.widget-body{padding:18px}.widget-step{display:flex;gap:10px;align-items:center;padding:11px 0;border-bottom:1px solid var(--border-light)}.widget-step:last-child{border-bottom:0}.widget-step-num{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--brand-light);color:var(--brand-dark);font-size:12px;font-weight:850}
+.bar-chart{height:230px;display:flex;align-items:flex-end;gap:12px;padding:20px 8px 0;border-bottom:1px solid var(--border)}.bar{flex:1;min-width:24px;background:linear-gradient(180deg,var(--brand),var(--brand-dark));border-radius:8px 8px 2px 2px;position:relative}.bar span{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);font-size:12px;color:var(--text-3)}.bar em{position:absolute;top:-20px;left:50%;transform:translateX(-50%);font-style:normal;font-size:12px;color:var(--text-2)}
+.settings-list{display:grid}.settings-row{display:flex;align-items:center;gap:13px;padding:15px 17px;border-bottom:1px solid var(--border-light);cursor:pointer}.settings-row:last-child{border-bottom:0}.settings-row:hover{background:var(--surface-hover)}.settings-icon{width:38px;height:38px;border-radius:11px;background:var(--surface-subtle);border:1px solid var(--border);display:grid;place-items:center}.settings-copy{flex:1}.settings-copy strong{display:block;font-size:13px}.settings-copy span{display:block;font-size:12px;color:var(--text-3);margin-top:2px}
+.demo-panel{position:fixed;right:18px;bottom:18px;z-index:50;width:min(390px,calc(100vw - 36px));background:rgba(32,41,35,.97);color:white;border:1px solid rgba(255,255,255,.12);border-radius:14px;box-shadow:0 18px 50px rgba(0,0,0,.2);padding:13px}
+.demo-panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}.demo-panel strong{font-size:13px}.demo-panel p{margin:3px 0 0;color:#bdc8c0;font-size:12px}.demo-close{background:transparent;border:0;color:#dfe7e0;cursor:pointer;font-size:18px}
+.state-buttons{display:flex;flex-wrap:wrap;gap:7px}.state-btn{border:1px solid rgba(255,255,255,.17);background:rgba(255,255,255,.07);color:#f4f7f4;padding:7px 9px;border-radius:8px;cursor:pointer;font-size:12px}.state-btn.active{background:#f1dfbd;color:#332515;border-color:#f1dfbd}
+.demo-open{position:fixed;right:18px;bottom:18px;z-index:40;border:0;background:#202923;color:white;border-radius:999px;padding:11px 15px;font-weight:760;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,.2);display:none}
+.backdrop{position:fixed;inset:0;z-index:80;background:rgba(20,25,21,.42);display:none}.backdrop.open{display:block}
+.drawer{position:absolute;right:0;top:0;height:100%;width:min(480px,100%);background:white;box-shadow:-20px 0 70px rgba(0,0,0,.2);display:flex;flex-direction:column}
+.drawer-head{padding:18px 19px;border-bottom:1px solid var(--border-light);display:flex;align-items:flex-start;justify-content:space-between;gap:12px}.drawer-head h3{margin:0;font-size:18px}.drawer-head p{margin:4px 0 0;color:var(--text-3);font-size:12px}.drawer-close{border:0;background:transparent;font-size:24px;color:var(--text-2);cursor:pointer}.drawer-body{padding:18px;overflow:auto;flex:1}.drawer-footer{padding:14px 18px;border-top:1px solid var(--border-light);display:flex;justify-content:flex-end;gap:8px;background:var(--surface-subtle)}
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.detail-box{padding:12px;border:1px solid var(--border);border-radius:10px;background:var(--surface-subtle)}.detail-box span{display:block;color:var(--text-3);font-size:12px;text-transform:uppercase;letter-spacing:.06em}.detail-box strong{display:block;margin-top:4px;font-size:12px}
+.modal-wrap{position:fixed;inset:0;z-index:90;background:rgba(20,25,21,.42);display:none;align-items:center;justify-content:center;padding:18px}.modal-wrap.open{display:flex}.modal{width:min(540px,100%);max-height:calc(100vh - 36px);overflow:auto;background:white;border-radius:16px;border:1px solid var(--border);box-shadow:var(--shadow-lg);padding:20px}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px}.modal h3{margin:0}.modal-close{background:transparent;border:0;font-size:23px;cursor:pointer;color:var(--text-2)}.field{margin:12px 0}.field label{display:block;font-size:12px;font-weight:760;color:var(--text-2);margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid var(--border);border-radius:9px;padding:10px 11px;background:white;color:var(--text)}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
+.toast{position:fixed;top:78px;right:22px;z-index:100;background:#202923;color:white;padding:11px 14px;border-radius:10px;font-size:12px;box-shadow:0 10px 35px rgba(0,0,0,.2);opacity:0;transform:translateY(-8px);pointer-events:none;transition:.2s ease}.toast.show{opacity:1;transform:translateY(0)}
+.skeleton{position:relative;overflow:hidden;background:#eceeea;border-radius:8px;color:transparent!important}.skeleton::after{content:"";position:absolute;inset:0;transform:translateX(-100%);background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);animation:shimmer 1.3s infinite}@keyframes shimmer{100%{transform:translateX(100%)}}
+@media(max-width:1120px){.golden{grid-template-columns:1fr}.golden>.golden-aside{grid-template-columns:repeat(2,minmax(0,1fr))}.grid-3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:920px){.app{display:block}.sidebar{display:none;position:fixed;z-index:70;width:275px;left:0;box-shadow:15px 0 50px rgba(0,0,0,.2)}.sidebar.open{display:flex}.mobile-topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:#202923;color:white;position:sticky;top:0;z-index:45}.mobile-menu{border:0;background:rgba(255,255,255,.08);color:white;border-radius:8px;padding:7px 10px;cursor:pointer}.topbar{display:none}.content{padding:24px 18px 68px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.calendar-desktop{display:none}.mobile-agenda{display:block}}
+@media(max-width:720px){.page-head{align-items:stretch}.head-actions{justify-content:flex-start}.golden>.golden-aside{grid-template-columns:1fr}.grid-2,.grid-3{grid-template-columns:1fr}.callouts{grid-template-columns:1fr}.callout{flex-direction:column;align-items:flex-start}.list-row{grid-template-columns:58px minmax(0,1fr)}.list-tags{grid-column:1/-1;justify-content:flex-start;padding-left:65px}.service-row{grid-template-columns:1fr auto}.service-row>span:nth-of-type(1),.service-row>span:nth-of-type(2){display:none}.demo-panel{right:10px;bottom:10px;width:calc(100vw - 20px)}.detail-grid{grid-template-columns:1fr}}
+@media(max-width:500px){.content{padding-left:13px;padding-right:13px}.page-head{flex-direction:column}.stats{gap:9px}.stat{padding:14px}.stat-value{font-size:23px}.section-head{align-items:flex-start;flex-direction:column}.toolbar{align-items:stretch}.toolbar-spacer{display:none}.toolbar-group{overflow:auto;flex-wrap:nowrap}.input-search{min-width:100%;width:100%}.table{min-width:650px}.drawer{top:auto;bottom:0;height:min(78vh,700px);width:100%;border-radius:18px 18px 0 0}.preview-shell{padding:10px}.site-preview{padding:22px 18px}.site-preview h3{font-size:23px}}
+
+/* Product-Maturity-Audit 36/36 — interactive prototype additions */
+.kpi-slot{position:relative}.kpi-slot::before{content:attr(data-slot);position:absolute;right:13px;top:11px;color:var(--text-3);font-size:12px;font-weight:820;letter-spacing:.08em;text-transform:uppercase}
+.legend{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:10px 15px;border-bottom:1px solid var(--border-light);background:white}
+.legend-item{display:inline-flex;align-items:center;gap:7px;color:var(--text-2);font-size:12px;font-weight:700}
+.legend-swatch{width:28px;height:16px;border-radius:5px;background:#eef5f2;border-left:4px solid var(--daily)}
+.legend-swatch.open{background:#fff7e8;border:1px dashed var(--warning-border);border-left:4px solid var(--warning-border)}
+.legend-swatch.block{border-left:4px solid #8b918a;background:repeating-linear-gradient(-45deg,#f1f1ef,#f1f1ef 4px,#e4e5e1 4px,#e4e5e1 8px)}
+.legend-swatch.pause{border-left:4px solid #8b918a;background:#ecece9}
+.multi-select-bar{display:flex;align-items:center;gap:7px;overflow:auto;padding-bottom:2px;scrollbar-width:thin}
+.confidence{display:inline-flex;align-items:center;gap:5px;border-radius:7px;padding:4px 7px;font-size:12px;font-weight:790;border:1px solid}
+.confidence.recognized{color:var(--success);background:var(--success-bg);border-color:var(--success-border)}
+.confidence.review{color:var(--warning);background:var(--warning-bg);border-color:var(--warning-border)}
+.confidence.missing{color:var(--danger);background:var(--danger-bg);border-color:#e8b0b0}
+.audit-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.audit-item{display:flex;gap:9px;align-items:flex-start;padding:10px;border:1px solid var(--border);border-radius:9px;background:var(--surface-subtle);font-size:12px}
+.audit-num{width:23px;height:23px;display:grid;place-items:center;border-radius:50%;background:var(--success-bg);border:1px solid var(--success-border);color:var(--success);font-weight:850;flex:0 0 auto}
+.audit-group-title{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);margin:18px 0 8px}
+.demo-audit-actions{display:flex;gap:7px;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12)}
+.demo-audit-actions .state-btn{flex:1}
+.command-wrap{position:fixed;inset:0;z-index:120;background:rgba(20,25,21,.48);display:none;align-items:flex-start;justify-content:center;padding:10vh 18px 18px}
+.command-wrap.open{display:flex}
+.command{width:min(680px,100%);max-height:75vh;background:white;border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden;display:flex;flex-direction:column}
+.command-search{border:0;border-bottom:1px solid var(--border);padding:16px 18px;font-size:16px;outline:0}
+.command-results{overflow:auto;padding:8px}
+.command-group{padding:8px 7px 3px;color:var(--text-3);font-size:12px;font-weight:850;text-transform:uppercase;letter-spacing:.1em}
+.command-item{display:flex;align-items:center;gap:11px;width:100%;border:0;background:white;color:var(--text);text-align:left;padding:10px;border-radius:9px;cursor:pointer}
+.command-item:hover,.command-item.active{background:var(--surface-hover)}
+.command-item-icon{width:31px;height:31px;border-radius:9px;background:var(--surface-subtle);border:1px solid var(--border);display:grid;place-items:center}
+.command-item-copy{flex:1}.command-item-copy strong{display:block;font-size:12px}.command-item-copy span{display:block;color:var(--text-3);font-size:12px;margin-top:2px}
+.scan-indicator{display:none;align-items:center;gap:7px;border:1px solid var(--info-border);background:var(--info-bg);color:var(--info);border-radius:999px;padding:6px 9px;font-size:12px;font-weight:780;cursor:pointer}
+.scan-indicator.show{display:inline-flex}.scan-pulse{width:7px;height:7px;border-radius:50%;background:var(--info-border);animation:pulse 1.2s infinite}@keyframes pulse{50%{opacity:.35}}
+.inline-details{margin-top:8px}.inline-details summary{cursor:pointer;font-size:12px;font-weight:760}.inline-details p{font-size:12px;color:var(--text-2)}
+.bulk-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:10px 15px;background:var(--brand-soft);border-bottom:1px solid #ead9b8}
+.duplicate-box{padding:14px;border:1px solid var(--warning-border);background:var(--warning-bg);border-radius:11px}
+.duplicate-pair{display:grid;grid-template-columns:1fr auto 1fr;gap:9px;align-items:center;margin-top:10px}
+.safe-default{border-left:5px solid var(--danger-border)}
+.status-model{display:grid;gap:10px}.status-axis{padding:11px;border:1px solid var(--border);border-radius:9px;background:var(--surface-subtle)}.status-axis strong{font-size:12px}.status-axis div{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
+.undo-toast{display:flex;align-items:center;gap:12px}.undo-toast button{border:0;background:transparent;color:#f1dfbd;font-weight:800;cursor:pointer;padding:0}
+.profile-menu{position:fixed;right:22px;top:60px;z-index:70;width:190px;background:white;border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow-lg);display:none;padding:6px}.profile-menu.open{display:block}.profile-menu button{display:block;width:100%;border:0;background:transparent;text-align:left;padding:9px 10px;border-radius:8px;cursor:pointer;color:var(--text-2);font-size:12px}.profile-menu button:hover{background:var(--surface-hover)}
+@media(max-width:720px){.audit-grid{grid-template-columns:1fr}.duplicate-pair{grid-template-columns:1fr}.duplicate-pair>span{text-align:center}.command-wrap{padding-top:5vh}.kpi-slot::before{display:none}}
+
+
+/* Final visual-quality pass */
+:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 38%,transparent);outline-offset:2px}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 38%,transparent);outline-offset:2px}
+.demo-close,.drawer-close,.modal-close{width:40px;height:40px;display:grid;place-items:center;border-radius:9px;line-height:1}
+.demo-close:hover,.drawer-close:hover,.modal-close:hover{background:rgba(255,255,255,.08)}
+.drawer-close:hover,.modal-close:hover{background:var(--surface-hover)}
+.state-btn{min-height:36px}
+.table-wrap{overscroll-behavior-inline:contain;scrollbar-gutter:stable}
+.desktop-record-table{display:block}.mobile-record-list{display:none}
+.mobile-record-card{width:100%;border:0;border-bottom:1px solid var(--border-light);background:white;color:var(--text);display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px 14px;text-align:left;cursor:pointer}
+.mobile-record-card:last-child{border-bottom:0}.mobile-record-card:hover{background:var(--surface-hover)}
+.mobile-record-time{display:grid;gap:2px}.mobile-record-time strong{font-size:13px}.mobile-record-time small,.mobile-record-main small,.mobile-record-contact,.customer-record-meta small{font-size:12px;color:var(--text-3)}
+.mobile-record-main{min-width:0}.mobile-record-main>strong{display:block;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mobile-record-main small,.mobile-record-contact{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+.mobile-record-status{justify-self:end}.customer-record{grid-template-columns:minmax(0,1fr) auto}.customer-record-meta{display:grid;justify-items:end;gap:2px}.customer-record-meta>strong{font-size:14px}
+.calendar-filter-toolbar{align-items:flex-start}.calendar-staff-wrap{min-width:0;flex:1}.calendar-filter-help{margin-top:7px;color:var(--text-3);font-size:12px}.mobile-filter-help{display:none}.calendar-team-search{width:180px}
+.calendar-legend{align-items:center}
+.service-main{min-width:0}.service-main strong{overflow-wrap:anywhere}.service-mobile-meta{display:none!important}.service-status{display:flex;gap:6px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+.profile-card{display:grid;grid-template-columns:46px minmax(0,1fr) auto;align-items:start}.profile-main{min-width:0}.profile-meta{min-width:0}.profile-meta .badge{max-width:100%;white-space:normal;line-height:1.25}.profile-actions{display:flex;flex-direction:column;gap:5px;align-items:flex-end}
+.mobile-schedule{display:none}.mobile-schedule-card{background:white;border-bottom:1px solid var(--border-light);padding:14px}.mobile-schedule-card:last-child{border-bottom:0}.mobile-schedule-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}.mobile-schedule-days{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}.mobile-schedule-days>div{border:1px solid var(--border);background:var(--surface-subtle);border-radius:8px;padding:7px 5px;text-align:center;min-width:0}.mobile-schedule-days span{display:block;color:var(--text-3);font-size:12px;text-transform:uppercase;font-weight:800}.mobile-schedule-days strong{display:block;margin-top:4px;font-size:12px;overflow-wrap:anywhere}
+.bar-chart{height:250px;padding:24px 8px 28px}
+.btn-sm{min-height:38px}
+
+@media(max-width:1200px) and (min-width:721px){
+ .profile-card{grid-template-columns:46px minmax(0,1fr)}
+ .profile-actions{grid-column:2;flex-direction:row;align-items:flex-start;flex-wrap:wrap;margin-top:7px}
+}
+@media(max-width:920px){
+ .demo-panel{display:none}.demo-open{display:block}.content{padding-bottom:92px}
+ .calendar-filter-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center}
+ .calendar-staff-wrap{grid-column:1/-1;width:100%}.calendar-team-search{width:100%}.calendar-save-view{white-space:nowrap}
+ .desktop-filter-help{display:none}.mobile-filter-help{display:inline}
+ .calendar-legend{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.calendar-legend>span:last-child{grid-column:1/-1;margin-left:0!important}
+}
+@media(max-width:720px){
+ .desktop-record-table{display:none}.mobile-record-list{display:block}
+ .desktop-schedule{display:none}.mobile-schedule{display:block}
+ .profile-card{grid-template-columns:46px minmax(0,1fr)}
+ .profile-actions{grid-column:1/-1;flex-direction:row;align-items:center;justify-content:flex-end;flex-wrap:wrap;padding-top:4px}
+ .service-row{grid-template-columns:minmax(0,1fr);gap:8px;padding:13px 14px}.service-duration,.service-price,.service-category{display:none!important}.service-mobile-meta{display:block!important}.service-status{justify-content:flex-start}
+ .pagination{align-items:flex-start;gap:10px;flex-direction:column}.pagination>div{display:flex;gap:6px;width:100%}.pagination .btn{flex:1}
+ .toolbar-group{max-width:100%;padding-bottom:2px}
+ .mobile-record-card{min-height:74px}
+}
+@media(max-width:500px){
+ .state-btn{min-height:40px}.demo-open{min-height:44px;right:12px;bottom:12px}
+ .calendar-filter-toolbar{grid-template-columns:1fr}.calendar-save-view{width:100%}
+ .calendar-legend{grid-template-columns:1fr 1fr}.legend-item{font-size:12px}
+ .mobile-record-card{grid-template-columns:54px minmax(0,1fr)}.mobile-record-status{grid-column:2;justify-self:start}.customer-record{grid-template-columns:minmax(0,1fr) auto}.customer-record-meta{grid-column:auto;justify-self:end}
+ .head-actions{width:100%}.head-actions .btn,.head-actions .select{flex:1}
+}
+
+
+/* Non-obstructive demo controls */
+.demo-panel{display:none;top:76px;right:18px;bottom:auto;max-height:calc(100vh - 94px);overflow:auto}
+.demo-open{display:none!important}
+.mobile-top-actions{display:flex;align-items:center;gap:7px}.mobile-tool{border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:white;border-radius:8px;padding:7px 9px;min-height:38px;cursor:pointer}
+.service-main strong{display:block}.service-main .service-category{display:block;margin-top:2px;color:var(--text-3);font-size:12px}
+@media(max-width:920px){.demo-panel{top:70px;right:10px;bottom:auto;width:calc(100vw - 20px);max-height:calc(100vh - 82px)}.content{padding-bottom:68px}.multi-select-bar{-webkit-mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 28px),transparent 100%);mask-image:linear-gradient(to right,#000 0,#000 calc(100% - 28px),transparent 100%);padding-right:30px}}
+
+
+.mobile-avatar{width:38px;height:38px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:#ded9cc;color:#4a4437;font-size:12px;font-weight:850;cursor:pointer}
+
+@media(max-height:720px){
+  .sidebar{padding-top:10px;padding-bottom:10px}
+  .sidebar .brand{padding-bottom:10px}
+  .nav-group{margin:7px 0 10px}
+  .nav-label{padding-bottom:4px;font-size:12px}
+  .nav-item{min-height:35px;padding:7px 9px;font-size:12px}
+  .sidebar-footer{padding-top:8px;padding-bottom:4px;font-size:12px}
+}
+@media(max-height:560px){
+  .sidebar-footer{display:none}
+  .sidebar .brand{padding-bottom:6px}
+  .nav-group{margin:4px 0 6px}
+  .nav-item{min-height:31px;padding:5px 8px}
+}
+
+
+/* Heute: klare operative Hierarchie statt konkurrierender Einzelkarten */
+.today-overview{display:grid;grid-template-columns:1.25fr repeat(3,minmax(0,1fr));margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.today-overview-cell{min-width:0;padding:15px 18px 16px;border-right:1px solid var(--border-light)}
+.today-overview-cell:last-child{border-right:0}
+.today-overview-cell--attention{background:linear-gradient(180deg,#fff 0%,#fffaf0 100%)}
+.today-overview-label{display:block;color:var(--text-3);font-size:12px;font-weight:830;letter-spacing:.08em;text-transform:uppercase}
+.today-overview-value{display:block;margin-top:7px;color:var(--text);font-size:22px;font-weight:780;letter-spacing:-.025em;line-height:1.12;font-variant-numeric:tabular-nums}
+.today-overview-cell:first-child .today-overview-value{font-size:26px}
+.today-overview-detail{display:block;margin-top:5px;color:var(--text-2);font-size:12px;line-height:1.4}
+.today-overview-cell--attention .today-overview-detail{color:var(--warning)}
+.today-workspace{display:grid;grid-template-columns:minmax(0,1fr) 330px;grid-template-areas:"plan priority" "plan upcoming";gap:14px 18px;align-items:start}
+.today-plan-card{grid-area:plan}.today-priority-card{grid-area:priority}.today-upcoming-card{grid-area:upcoming}.today-plan-head{align-items:center}
+.today-plan-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}
+.today-rail{display:grid;gap:14px}
+.today-priority-list{display:grid}
+.today-priority-item{width:100%;display:grid;grid-template-columns:32px minmax(0,1fr) auto;gap:10px;align-items:center;padding:13px 15px;border:0;border-bottom:1px solid var(--border-light);background:white;color:inherit;text-align:left;cursor:pointer}
+.today-priority-item:last-child{border-bottom:0}
+.today-priority-item:hover{background:var(--surface-hover)}
+.today-priority-icon{width:32px;height:32px;border-radius:9px;display:grid;place-items:center;background:var(--warning-bg);color:var(--warning);font-size:13px;font-weight:850}
+.today-priority-icon.online{background:var(--online-bg);color:var(--online)}
+.today-priority-copy{min-width:0}
+.today-priority-copy strong{display:block;font-size:12px}
+.today-priority-copy span{display:block;margin-top:2px;color:var(--text-3);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.today-priority-empty{padding:19px 16px;text-align:center}
+.today-priority-empty strong{display:block;font-size:13px}
+.today-priority-empty span{display:block;margin-top:4px;color:var(--text-3);font-size:12px}
+.today-upcoming-row{display:grid;grid-template-columns:46px minmax(0,1fr);gap:10px;padding:11px 15px;border-bottom:1px solid var(--border-light);cursor:pointer}
+.today-upcoming-row:hover{background:var(--surface-hover)}
+.today-upcoming-row:last-of-type{border-bottom:0}
+.today-upcoming-time{font-size:12px;font-weight:780;color:var(--text-2)}
+.today-upcoming-copy{min-width:0}
+.today-upcoming-copy strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.today-upcoming-copy span{display:block;margin-top:2px;color:var(--text-3);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.today-rail-footer{padding:11px 15px;border-top:1px solid var(--border-light);background:var(--surface-subtle)}
+.today-rail-footer .btn{width:100%}
+@media(max-width:1120px){.today-workspace{grid-template-columns:1fr 1fr;grid-template-areas:"priority upcoming" "plan plan"}.today-rail{display:contents}}
+@media(max-width:760px){.today-workspace{grid-template-columns:1fr;grid-template-areas:"priority" "plan" "upcoming"}.today-rail{display:contents}.today-overview{grid-template-columns:repeat(2,minmax(0,1fr))}.today-overview-cell:nth-child(2){border-right:0}.today-overview-cell:nth-child(-n+2){border-bottom:1px solid var(--border-light)}.today-plan-head{align-items:flex-start}.today-plan-actions{justify-content:flex-start;width:100%}.today-rail{grid-template-columns:1fr}}
+@media(max-width:500px){.today-overview-cell{padding:13px 14px}.today-overview-value,.today-overview-cell:first-child .today-overview-value{font-size:20px}.today-overview-detail{font-size:12px}.today-plan-actions .btn{flex:1}.today-priority-item{grid-template-columns:30px minmax(0,1fr) auto;padding-left:13px;padding-right:13px}.today-priority-card>.section-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start}.today-priority-card>.section-head>div{min-width:0}.today-priority-card>.section-head>.badge{grid-column:2;grid-row:1}}
+
+
+/* Interface-Reife: gekapselte Komponenten, Semantik und belastbare Typografie */
+.sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+.ui-icon{width:1.15em;height:1.15em;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+.nav-icon{display:grid;place-items:center}.nav-icon .ui-icon{width:18px;height:18px}
+.nav-status-label{margin-left:auto;flex:0 0 auto;max-width:78px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:2px 6px;font-size:12px;font-weight:760;line-height:1.25;color:#dce5de;background:rgba(255,255,255,.06)}
+.nav-status-label--attention{border-color:rgba(217,154,26,.55);color:#f4cf82;background:rgba(217,154,26,.12)}
+.nav-status-label--blocked{border-color:rgba(220,38,38,.55);color:#f5a3a3;background:rgba(220,38,38,.12)}
+.nav-status-label--info{border-color:rgba(142,183,208,.55);color:#c9e3f2;background:rgba(142,183,208,.12)}
+.nav-item.active .nav-status-label--attention{border-color:#b87800;color:#684000;background:#fff4d6}
+.nav-item.active .nav-status-label--blocked{border-color:#b91c1c;color:#7f1d1d;background:#fee2e2}
+.nav-item.active .nav-status-label--info{border-color:#4f7f99;color:#284e63;background:#e5f2f8}
+.interactive-reset{appearance:none;-webkit-appearance:none;width:100%;border:0;background:transparent;color:inherit;font:inherit;text-align:inherit;padding:0;margin:0;cursor:pointer}
+.interactive-reset:focus-visible,.table-action:focus-visible,.cal-event:focus-visible,.settings-row:focus-visible,.profile-card:focus-visible{outline:3px solid color-mix(in srgb,var(--brand) 35%,transparent);outline-offset:-3px}
+.table-action{border:1px solid var(--border);background:var(--surface);color:var(--text-2);border-radius:8px;padding:7px 10px;font-weight:720;cursor:pointer;white-space:nowrap}
+.table-action:hover{background:var(--surface-hover)}
+.cal-event{width:100%;border-top:0;border-right:0;border-bottom:0;text-align:left;font:inherit;cursor:pointer}
+.compact-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:18px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
+.compact-summary-item{min-width:0;padding:14px 16px;border-right:1px solid var(--border-light)}
+.compact-summary-item:last-child{border-right:0}.compact-summary-item--attention{background:#fffaf0}
+.compact-summary-label{display:block;color:var(--text-3);font-size:12px;font-weight:800;letter-spacing:.055em;text-transform:uppercase}
+.compact-summary-value{display:block;margin-top:5px;font-size:20px;font-weight:780;letter-spacing:-.02em;line-height:1.2}
+.compact-summary-detail{display:block;margin-top:4px;color:var(--text-2);font-size:12px;line-height:1.4}
+.decision-panel{display:grid;grid-template-columns:42px minmax(0,1fr) auto;gap:13px;align-items:center;margin-bottom:16px;padding:16px 18px;border:1px solid var(--warning-border);border-radius:var(--radius);background:linear-gradient(180deg,#fffdf7,#fff8e8);color:var(--text)}
+.decision-panel__icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--warning-bg);color:var(--warning)}
+.decision-panel h2{margin:0;font-size:16px}.decision-panel p{margin:4px 0 0;color:var(--text-2);font-size:13px}
+.analytics-decision{display:grid;grid-template-columns:minmax(0,1.2fr) repeat(2,minmax(0,.8fr));gap:12px;margin-bottom:16px}
+.analytics-decision__lead{padding:18px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface);box-shadow:var(--shadow)}
+.analytics-decision__lead h2{margin:0;font-size:17px}.analytics-decision__lead p{margin:6px 0 0;color:var(--text-2);font-size:13px}
+.analytics-decision__metric{padding:15px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface-subtle)}
+.analytics-decision__metric span{display:block;color:var(--text-3);font-size:12px;font-weight:760;text-transform:uppercase;letter-spacing:.04em}.analytics-decision__metric strong{display:block;margin-top:5px;font-size:19px}.analytics-decision__metric small{display:block;margin-top:4px;color:var(--text-2);font-size:12px}
+[role="dialog"]:focus{outline:none}
+.toast[aria-live]{pointer-events:none}.toast[aria-live] button{pointer-events:auto}
+@media(max-width:920px){.compact-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.compact-summary-item:nth-child(2){border-right:0}.compact-summary-item:nth-child(-n+2){border-bottom:1px solid var(--border-light)}.analytics-decision{grid-template-columns:1fr 1fr}.analytics-decision__lead{grid-column:1/-1}}
+@media(max-width:620px){.compact-summary{grid-template-columns:1fr}.compact-summary-item{border-right:0;border-bottom:1px solid var(--border-light);display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:14px;align-items:center}.compact-summary-item:last-child{border-bottom:0}.compact-summary-value{grid-column:2;grid-row:1/3;text-align:right}.compact-summary-detail{grid-column:1}.decision-panel{grid-template-columns:38px minmax(0,1fr)}.decision-panel .btn{grid-column:1/-1;width:100%}.analytics-decision{grid-template-columns:1fr}.analytics-decision__lead{grid-column:auto}}
+
+
+
+@media(max-width:500px){
+ .availability-toolbar{align-items:flex-start}
+ .availability-toolbar .toolbar-group{width:100%;overflow:visible;flex-wrap:wrap}
+ .availability-toolbar>.btn{width:100%}
+}
+
+@media(max-height:500px){
+  .sidebar{padding-top:6px;padding-bottom:6px}
+  .sidebar .brand{padding-bottom:3px}
+  .nav-label{display:none}
+  .nav-group{margin:2px 0}
+  .nav-item{min-height:31px;padding:4px 7px}
+}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
+
+
+@media(max-width:350px){.mobile-topbar{padding-left:10px;padding-right:10px}.mobile-top-actions{gap:5px}.mobile-tool{padding-left:8px;padding-right:8px}.mobile-menu{width:38px;padding-left:0;padding-right:0}.brand{font-size:14px}.brand-mark{width:29px;height:29px}}
+
+
+/* CARD-SAFE-INSET START */
+:root{
+  --card-inset:20px;
+  --card-inset-compact:16px;
+}
+
+/* Every card-like surface receives a predictable breathing zone. */
+.card-padded,
+.analytics-decision__lead,
+.analytics-decision__metric,
+.decision-panel,
+.duplicate-box,
+.preview-shell,
+.widget-head,
+.widget-body{
+  padding:var(--card-inset);
+}
+
+/* Full-bleed card regions keep their separators, but their content no longer hugs the edge. */
+.section-head{padding:var(--card-inset)}
+.toolbar{padding:16px var(--card-inset)}
+.table th,.table td{padding:14px var(--card-inset)}
+.list-row{padding:16px var(--card-inset)}
+.service-row{padding:16px var(--card-inset)}
+.settings-row{padding:16px var(--card-inset)}
+.bulk-bar{padding:12px var(--card-inset)}
+.legend{padding:12px var(--card-inset)}
+.pagination{padding:16px var(--card-inset)}
+.area-body{padding:20px var(--card-inset)}
+.callout{padding:var(--card-inset)}
+.empty{padding:48px var(--card-inset)}
+.today-priority-item{padding:16px var(--card-inset)}
+.today-upcoming-row{padding:14px var(--card-inset)}
+.today-rail-footer{padding:16px var(--card-inset)}
+.mobile-record-card{padding:16px var(--card-inset)}
+.mobile-schedule-card{padding:var(--card-inset)}
+.profile-card{padding:var(--card-inset)}
+.compact-summary-item{padding:16px var(--card-inset)}
+.today-overview-cell{padding:16px var(--card-inset)}
+.status-axis{padding:var(--card-inset-compact)}
+.detail-box{padding:var(--card-inset-compact)}
+
+/* Preview cards use the same horizontal inset as product cards. */
+.browser-bar{padding-inline:var(--card-inset-compact)}
+.site-preview{padding:32px var(--card-inset)}
+.widget-step{padding:12px 0}
+
+/* Card-contained schedules and records keep at least one inset before the first readable element. */
+.mobile-schedule-days{gap:8px}
+.mobile-schedule-days>div{padding:8px}
+.agenda-item{padding:12px 0}
+
+@media(max-width:620px){
+  :root{--card-inset:16px;--card-inset-compact:16px}
+  .section-head{padding:16px}
+  .toolbar{padding:16px}
+  .table th,.table td{padding-inline:16px}
+  .list-row,.service-row,.settings-row,.today-priority-item,.mobile-record-card{padding-inline:16px}
+  .today-upcoming-row,.today-rail-footer,.bulk-bar,.legend,.pagination{padding-inline:16px}
+  .compact-summary-item,.today-overview-cell{padding:16px}
+  .site-preview{padding:24px 16px}
+}
+/* CARD-SAFE-INSET END */
+
+</style>
+</head>
+<body>
+<div class="mobile-topbar">
+  <div class="brand" style="padding:0"><span class="brand-mark">G</span> Gasserwerk</div>
+  <div class="mobile-top-actions"><button class="mobile-tool" onclick="openDemoPanel()" aria-label="Demo-Zustände öffnen">Demo</button><button class="mobile-avatar" onclick="toggleProfileMenu(event)" aria-label="Profilmenü öffnen" aria-haspopup="menu" aria-controls="profileMenu" aria-expanded="false">SG</button><button class="mobile-menu" onclick="toggleMenu()" aria-label="Navigation öffnen">☰</button></div>
+</div>
+<div class="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand"><span class="brand-mark">G</span> Gasserwerk</div>
+    <nav id="navigation"></nav>
+    <div class="sidebar-footer">Vollständige lokale UI-Demo<br>Keine Datenbank · keine Speicherung</div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="crumb" id="crumb">Dashboard / Heute</div>
+      <div class="top-actions">
+        <button id="scanIndicator" class="scan-indicator" onclick="navigateToScan()"><span class="scan-pulse"></span><span id="scanIndicatorText">Scan läuft</span></button>
+        <button class="btn btn-secondary btn-sm demo-top-button" onclick="openDemoPanel()">Demo-Zustände</button>
+        <div class="search-wrap"><label class="sr-only" for="globalSearch">Globale Suche und Aktionen</label><input id="globalSearch" aria-label="Globale Suche und Aktionen" class="search" placeholder="Suchen oder Aktion starten" onfocus="openCommandPalette()" onkeydown="globalSearch(event)"><span class="search-key">⌘K</span></div>
+        <button type="button" class="avatar" onclick="toggleProfileMenu(event)" aria-label="Profilmenü öffnen" aria-haspopup="menu" aria-controls="profileMenu" aria-expanded="false">SG</button>
+      </div>
+    </header>
+    <div class="content" id="pageContent"></div>
+  </main>
+</div>
+
+<div class="demo-panel" id="demoPanel">
+  <div class="demo-panel-head">
+    <div><strong>Demo-Zustand</strong><p id="demoHint">Zustände dieser Seite wechseln</p></div>
+    <button class="demo-close" onclick="closeDemoPanel()" title="Schliessen">×</button>
+  </div>
+  <div class="state-buttons" id="stateButtons"></div>
+  <div class="demo-audit-actions">
+    <button class="state-btn" onclick="openAuditCoverage()">✓ Audit 36/36</button>
+    <button class="state-btn" onclick="openStatusModel()">Statusmodell</button>
+  </div>
+</div>
+<button class="demo-open" id="demoOpen" onclick="openDemoPanel()">Demo-Zustände</button>
+
+<div class="backdrop" id="drawerBackdrop" onclick="drawerBackdropClose(event)">
+  <aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" tabindex="-1"></aside>
+</div>
+<div class="modal-wrap" id="modalWrap" onclick="modalBackdropClose(event)">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1"></div>
+</div>
+<div class="command-wrap" id="commandWrap" onclick="commandBackdropClose(event)">
+  <div class="command" role="dialog" aria-modal="true" aria-labelledby="commandTitle" tabindex="-1"><h2 id="commandTitle" class="sr-only">Suche und Aktionen</h2><label class="sr-only" for="commandSearch">Kunde, Termin, Person, Leistung, Standort oder Aktion suchen</label>
+    <input id="commandSearch" aria-label="Kunde, Termin, Person, Leistung, Standort oder Aktion suchen" class="command-search" placeholder="Kunde, Termin, Person, Leistung, Standort oder Aktion …" oninput="renderCommandResults(this.value)" onkeydown="commandKeydown(event)">
+    <div class="command-results" id="commandResults"></div>
+  </div>
+</div>
+<div class="profile-menu" id="profileMenu" role="menu" aria-label="Profilmenü">
+  <button role="menuitem" onclick="demoToast('Profil geöffnet')">Profil</button>
+  <button role="menuitem" onclick="navigate('settings');closeProfileMenu()">Einstellungen</button>
+  <button role="menuitem" onclick="demoToast('Abmeldung wäre hier verfügbar')">Abmelden</button>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<script>
+const pages = {
+  today:{label:'Heute',icon:'home',group:'Tagesgeschäft'},
+  bookings:{label:'Buchungen',icon:'bookings',group:'Tagesgeschäft'},
+  calendar:{label:'Kalender',icon:'calendar',group:'Tagesgeschäft',statusTone:'info',statusLabel:'Info',statusTitle:'Mobile Tagesansicht und Mehrfachfilter'},
+  customers:{label:'Kunden',icon:'customers',group:'Tagesgeschäft'},
+  offer:{label:'Angebot & Buchbarkeit',icon:'offer',group:'Mein Betrieb',statusTone:'attention',statusLabel:'Offen',statusTitle:'Eine Abhängigkeit ist offen'},
+  team:{label:'Team',icon:'team',group:'Mein Betrieb'},
+  locations:{label:'Standorte',icon:'locations',group:'Mein Betrieb'},
+  availability:{label:'Verfügbarkeit',icon:'availability',group:'Mein Betrieb',statusTone:'attention',statusLabel:'1 Konflikt',statusTitle:'Arbeitszeit prüfen'},
+  website:{label:'Website',icon:'website',group:'Online-Auftritt',statusTone:'attention',statusLabel:'2 offen',statusTitle:'Website-Abweichungen'},
+  widget:{label:'Online-Buchung',icon:'widget',group:'Online-Auftritt'},
+  analytics:{label:'Analytics',icon:'analytics',group:'Online-Auftritt'},
+  settings:{label:'Einstellungen',icon:'settings',group:null}
+};
+const groups=['Tagesgeschäft','Mein Betrieb','Online-Auftritt'];
+let activePage=(location.hash||'#today').slice(1);
+if(!pages[activePage]) activePage='today';
+let pageState='normal';
+
+const bookings=[
+ {id:1,time:'09:00',date:'Heute',phase:'past',name:'Anna Keller',service:'Waschen, Schneiden, Föhnen',duration:'60 Min.',price:'CHF 98',staff:'Belinda',status:'Bestätigt',tone:'success',phone:'+41 79 123 45 67',email:'anna@example.ch',note:'Kundin wünscht einen ruhigen Termin.'},
+ {id:2,time:'10:30',date:'Heute',phase:'past',name:'Lea Schmid',service:'Balayage',duration:'180 Min.',price:'CHF 255',staff:'Elma',status:'Bestätigt',tone:'success',phone:'+41 78 222 17 89',email:'lea@example.ch',note:'Farbberatung vor Beginn einplanen.'},
+ {id:3,time:'14:15',date:'Heute',phase:'future',name:'Nina Frei',service:'Ansatzfarbe',duration:'90 Min.',price:'CHF 145',staff:'Laura',status:'Bestätigt',tone:'success',phone:'+41 76 888 12 10',email:'nina@example.ch',note:'Letzter Termin kurzfristig abgesagt.'},
+ {id:4,time:'16:00',date:'Heute',phase:'future',name:'Sofia Meier',service:'Herrenhaarschnitt',duration:'45 Min.',price:'CHF 62',staff:'Belinda',status:'Bestätigt',tone:'success',phone:'+41 79 455 29 40',email:'sofia@example.ch',note:''},
+ {id:5,time:'09:30',date:'Morgen',phase:'future',name:'Mara Graf',service:'Farbe & Schnitt',duration:'150 Min.',price:'CHF 220',staff:'Elma',status:'Bestätigt',tone:'success',phone:'+41 77 314 90 22',email:'mara@example.ch',note:''},
+ {id:6,time:'11:45',date:'Morgen',phase:'future',name:'Jonas Wyss',service:'Herrenhaarschnitt',duration:'45 Min.',price:'CHF 62',staff:'Laura',status:'Anfrage',tone:'warning',phone:'+41 76 511 08 31',email:'jonas@example.ch',note:'Wartet auf Bestätigung.'},
+ {id:7,time:'17:30',date:'Gestern',phase:'past',name:'M. A.',service:'Styling',duration:'45 Min.',price:'CHF 78',staff:'Nadine',status:'Erledigt',tone:'info',phone:'079 12',email:'fehlt',note:'Datenqualität prüfen: Name und Telefonnummer unvollständig.',dataIssue:true}
+];
+const customers=[
+ {id:1,name:'Anna Keller',contact:'+41 79 123 45 67',email:'anna@example.ch',visits:14,last:'20.07.2026',value:'CHF 1’482',status:'Aktiv'},
+ {id:2,name:'Lea Schmid',contact:'+41 78 222 17 89',email:'lea@example.ch',visits:8,last:'20.07.2026',value:'CHF 1’120',status:'Aktiv'},
+ {id:3,name:'Nina Frei',contact:'+41 76 888 12 10',email:'nina@example.ch',visits:3,last:'20.07.2026',value:'CHF 430',status:'Prüfen'},
+ {id:4,name:'Sofia Meier',contact:'+41 79 455 29 40',email:'sofia@example.ch',visits:21,last:'20.07.2026',value:'CHF 2’310',status:'Stammkundin'},
+ {id:5,name:'Mara Graf',contact:'+41 77 314 90 22',email:'mara@example.ch',visits:5,last:'14.07.2026',value:'CHF 875',status:'Aktiv'},
+ {id:6,name:'M. A.',contact:'079 12',email:'fehlt',visits:1,last:'19.07.2026',value:'CHF 78',status:'Daten prüfen',dataIssue:true}
+];
+const staff=[
+ {id:1,name:'Belinda Gerber',role:'Stv. Geschäftsführerin',locations:'Grenchen · Solothurn',services:'Damen · Herren · Coloration',status:'Buchbar',initials:'BG'},
+ {id:2,name:'Elma Rossi',role:'Senior Coloristin',locations:'Grenchen',services:'Coloration · Balayage · Styling',status:'Buchbar',initials:'ER'},
+ {id:3,name:'Laura Frei',role:'Stylistin',locations:'Solothurn',services:'Damen · Herren · Styling',status:'Unvollständig',initials:'LF'},
+ {id:4,name:'Nadine Keller',role:'Lernende',locations:'Grenchen',services:'Waschen · Föhnen',status:'Nur intern',initials:'NK'}
+];
+const services=[
+ {name:'Waschen, Schneiden, Föhnen',category:'Damen',duration:'60 Min.',price:'CHF 98',status:'Buchbar'},
+ {name:'Balayage',category:'Coloration',duration:'180 Min.',price:'ab CHF 255',status:'Buchbar'},
+ {name:'Ansatzfarbe',category:'Coloration',duration:'90 Min.',price:'CHF 145',status:'Buchbar'},
+ {name:'Herrenhaarschnitt',category:'Herren',duration:'45 Min.',price:'CHF 62',status:'Buchbar'},
+ {name:'Brautstyling',category:'Styling',duration:'120 Min.',price:'CHF 210',status:'Prüfen'}
+];
+const locations=[
+ {name:'Grenchen',address:'Bettlachstrasse 8, 2540 Grenchen',staff:3,services:12,status:'Im Widget sichtbar'},
+ {name:'Solothurn',address:'Hauptgasse 44, 4500 Solothurn',staff:2,services:9,status:'Im Widget sichtbar'}
+];
+const STATUS_MODEL={
+  record:['Entwurf','Aktiv','Deaktiviert'],
+  visibility:['Nicht sichtbar','Sichtbar'],
+  bookability:['Unvollständig','Buchbar','Pausiert'],
+  appointment:['Anfrage','Bestätigt','Erledigt','No-Show','Abgesagt']
+};
+let calendarSelected=new Set(['Belinda','Elma','Laura','Nadine']);
+let calendarStaffQuery='';
+let calendarLocation='Alle Standorte';
+const demoStorage={
+ getItem(key){try{return window.localStorage.getItem(key)}catch{return null}},
+ setItem(key,value){try{window.localStorage.setItem(key,value)}catch{}},
+ removeItem(key){try{window.localStorage.removeItem(key)}catch{}}
+};
+let scanPhase=Number(demoStorage.getItem('gwsDemoScanPhase')||5);
+let scanTimer=null;
+let commandIndex=0;
+
+
+
+const ICON_PATHS={
+ home:'<path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10.5V20h13v-9.5"/><path d="M9.5 20v-6h5v6"/>',
+ bookings:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/>',
+ calendar:'<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 3v4M17 3v4M3 10h18"/>',
+ customers:'<path d="M16 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9.5" cy="7" r="4"/><path d="M16 4.5a4 4 0 0 1 0 7.5M21 21v-2a4 4 0 0 0-3-3.87"/>',
+ offer:'<path d="m12 3 8 6-8 6-8-6 8-6Z"/><path d="m4 13 8 6 8-6"/>',
+ team:'<circle cx="9" cy="7" r="4"/><path d="M3 21v-2a6 6 0 0 1 12 0v2M17 8h4M19 6v4"/>',
+ locations:'<path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/>',
+ availability:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2M8 3h8"/>',
+ website:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/>',
+ widget:'<path d="M14 3h7v7M10 14 21 3"/><path d="M21 14v5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5"/>',
+ analytics:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>',
+ settings:'<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.83 2.83-.06-.06A1.7 1.7 0 0 0 15 19.4a1.7 1.7 0 0 0-1 .6 1.7 1.7 0 0 0-.4 1.1V21h-4v-.1A1.7 1.7 0 0 0 8.6 19.4a1.7 1.7 0 0 0-1.88.34l-.06.06-2.83-2.83.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-.6-1 1.7 1.7 0 0 0-1.1-.4H3v-4h.1A1.7 1.7 0 0 0 4.6 8.6a1.7 1.7 0 0 0-.34-1.88l-.06-.06 2.83-2.83.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1-.6 1.7 1.7 0 0 0 .4-1.1V3h4v.1A1.7 1.7 0 0 0 15.4 4.6a1.7 1.7 0 0 0 1.88-.34l.06-.06 2.83 2.83-.06.06A1.7 1.7 0 0 0 19.4 9c.14.38.35.72.6 1 .3.3.7.4 1.1.4h.1v4h-.1a1.7 1.7 0 0 0-1.7.6Z"/>',
+ plus:'<path d="M12 5v14M5 12h14"/>',
+ alert:'<path d="M12 4 3 20h18L12 4Z"/><path d="M12 9v5M12 17h.01"/>',
+ arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+ search:'<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>',
+ close:'<path d="m6 6 12 12M18 6 6 18"/>',
+ check:'<path d="m5 12 4 4L19 6"/>',
+ block:'<circle cx="12" cy="12" r="9"/><path d="M7 7l10 10"/>'
+};
+function icon(name,label=''){const title=label?`<title>${escapeHtml(label)}</title>`:'';return `<svg class="ui-icon" viewBox="0 0 24 24" aria-hidden="${label?'false':'true'}" focusable="false">${title}${ICON_PATHS[name]||ICON_PATHS.offer}</svg>`}
+function compactSummary(items){return `<section class="compact-summary" aria-label="Bereichsübersicht">${items.map(x=>`<div class="compact-summary-item ${x.tone==='attention'?'compact-summary-item--attention':''}"><span class="compact-summary-label">${x.label}</span><strong class="compact-summary-value">${x.value}</strong><span class="compact-summary-detail">${x.detail}</span></div>`).join('')}</section>`}
+
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+function renderNavigation(){
+ const nav=document.getElementById('navigation');
+ nav.innerHTML=groups.map(group=>`<div class="nav-group"><div class="nav-label">${group}</div>${
+  Object.entries(pages).filter(([,p])=>p.group===group).map(([key,p])=>`<button class="nav-item ${key===activePage?'active':''}" onclick="navigate('${key}')"><span class="nav-icon" aria-hidden="true">${icon(p.icon)}</span><span>${p.label}</span>${p.statusLabel?`<span class="nav-status-label nav-status-label--${p.statusTone}" title="${p.statusTitle||p.statusLabel}">${p.statusLabel}</span>`:''}</button>`).join('')
+ }</div>`).join('');
+}
+function navigate(page){
+ if(!pages[page])return;
+ activePage=page;pageState='normal';location.hash=page;renderNavigation();renderPage();updateScanIndicator();if(scanPhase<5)resumeScanTimer();
+ document.getElementById('sidebar').classList.remove('open');closeProfileMenu();closeCommandPalette();
+ window.scrollTo({top:0,behavior:'smooth'});
+}
+window.addEventListener('hashchange',()=>{const p=location.hash.slice(1);if(pages[p]&&p!==activePage){activePage=p;pageState='normal';renderNavigation();renderPage()}})
+function pageHeader(title,sub,actions=''){return `<div class="page-head"><div class="page-head-copy"><h1>${title}</h1><p class="subhead">${sub}</p></div><div class="head-actions">${actions}</div></div>`}
+function stat(label,value,detail,tone=''){return `<article class="stat ${tone}"><div class="stat-label">${label}</div><div class="stat-value">${value}</div><div class="stat-detail">${detail}</div></article>`}
+function badge(text,tone=''){return `<span class="badge ${tone}">${text}</span>`}
+function emptyState(icon,title,body,action='',onclick=''){return `<div class="empty"><div class="empty-icon">${icon}</div><strong>${title}</strong><p>${body}</p>${action?`<button class="btn btn-secondary" onclick="${onclick}">${action}</button>`:''}</div>`}
+function setCrumb(){document.getElementById('crumb').textContent=`Dashboard / ${pages[activePage].label}`}
+function setDemoStates(items,hint='Zustände dieser Seite wechseln'){
+ document.getElementById('demoHint').textContent=hint;
+ document.getElementById('stateButtons').innerHTML=items.map(([key,label])=>`<button class="state-btn ${pageState===key?'active':''}" onclick="setPageState('${key}')">${label}</button>`).join('');
+}
+function setPageState(s){pageState=s;renderPage()}
+function renderPage(){
+ setCrumb();renderNavigation();
+ const f=renderers[activePage]||renderToday;
+ document.getElementById('pageContent').innerHTML=f();
+ wirePage();updateScanIndicator();
+}
+function wirePage(){
+ document.querySelectorAll('[data-filter]').forEach(b=>b.addEventListener('click',()=>{b.parentElement.querySelectorAll('[data-filter]').forEach(x=>x.classList.remove('active'));b.classList.add('active')}));
+}
+function renderToday(){
+ setDemoStates([['normal','Laufender Betrieb'],['quiet','Ruhiger Tag'],['setup','Einrichtung'],['growth','Wachstum'],['loading','Loading']],'Vier stabile Slots, deren Inhalte zum Betriebszustand passen');
+ if(pageState==='loading')return pageHeader('<span class="skeleton">Heute</span>','<span class="skeleton">Montag, 20. Juli</span>','')+`<div class="today-overview">${[1,2,3,4].map(()=>`<div class="today-overview-cell"><span class="today-overview-label skeleton">Status</span><strong class="today-overview-value skeleton">000</strong><span class="today-overview-detail skeleton">Detail</span></div>`).join('')}</div><section class="today-workspace"><div class="card today-plan-card"><div class="section-head"><div><h2 class="skeleton">Tagesplan</h2><p class="skeleton">Nächster Termin</p></div></div><div style="padding:16px">${[1,2,3,4].map(()=>`<div class="skeleton" style="height:62px;margin-bottom:10px"></div>`).join('')}</div></div><div class="card today-priority-card skeleton" style="height:170px"></div><div class="card today-upcoming-card skeleton" style="height:150px"></div></section>`;
+ const state=pageState,quiet=state==='quiet',setup=state==='setup',growth=state==='growth';
+ const actions=`<button class="btn btn-primary" onclick="openModal('Neue Buchung',bookingForm())">${icon('plus')} Buchung</button>`;
+ const values=setup?[
+  ['Heute','Einrichtung','3 von 5 Schritten','Arbeitszeiten und Testbuchung fehlen','attention'],
+  ['Offene Punkte','4','konkrete Abhängigkeiten','Buchbarkeit braucht Aufmerksamkeit','attention'],
+  ['Betrieb','Nicht live','öffentliche Buchung pausiert','Sicherer Default aktiv',''],
+  ['Wachstum','—','beginnt nach der Freigabe','Noch keine Erfolgsmetrik','']
+ ]:quiet?[
+  ['Heute','0 Termine','ruhiger Tag','6 Stunden freie Kapazität',''],
+  ['Offene Punkte','0','alles ruhig','Keine Aktion erforderlich',''],
+  ['Betrieb','6 h frei','kurzfristig verfügbar','Im Kalender nutzbar',''],
+  ['Wachstum','9','Buchungen in 7 Tagen','Nächste Nachfrage sichtbar','']
+ ]:growth?[
+  ['Heute','8 Termine','davon 6 bestätigt','Nächster Termin 09:00',''],
+  ['Offene Punkte','1','eine Anfrage bestätigen','Konkrete nächste Handlung','attention'],
+  ['Betrieb','81 %','Auslastung heute','Stabiler Tagesbetrieb',''],
+  ['Wachstum','+24 %','Buchungen zum Vormonat','Nachfrage entwickelt sich','']
+ ]:[
+  ['Heute','6 Termine','davon 4 bestätigt','Nächster Termin 09:00',''],
+  ['Offene Punkte','2 offen','braucht Aufmerksamkeit','Erinnerung und Risiko prüfen','attention'],
+  ['Betrieb','74 %','Auslastung heute','2 freie Zeitfenster',''],
+  ['Wachstum','+18 %','Buchungen zum Vormonat','Gesunde Entwicklung','']
+ ];
+ const overview=`<section class="today-overview" aria-label="Tagesüberblick">${values.map(v=>`<div class="today-overview-cell ${v[4]==='attention'?'today-overview-cell--attention':''}"><span class="today-overview-label">${v[0]}</span><strong class="today-overview-value">${v[1]}</strong><span class="today-overview-detail">${v[3]}</span></div>`).join('')}</section>`;
+ const rows=quiet?emptyState(icon('calendar'),'Heute bleibt der Kalender frei.','Nutze freie Kapazität, erfasse eine Testbuchung oder blockiere interne Zeit.','Termin eintragen',"openModal('Neue Buchung',bookingForm())"):bookings.slice(0,4).map(b=>`<button type="button" class="list-row interactive-reset" onclick="openBookingDrawer(${b.id})"><span class="list-time"><span class="dot"></span>${b.time}</span><span class="list-main"><strong>${b.name}</strong><span>${b.service} · ${b.duration} · ${b.price}</span></span><span class="list-tags">${badge(b.staff)}${b.status!=='Bestätigt'?badge(b.status,b.tone):''}</span></button>`).join('');
+ const priorityItems=quiet?`<div class="today-priority-empty"><strong>Alles ruhig</strong><span>Keine unmittelbare Aktion erforderlich.</span></div>`:[
+  `<button type="button" class="today-priority-item" onclick="openBookingDrawer(2)"><span class="today-priority-icon">${icon('alert')}</span><span class="today-priority-copy"><strong>Erinnerung prüfen</strong><span>Lea Schmid · heute 10:30</span></span><span class="arrow">${icon('arrow')}</span></button>`,
+  `<button type="button" class="today-priority-item" onclick="navigate('website')"><span class="today-priority-icon online">${icon('website')}</span><span class="today-priority-copy"><strong>Website-Abweichungen</strong><span>2 Änderungen an Preisen und Team</span></span><span class="arrow">${icon('arrow')}</span></button>`
+ ].join('');
+ const upcoming=bookings.slice(4,6).map(b=>`<button type="button" class="today-upcoming-row interactive-reset" onclick="openBookingDrawer(${b.id})"><span class="today-upcoming-time">${b.time}</span><span class="today-upcoming-copy"><strong>${b.name}</strong><span>${b.service} · ${b.staff}</span></span></button>`).join('');
+ const setupCallout=setup?`<section class="callouts"><a class="callout info" href="#" onclick="navigate('offer');return false"><div><strong>Buchungserlebnis noch nicht live</strong><p>Preise, Zuständigkeiten und Arbeitszeiten vollständig prüfen.</p></div><span class="cta">Einrichtung fortsetzen →</span></a><a class="callout danger" href="#" onclick="navigate('locations');return false"><div><strong>Sicherer Default schützt vor Fehlbuchungen</strong><p>Eine Person ohne Standortzuordnung bleibt öffentlich nicht buchbar.</p></div><span class="cta">Zuordnung klären →</span></a></section>`:'';
+ return pageHeader('Heute','Montag, 20. Juli · Dein Tagesgeschäft auf einen Blick.',actions)+overview+`<section class="today-workspace"><div class="card today-plan-card"><div class="section-head today-plan-head"><div><h2>Tagesplan</h2><p>${quiet?'Heute ist kein bestätigter Termin mehr offen':'Nächster Termin 09:00 · Anna Keller'}</p></div><div class="today-plan-actions"><button class="btn btn-secondary btn-sm" onclick="navigate('calendar')">${icon('calendar')} Kalender</button><button class="btn btn-secondary btn-sm" onclick="openModal('Zeit blockieren',blockForm())">${icon('availability')} Zeit blockieren</button></div></div>${rows}</div><div class="card today-priority-card"><div class="section-head"><div><h2>Jetzt wichtig</h2><p>${quiet?'Keine offene Aufgabe':'Konkrete nächste Handlungen'}</p></div>${quiet?'':badge(growth?'1 offen':'2 offen','warning')}</div><div class="today-priority-list">${priorityItems}</div></div><div class="card today-upcoming-card"><div class="section-head"><div><h2>Nächste Tage</h2><p>9 kommende Buchungen</p></div></div>${upcoming}<div class="today-rail-footer"><button class="btn btn-secondary btn-sm" onclick="navigate('calendar')">Kalender öffnen</button></div></div></section>${setupCallout}`;
+}
+function renderBookings(){
+ setDemoStates([['normal','Belegt'],['empty','Keine Buchungen'],['filtered','Filter leer'],['quality','Daten prüfen'],['loading','Loading']]);
+ const actions=`<button class="btn btn-secondary" onclick="navigate('calendar')">${icon('calendar')} Kalender</button><button class="btn btn-primary" onclick="openModal('Neue Buchung',bookingForm())">${icon('plus')} Buchung</button>`;
+ if(pageState==='loading')return pageHeader('Buchungen','Termine finden, prüfen und bearbeiten.',actions)+`<div class="card"><div class="toolbar"><span class="skeleton" style="width:240px;height:38px"></span></div>${[1,2,3,4,5].map(()=>`<div class="skeleton" style="height:64px;margin:12px 16px"></div>`).join('')}</div>`;
+ const rows=pageState==='empty'||pageState==='filtered'?[]:pageState==='quality'?bookings.filter(b=>b.dataIssue||b.status==='Anfrage'):bookings;
+ const desktop=rows.length?`<div class="desktop-record-table table-wrap"><table class="table"><thead><tr><th>Zeit</th><th>Kundschaft</th><th>Leistung</th><th>Team</th><th>Status</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>${rows.map(b=>`<tr><td><strong>${b.date}</strong><br><span style="color:var(--text-3)">${b.time}</span></td><td class="primary-cell"><strong>${b.name}</strong><span>${b.phone}</span></td><td class="primary-cell"><strong>${b.service}</strong><span>${b.duration} · ${b.price}</span></td><td>${b.staff}</td><td>${badge(b.dataIssue?'Daten prüfen':b.status,b.dataIssue?'warning':b.tone)}</td><td><button type="button" class="table-action" onclick="openBookingDrawer(${b.id})">Öffnen</button></td></tr>`).join('')}</tbody></table></div>`:'';
+ const mobile=rows.length?`<div class="mobile-record-list">${rows.map(b=>`<button type="button" class="mobile-record-card" onclick="openBookingDrawer(${b.id})"><span class="mobile-record-time"><strong>${b.time}</strong><small>${b.date}</small></span><span class="mobile-record-main"><strong>${b.name}</strong><small>${b.service} · ${b.staff}</small></span><span class="mobile-record-status">${badge(b.dataIssue?'Daten prüfen':b.status,b.dataIssue?'warning':b.tone)}</span></button>`).join('')}</div>`:'';
+ const body=rows.length?desktop+mobile+`<div class="pagination"><span>1–${rows.length} von 28 Buchungen</span><div><button class="btn btn-secondary btn-sm">Zurück</button><button class="btn btn-secondary btn-sm">Weiter</button></div></div>`:emptyState(icon('bookings'),pageState==='filtered'?'Keine Buchung passt zu diesem Filter.':'Noch keine Buchungen.','Passe den Filter an oder erfasse die erste Buchung.','Filter zurücksetzen',"setPageState('normal')");
+ return pageHeader('Buchungen','Alle Termine als scanbare Arbeitsliste mit kontextgerechten Aktionen.',actions)+`<div class="card"><div class="toolbar"><div class="toolbar-group"><button class="chip active" data-filter>Alle</button><button class="chip" data-filter>Heute</button><button class="chip" data-filter>Kommend</button><button class="chip chip--attention" data-filter>Zu prüfen</button><button class="chip" data-filter>Erledigt</button></div><div class="toolbar-spacer"></div><label class="sr-only" for="bookingSearch">Angezeigte Buchungen durchsuchen</label><input id="bookingSearch" class="input input-search" aria-label="Angezeigte Buchungen durchsuchen" placeholder="Angezeigte Buchungen durchsuchen"></div>${body}</div>`;
+}
+function renderCalendar(){
+ setDemoStates([['normal','Woche belegt'],['empty','Leere Woche'],['attention','Offene Anfrage'],['loading','Loading']],'Desktop: Wochenplanung · Mobile: Tagesarbeit');
+ const actions=`<button class="btn btn-secondary" onclick="openModal('Termin erfassen',bookingForm())">Termin erfassen</button><button class="btn btn-primary" onclick="openModal('Zeit blockieren',blockForm())">${icon('plus')} Zeit blockieren</button>`;
+ if(pageState==='loading')return pageHeader('Kalender','Wochenplanung und mobile Tagesarbeit.',actions)+`<div class="card card-padded"><div class="skeleton" style="height:510px"></div></div>`;
+ const empty=pageState==='empty';
+ const staffNames=staff.map(s=>s.name.split(' ')[0]).filter(n=>!calendarStaffQuery||n.toLowerCase().includes(calendarStaffQuery.toLowerCase()));
+ return pageHeader('Kalender','Mitarbeitendenfarbe zeigt Identität; Form, Füllung und Text unterscheiden Termin, Anfrage, Blockzeit und Pause.',actions)+`<div class="card"><div class="toolbar"><button class="btn btn-secondary btn-sm icon-btn" aria-label="Vorherige Woche">‹</button><button class="btn btn-secondary btn-sm">Heute</button><button class="btn btn-secondary btn-sm icon-btn" aria-label="Nächste Woche">›</button><strong style="font-size:13px">20.–25. Juli 2026</strong><div class="toolbar-spacer"></div><select class="select" aria-label="Standort im Kalender" onchange="calendarLocation=this.value;renderPage()"><option ${calendarLocation==='Alle Standorte'?'selected':''}>Alle Standorte</option><option ${calendarLocation==='Grenchen'?'selected':''}>Grenchen</option><option ${calendarLocation==='Solothurn'?'selected':''}>Solothurn</option></select></div><div class="toolbar calendar-filter-toolbar"><div class="calendar-staff-wrap"><div class="multi-select-bar"><button class="chip ${calendarSelected.size===staff.length?'active':''}" onclick="selectAllCalendarStaff()">Alle</button><button class="chip ${calendarSelected.size===0?'active':''}" onclick="clearCalendarStaff()">Keine</button><button class="chip" onclick="selectPresentCalendarStaff()">Heute im Einsatz</button>${staffNames.map(n=>`<button class="chip ${calendarSelected.has(n)?'active':''}" onclick="toggleCalendarStaff('${n}')" ondblclick="onlyCalendarStaff('${n}')" title="Klick: umschalten · Doppelklick: nur diese Person">${n}</button>`).join('')}</div><div class="calendar-filter-help"><span class="desktop-filter-help">Klick wählt an/ab · Doppelklick zeigt nur diese Person</span><span class="mobile-filter-help">Tippen wählt Personen an oder ab</span></div></div><input class="input calendar-team-search" aria-label="Mitarbeitende im Kalender suchen" value="${escapeHtml(calendarStaffQuery)}" placeholder="Team suchen" oninput="calendarStaffQuery=this.value;renderPage()"><button class="btn btn-secondary btn-sm calendar-save-view" onclick="saveCalendarView()">Ansicht speichern</button></div><div class="legend calendar-legend"><span class="legend-item"><span class="legend-swatch"></span>Bestätigter Termin</span><span class="legend-item"><span class="legend-swatch open"></span>Anfrage</span><span class="legend-item"><span class="legend-swatch block"></span>Blockierte Zeit</span><span class="legend-item"><span class="legend-swatch pause"></span>Pause</span><span style="margin-left:auto;color:var(--text-3);font-size:12px">${calendarSelected.size} von ${staff.length} Personen · ${calendarLocation}</span></div><div class="calendar-desktop table-wrap">${calendarGrid(empty,pageState==='attention')}</div><div class="mobile-agenda card-padded">${agendaHtml(empty,pageState==='attention')}</div></div>`;
+}
+function calendarGrid(empty,attention){
+ const days=[['Mo','20.07.'],['Di','21.07.'],['Mi','22.07.'],['Do','23.07.'],['Fr','24.07.'],['Sa','25.07.']];
+ const times=['08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+ let html=`<div class="calendar-shell"><div class="calendar-corner"></div>${days.map(d=>`<div class="calendar-day-head"><strong>${d[0]}</strong><span>${d[1]}</span></div>`).join('')}`;
+ times.forEach((t,ri)=>{html+=`<div class="calendar-time">${t}</div>`;days.forEach((d,ci)=>{
+  let event='';
+  if(!empty){
+   if((ri+ci)%4===1){const b=(ri+ci)%bookings.length+1;event=`<button type="button" class="cal-event" onclick="openBookingDrawer(${b})"><strong>${['Anna','Lea','Nina','Sofia'][ci%4]}</strong><span>${['Schnitt','Balayage','Farbe','Styling'][ri%4]}</span></button>`}
+   if(ri===5&&ci===1)event=`<button type="button" class="cal-event block" onclick="demoToast('Blockierte Zeit geöffnet')"><strong>Pause</strong><span>Elma</span></button>`;
+   if(attention&&ri===2&&ci===3)event=`<button type="button" class="cal-event open" onclick="openBookingDrawer(6)"><strong>Offene Anfrage</strong><span>Jonas Wyss</span></button>`;
+  }
+  html+=`<div class="calendar-cell">${event}</div>`;
+ });});
+ return html+`</div>`;
+}
+function agendaHtml(empty,attention){
+ if(empty||calendarSelected.size===0)return emptyState(icon('calendar'),calendarSelected.size===0?'Keine Person ausgewählt.':'Keine Termine an diesem Tag.',calendarSelected.size===0?'Wähle mindestens eine Person oder setze den Filter zurück.':'Nutze die freie Zeit oder blockiere einen internen Zeitraum.',calendarSelected.size===0?'Alle auswählen':'Zeit blockieren',calendarSelected.size===0?'selectAllCalendarStaff()':"openModal('Zeit blockieren',blockForm())");
+ const visible=bookings.slice(0,4).filter(b=>calendarSelected.has(b.staff));
+ const items=visible.map(b=>`<button type="button" class="agenda-item interactive-reset" onclick="openBookingDrawer(${b.id})"><span class="agenda-time">${b.time}</span><span class="agenda-copy"><strong>${b.name}</strong><span>${b.service} · ${b.staff}</span>${b.status!=='Bestätigt'?badge(b.status,b.tone):''}</span></button>`).join('');
+ const request=attention&&calendarSelected.has('Laura')?`<button type="button" class="agenda-item interactive-reset" onclick="openBookingDrawer(6)"><span class="agenda-time">17:15</span><span class="agenda-copy"><strong>Jonas Wyss</strong><span>Offene Buchungsanfrage · Laura</span>${badge('Anfrage','warning')}</span></button>`:'';
+ return `<div class="agenda-day"><h3>Heute · Montag · ${calendarLocation}</h3>${items}${request}</div>`;
+}
+
+function toggleCalendarStaff(name){calendarSelected.has(name)?calendarSelected.delete(name):calendarSelected.add(name);renderPage()}
+function onlyCalendarStaff(name){calendarSelected=new Set([name]);renderPage()}
+function selectAllCalendarStaff(){calendarSelected=new Set(staff.map(s=>s.name.split(' ')[0]));renderPage()}
+function clearCalendarStaff(){calendarSelected.clear();renderPage()}
+function selectPresentCalendarStaff(){calendarSelected=new Set(['Belinda','Elma','Laura']);renderPage();demoToast('Heute anwesende Personen ausgewählt')}
+function saveCalendarView(){demoToast('Kalenderansicht gespeichert.','Rückgängig')}
+
+function renderCustomers(){
+ setDemoStates([['normal','Mit Kunden'],['empty','Noch leer'],['attention','Daten prüfen'],['duplicates','Dubletten']]);
+ const actions=`<button class="btn btn-primary" onclick="openModal('Kunde erfassen',customerForm())">${icon('plus')} Kunde</button>`;
+ const rows=pageState==='empty'?[]:pageState==='attention'?customers.filter(c=>c.status.includes('Prüfen')||c.dataIssue):customers;
+ const duplicate=pageState==='duplicates'?`<div class="duplicate-box" style="margin-bottom:15px"><strong>Mögliche Kundendublette</strong><p>„Anna Keller“ und „A. Keller“ teilen Telefonnummer und E-Mail-Domain.</p><div style="display:flex;gap:8px;margin-top:10px"><button class="btn btn-secondary btn-sm" onclick="demoToast('Getrennt behalten')">Getrennt behalten</button><button class="btn btn-primary btn-sm" onclick="demoToast('Kundenprofile zusammengeführt.','Rückgängig')">Zusammenführen</button></div></div>`:'';
+ const summary=compactSummary([{label:'Kundschaft',value:'1’284',detail:'214 aktiv in 90 Tagen'},{label:'Wiederkehrend',value:'68 %',detail:'mehr als ein Besuch'},{label:'Dubletten',value:'2',detail:'freiwillig prüfen'},{label:'Datenqualität',value:pageState==='attention'?'3':'1',detail:'Namen oder Kontakt prüfen',tone:pageState==='attention'?'attention':''}]);
+ const desktop=rows.length?`<div class="desktop-record-table table-wrap"><table class="table"><thead><tr><th>Kundschaft</th><th>Kontakt</th><th>Besuche</th><th>Letzter Termin</th><th>Wert</th><th>Datenstatus</th><th><span class="sr-only">Aktion</span></th></tr></thead><tbody>${rows.map(c=>`<tr><td class="primary-cell"><strong>${c.name}</strong><span>${c.email}</span></td><td>${c.contact}</td><td>${c.visits}</td><td>${c.last}</td><td>${c.value}</td><td>${badge(c.status,c.status.includes('Prüfen')?'warning':c.status==='Stammkundin'?'info':'success')}</td><td><button type="button" class="table-action" onclick="openCustomerDrawer(${c.id})">Öffnen</button></td></tr>`).join('')}</tbody></table></div>`:'';
+ const mobile=rows.length?`<div class="mobile-record-list">${rows.map(c=>`<button type="button" class="mobile-record-card customer-record" onclick="openCustomerDrawer(${c.id})"><span class="mobile-record-main"><strong>${c.name}</strong><small>${c.contact}</small><span class="mobile-record-contact">${c.email}</span></span><span class="customer-record-meta"><strong>${c.visits}</strong><small>Besuche</small>${badge(c.status,c.status.includes('Prüfen')?'warning':c.status==='Stammkundin'?'info':'success')}</span></button>`).join('')}</div>`:'';
+ const body=rows.length?desktop+mobile:emptyState(icon('customers'),pageState==='attention'?'Keine auffälligen Kundendaten.':'Noch keine Kundschaft.','Kundendaten entstehen automatisch bei Buchungen oder können manuell erfasst werden.','Erste Person erfassen',"openModal('Kunde erfassen',customerForm())");
+ return pageHeader('Kunden','Kontakte, Verlauf, Plausibilitätsprüfung und Dublettenhinweise ohne aggressive Blockaden.',actions)+duplicate+summary+`<div class="card"><div class="toolbar"><label class="sr-only" for="customerSearch">Kundschaft durchsuchen</label><input id="customerSearch" class="input input-search" aria-label="Kundschaft durchsuchen" placeholder="Name, Telefon oder E-Mail"><div class="toolbar-group"><button class="chip active" data-filter>Alle</button><button class="chip" data-filter>Aktiv</button><button class="chip" data-filter>Stammkundschaft</button><button class="chip chip--attention" data-filter onclick="setPageState('attention')">Daten prüfen</button><button class="chip" data-filter onclick="setPageState('duplicates')">Dubletten</button></div></div>${body}</div>`;
+}
+function renderOffer(){
+ setDemoStates([['normal','Fast bereit'],['empty','Noch nicht eingerichtet'],['attention','Abhängigkeiten'],['duplicates','Dubletten'],['import','Import prüfen']]);
+ const empty=pageState==='empty',attention=pageState==='attention',duplicates=pageState==='duplicates',imp=pageState==='import';
+ const actions=`<button class="btn btn-secondary" onclick="openModal('Website importieren',scanForm())">${icon('website')} Website importieren</button><button class="btn btn-primary" onclick="openModal('Leistung hinzufügen',serviceForm())">${icon('plus')} Leistung</button>`;
+ const summary=compactSummary([
+  {label:'Leistungen',value:empty?'0':'18',detail:empty?'noch nicht erfasst':'17 buchbar'},
+  {label:'Team',value:empty?'0':'4',detail:empty?'noch nicht erfasst':'3 buchbar'},
+  {label:'Standorte',value:empty?'0':'2',detail:empty?'noch nicht erfasst':'sicher zugeordnet'},
+  {label:'Verfügbarkeit',value:attention?'1 Konflikt':empty?'Offen':'Geprüft',detail:attention?'blockiert Freigabe':empty?'Arbeitszeiten fehlen':'bereit',tone:attention||empty?'attention':''}
+ ]);
+ const decision=empty?`<section class="decision-panel"><span class="decision-panel__icon">${icon('alert')}</span><div><h2>Was fehlt für die erste Testbuchung?</h2><p>Leistungen, Teamzuordnungen und Arbeitszeiten müssen zuerst vollständig sein.</p></div><button class="btn btn-primary" onclick="openModal('Website importieren',scanForm())">Einrichtung beginnen</button></section>`:attention?`<section class="decision-panel"><span class="decision-panel__icon">${icon('alert')}</span><div><h2>Was verhindert aktuell vollständige Buchbarkeit?</h2><p>Laura bietet Balayage in Grenchen an, hat dort aber keine Arbeitszeit.</p></div><button class="btn btn-primary" onclick="navigate('availability')">Konflikt lösen</button></section>`:`<section class="decision-panel" style="border-color:var(--success-border);background:var(--success-bg)"><span class="decision-panel__icon" style="background:white;color:var(--success)">${icon('check')}</span><div><h2>Fast bereit für die Freigabe</h2><p>Nur die Testbuchung fehlt. Alle sicherheitsrelevanten Abhängigkeiten sind erfüllt.</p></div><button class="btn btn-primary" onclick="navigate('widget')">Testbuchung starten</button></section>`;
+ const warning=imp?`<div class="callout warning" style="margin-bottom:14px"><div><strong>Bitte Preise und Dauern prüfen. Nichts wird ungeprüft veröffentlicht.</strong><details class="inline-details"><summary>Warum ist das nötig?</summary><p>„Ab“-Preise, Paketleistungen, MwSt. und erkannte Varianten können mehrdeutig sein. Unsichere Felder bleiben sichtbar offen.</p></details></div></div>`:'';
+ const duplicate=duplicates?`<div class="duplicate-box" style="margin-bottom:15px"><strong>Mögliche Dublette erkannt</strong><p>Diese Leistungen könnten dasselbe Angebot beschreiben.</p><div class="duplicate-pair"><div class="detail-box"><span>Erkannt</span><strong>Damen Schnitt</strong></div><span aria-hidden="true">↔</span><div class="detail-box"><span>Bestehend</span><strong>Waschen, Schneiden, Föhnen</strong></div></div><div style="display:flex;gap:8px;margin-top:11px"><button class="btn btn-secondary btn-sm" onclick="demoToast('Getrennt behalten')">Getrennt behalten</button><button class="btn btn-primary btn-sm" onclick="demoToast('Leistungen zusammengeführt.','Rückgängig')">Zusammenführen</button></div></div>`:'';
+ const serviceData=services.map((service,i)=>({...service,confidence:i===1||i===4?'review':'recognized'}));
+ const rows=empty?emptyState(icon('offer'),'Noch keine Leistungen.','Importiere die Website oder erfasse die erste Leistung.','Website importieren',"openModal('Website importieren',scanForm())"):serviceData.map((service,i)=>`<div class="service-row"><div class="service-main"><strong>${service.name}</strong><span class="service-category">${service.category}</span><span class="service-mobile-meta">${service.category} · ${service.duration} · ${service.price}</span></div><span class="service-duration">${service.duration}</span><span class="service-price">${service.price}</span><div class="service-status"><span class="confidence ${service.confidence==='recognized'?'recognized':'review'}">${service.confidence==='recognized'?'Sicher erkannt':'Vorschlag – prüfen'}</span>${badge(attention&&i===4?'Zuordnung fehlt':service.status,attention&&i===4?'warning':service.status==='Prüfen'?'warning':'success')}</div></div>`).join('');
+ const checklist=['Leistungen gepflegt','Team erfasst','Standorte sicher zugeordnet','Arbeitszeiten geprüft','Testbuchung durchgeführt'];
+ const path=`<div class="card"><div class="section-head"><div><h2>Freigabepfad</h2><p>Nur Schritte anzeigen, die für sichere Buchbarkeit nötig sind.</p></div></div><div class="card-padded"><div class="check-list">${checklist.map((item,i)=>{const open=empty||i===4||attention&&i===3;return `<div class="check-row"><span class="check-icon ${open?'open':''}">${open?'!':'✓'}</span><span>${item}</span></div>`}).join('')}</div><button class="btn btn-primary" style="width:100%;margin-top:16px" onclick="navigate('${attention?'availability':'widget'}')">${attention?'Konflikt lösen':'Testbuchung durchführen'}</button><details class="inline-details" style="margin-top:15px"><summary>Importverlauf und frühere Versionen</summary><p>Letzte Sicherung: heute, 10:42. Wiederherstellung bleibt eine seltene sekundäre Funktion.</p><button class="btn btn-ghost btn-sm" onclick="demoToast('Frühere Versionen geöffnet')">Frühere Versionen ansehen</button></details></div></div>`;
+ const context=attention?`<div class="callout warning"><div><strong>Konkrete Ursache</strong><p>Laura hat in Grenchen keine Arbeitszeit. Die betroffene Leistung bleibt dort nicht öffentlich buchbar.</p></div><button class="btn btn-secondary btn-sm" onclick="navigate('availability')">Direkt korrigieren</button></div>`:`<div class="card card-padded"><h3 class="card-title">Team-Zuordnungen</h3><p class="card-subtitle">31 von 36 Zuordnungen vollständig.</p><div class="progress" style="margin:16px 0 8px"><span style="width:${empty?'0':'86'}%"></span></div><button class="btn btn-secondary btn-sm" onclick="navigate('team')">Team prüfen</button></div>`;
+ return pageHeader('Angebot & Buchbarkeit','Buchbarkeitszentrale: eine klare Freigabefrage statt einer zweiten Verwaltungswelt.',actions)+warning+duplicate+summary+decision+`<section class="golden"><div class="stack"><div class="card"><div class="section-head"><div><h2>Leistungen und Preise</h2><p>Kanonische Pflege mit sichtbarer Erkennungssicherheit.</p></div><button class="btn btn-secondary btn-sm" onclick="demoToast('Leistungsverwaltung geöffnet')">Öffnen</button></div><div class="bulk-bar"><strong>Massenbearbeitung</strong><button class="btn btn-secondary btn-sm" onclick="demoToast('Ausgewählte Dauer gesetzt.','Rückgängig')">Dauer setzen</button><button class="btn btn-secondary btn-sm" onclick="demoToast('Preise gerundet.','Rückgängig')">Preise runden</button><button class="btn btn-secondary btn-sm" onclick="setPageState('duplicates')">Dubletten prüfen</button></div>${rows}</div></div><aside class="stack">${path}${context}</aside></section>`;
+}
+function renderTeam(){
+ setDemoStates([['normal','Team vollständig'],['empty','Noch kein Team'],['attention','Buchbarkeit offen']]);
+ const empty=pageState==='empty',attention=pageState==='attention';
+ const actions=`<button class="btn btn-secondary" onclick="demoToast('Leistungszuordnung geöffnet')">Leistungen zuordnen</button><button class="btn btn-primary" onclick="openModal('Mitarbeitende erfassen',staffForm())">${icon('plus')} Mitarbeitende</button>`;
+ const summary=compactSummary([{label:'Team',value:empty?'0':'4',detail:'aktive Personen'},{label:'Buchbar',value:empty?'0':attention?'2':'3',detail:'vollständig konfiguriert'},{label:'Nur intern',value:empty?'0':'1',detail:'nicht öffentlich'},{label:'Unvollständig',value:empty?'0':attention?'2':'1',detail:'braucht Aufmerksamkeit',tone:attention?'attention':''}]);
+ const cards=empty?`<div class="card">${emptyState(icon('team'),'Noch kein Team erfasst.','Erfasse die erste Person und ordne danach Leistungen, Standort und Arbeitszeiten zu.','Erste Person erfassen',"openModal('Mitarbeitende erfassen',staffForm())")}</div>`:`<div class="grid-2">${staff.map((member,i)=>`<button type="button" class="card profile-card interactive-reset" onclick="openStaffDrawer(${member.id})"><span class="profile-avatar">${member.initials}</span><span class="profile-main"><h3>${member.name}</h3><p>${member.role}</p><p>${member.locations}</p><span class="profile-meta">${badge(attention&&i===2?'Unvollständig':member.status,attention&&i===2?'warning':member.status==='Buchbar'?'success':'info')}${badge(member.services)}</span></span><span class="profile-actions"><span class="arrow">Bearbeiten →</span></span></button>`).join('')}</div>`;
+ return pageHeader('Team','Kompakte Übersicht mit sichtbarem Buchbarkeitsstatus pro Person.',actions)+summary+cards;
+}
+function renderLocations(){
+ setDemoStates([['normal','Zwei Standorte'],['empty','Noch kein Standort'],['attention','Zuordnung fehlt'],['unsafe','Unsicherer Import']]);
+ const empty=pageState==='empty',attention=pageState==='attention'||pageState==='unsafe';
+ const actions=`<button class="btn btn-primary" onclick="openModal('Standort hinzufügen',locationForm())">${icon('plus')} Standort</button>`;
+ const cards=empty?emptyState(icon('locations'),'Noch kein Standort.','Ein Standort ist für Arbeitszeiten, Team-Zuordnungen und öffentliche Buchbarkeit erforderlich.','Standort erfassen',"openModal('Standort hinzufügen',locationForm())"):locations.map((l,i)=>`<article class="card card-padded"><div style="display:flex;justify-content:space-between;gap:12px"><div><h3 class="card-title">${l.name}</h3><p class="card-subtitle">${l.address}</p></div>${badge(attention&&i===1?'Zuordnung prüfen':'Sichtbar',attention&&i===1?'warning':'success')}</div><div class="grid-2" style="margin-top:16px;gap:9px"><div class="detail-box"><span>Team</span><strong>${l.staff} Personen</strong></div><div class="detail-box"><span>Buchbarkeit</span><strong>${attention&&i===1?'1 Person pausiert':l.services+' Leistungen'}</strong></div></div><div style="margin-top:15px;display:flex;gap:8px"><button class="btn btn-secondary btn-sm" onclick="demoToast('${l.name} bearbeiten')">Bearbeiten</button><button class="btn btn-ghost btn-sm" onclick="openLocationMenu('${l.name}')">•••</button></div></article>`).join('');
+ const safe=attention?`<article class="card card-padded safe-default" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;gap:12px"><div><h3 class="card-title">Laura Frei · keine eindeutige Standortzuordnung</h3><p class="card-subtitle">Sicherer Default: öffentlich nicht buchbar, bis die Zuordnung geklärt ist.</p></div>${badge('Nicht buchbar','danger')}</div><div style="margin-top:14px"><button class="btn btn-primary btn-sm" onclick="demoToast('Standortzuordnung geöffnet')">Standort zuordnen</button></div></article>`:'';
+ return pageHeader('Standorte','Bei Unsicherheit wird nie zu breit veröffentlicht: fehlende Zuordnungen pausieren die öffentliche Buchbarkeit.',actions)+safe+`<div class="${empty?'card':'grid-2'}">${cards}</div>`;
+}
+
+function openLocationMenu(name){
+ openModal(`${name} · weitere Aktionen`,`<div class="settings-list"><button type="button" class="settings-row interactive-reset" onclick="saveDemo('Standort aus der öffentlichen Buchung entfernt.','Rückgängig')"><span class="settings-icon" aria-hidden="true">${icon('widget')}</span><span class="settings-copy"><strong>Aus Online-Buchung entfernen</strong><span>Betrieb bleibt aktiv</span></span></button><button type="button" class="settings-row interactive-reset" onclick="saveDemo('Standort deaktiviert.','Rückgängig')"><span class="settings-icon" aria-hidden="true">${icon('block')}</span><span class="settings-copy"><strong>Deaktivieren</strong><span>Keine neuen Buchungen</span></span></button></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">Schliessen</button></div>`);
+}
+
+function renderAvailability(){
+ setDemoStates([['normal','Regelwoche'],['empty','Keine Arbeitszeiten'],['attention','Konflikte'],['holidays','Feiertage'],['patterns','Muster & Kopieren']]);
+ const empty=pageState==='empty',attention=pageState==='attention',holidays=pageState==='holidays',patterns=pageState==='patterns';
+ const actions=`<button class="btn btn-secondary" onclick="openModal('Abweichung eintragen',absenceForm())">Abweichung eintragen</button><button class="btn btn-primary" onclick="openModal('Arbeitszeit hinzufügen',availabilityForm())">${icon('plus')} Arbeitszeit</button>`;
+ const names=['Belinda','Elma','Laura','Nadine'],days=['Mo','Di','Mi','Do','Fr'];
+ let schedule=`<div class="schedule-grid"><div class="schedule-head">Mitarbeitende</div>${days.map(day=>`<div class="schedule-head">${day}</div>`).join('')}`;
+ names.forEach((name,ri)=>{schedule+=`<div class="schedule-staff">${name}</div>`;days.forEach((day,di)=>{const value=empty?'—':attention&&ri===2&&di===1?badge('Konflikt','warning'):`<span class="time-block">${ri===3?'09:00–16:00':'08:30–17:30'}</span>`;schedule+=`<div class="schedule-cell">${value}</div>`});});schedule+=`</div>`;
+ const mobileSchedule=`<div class="mobile-schedule">${names.map((name,ri)=>`<article class="mobile-schedule-card"><div class="mobile-schedule-head"><strong>${name}</strong>${attention&&ri===2?badge('Konflikt','warning'):badge('Regelwoche','success')}</div><div class="mobile-schedule-days">${days.map((day,di)=>`<div><span>${day}</span><strong>${empty?'—':attention&&ri===2&&di===1?'Nicht buchbar':ri===3?'09:00–16:00':'08:30–17:30'}</strong></div>`).join('')}</div></article>`).join('')}</div>`;
+ const holidayItems=['Bundesfeiertag · 1. August','Weihnachten · 25. Dezember','Stephanstag · 26. Dezember','Lokaler Feiertag Grenchen · prüfen'];
+ const holidayPanel=holidays?`<div class="card card-padded" style="margin-bottom:16px"><div style="display:flex;justify-content:space-between;gap:13px;align-items:flex-start"><div><h3 class="card-title">Schweizer Feiertage vorschlagen</h3><p class="card-subtitle">Aus Kanton und Standort erkannt — du bestätigst nur die relevanten Tage.</p></div><button class="btn btn-primary btn-sm" onclick="demoToast('5 Feiertage übernommen.','Rückgängig')">5 Vorschläge übernehmen</button></div><div class="check-list" style="margin-top:15px">${holidayItems.map((item,i)=>`<div class="check-row"><span class="check-icon ${i===3?'open':''}">${i===3?'!':'✓'}</span><span>${item}</span></div>`).join('')}</div></div>`:'';
+ const patternPanel=patterns?`<div class="card card-padded" style="margin-bottom:16px"><h3 class="card-title">Arbeitsmuster anwenden</h3><p class="card-subtitle">Weniger repetitive Eingabe bei Standardwochen und saisonalen Abweichungen.</p><div class="grid-3" style="margin-top:14px"><button class="btn btn-secondary" onclick="demoToast('Montag auf Dienstag–Freitag kopiert.','Rückgängig')">Tag kopieren</button><button class="btn btn-secondary" onclick="demoToast('Woche auf ausgewählte Personen übertragen.','Rückgängig')">Woche kopieren</button><button class="btn btn-secondary" onclick="demoToast('Alternierende Woche angelegt.','Rückgängig')">2-Wochen-Muster</button></div></div>`:'';
+ const categories=`<div class="grid-3" style="margin-bottom:16px"><div class="card card-padded"><h3 class="card-title">Regelmässige Arbeitszeiten</h3><p class="card-subtitle">${empty?'Noch nicht gepflegt':'4 Mitarbeitende · Standardwoche'}</p></div><div class="card card-padded"><h3 class="card-title">Abweichungen und Abwesenheiten</h3><p class="card-subtitle">2 Ferien · 1 Schulung</p></div><div class="card card-padded"><h3 class="card-title">Betriebsweite Schliessungen</h3><p class="card-subtitle">3 bestätigte Feiertage</p></div></div>`;
+ const conflict=attention?`<div class="callout warning" style="margin-bottom:16px"><div><strong>Laura bietet Balayage in Grenchen an, hat dort aber keine Arbeitszeit.</strong><p>Die Konsequenz ist konkret: Diese Leistung ist dort aktuell nicht buchbar.</p></div><div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn btn-secondary btn-sm" onclick="demoToast('Arbeitszeit geöffnet')">Arbeitszeit ergänzen</button><button class="btn btn-secondary btn-sm" onclick="demoToast('Standortzuordnung geöffnet')">Zuordnung ändern</button></div></div>`:'';
+ const toolbar=`<div class="toolbar availability-toolbar"><div class="toolbar-group"><button class="chip ${!holidays&&!patterns?'active':''}" data-filter onclick="setPageState('normal')">Regelwoche</button><button class="chip ${patterns?'active':''}" data-filter onclick="setPageState('patterns')">Muster & Kopieren</button><button class="chip" data-filter>Abweichungen</button><button class="chip ${holidays?'active':''}" data-filter onclick="setPageState('holidays')">Feiertage</button><button class="chip" data-filter>Buchungsregeln</button></div><div class="toolbar-spacer"></div><button class="btn btn-secondary btn-sm" onclick="setPageState('patterns')">Woche kopieren</button></div>`;
+ return pageHeader('Verfügbarkeit','Regelmässige Arbeitszeiten, Abweichungen, betriebsweite Schliessungen und Buchungsregeln sind getrennte Ebenen.',actions)+holidayPanel+patternPanel+categories+conflict+`<div class="card">${toolbar}<div class="desktop-schedule table-wrap">${schedule}</div>${mobileSchedule}</div>`;
+}
+function websitePreview(){return `<div class="preview-shell"><div class="browser"><div class="browser-bar"><span class="browser-dot"></span><span class="browser-dot"></span><span class="browser-dot"></span><div class="browser-url">salon-lumiere.ch</div></div><div class="site-preview"><h3>Salon Lumière</h3><p>Individuelle Schnitte, natürliche Farben und eine ruhige Atmosphäre in Grenchen und Solothurn.</p><button class="site-cta" onclick="navigate('widget')">Termin buchen</button></div></div></div>`}
+function renderWebsite(){
+ const running=scanPhase<5;
+ setDemoStates([['normal','Website aktuell'],['attention','Abweichungen'],['scan','Scan / Wiederaufnahme'],['empty','Keine Website'],['cms','CMS-Verknüpfung']]);
+ const actions=`<button class="btn btn-secondary" onclick="demoToast('Kundenvorschau geöffnet')">Vorschau</button><button class="btn btn-primary" ${running?'disabled style="opacity:.55;cursor:not-allowed"':''} onclick="startDemoScan()">${icon('website')} ${running?'Prüfung läuft':'Website prüfen'}</button>`;
+ if(pageState==='empty')return pageHeader('Website','Online-Auftritt prüfen und mit dem Buchungsangebot synchron halten.',actions)+`<div class="card">${emptyState(icon('website'),'Noch keine Website verbunden.','Verbinde die bestehende Website oder starte mit einer neuen Seite.','Website verbinden',"openModal('Website verbinden',websiteForm())")}</div>`;
+ if(pageState==='scan'||running){
+  const phases=['Website erreicht','Inhalte geladen','Leistungen und Preise erkannt','Team erkannt','Vorschlag vorbereitet'];
+  const phaseRows=phases.map((item,i)=>`<div class="check-row"><span class="check-icon ${i>=scanPhase?'open':''}">${i<scanPhase?'✓':i===scanPhase&&running?'●':'○'}</span><span>${item}</span></div>`).join('');
+  return pageHeader('Website','Der Scan bleibt nach Navigation und Browser-Refresh sichtbar und kann nicht doppelt gestartet werden.',actions)+`<div class="grid-2"><div class="card card-padded"><div style="display:flex;justify-content:space-between;gap:12px"><div><h2 class="card-title">${running?'Website wird vorbereitet':'Prüfung abgeschlossen'}</h2><p class="card-subtitle">${running?'Ehrliche Prozessphasen statt pseudo-genauer Prozentwerte.':'Vorschlag ist zur Prüfung bereit.'}</p></div>${badge(running?'Läuft im Hintergrund':'Bereit',running?'info':'success')}</div><div class="check-list" style="margin-top:17px">${phaseRows}</div><p class="card-subtitle" style="margin-top:16px">${running?'Das dauert normalerweise etwa 30–90 Sekunden. Du kannst die Seite verlassen; der Zustand bleibt sichtbar.':'Bitte unsichere Felder gezielt prüfen. Nichts wird ungeprüft veröffentlicht.'}</p><div style="margin-top:13px;display:flex;gap:8px">${running?`<button class="btn btn-secondary btn-sm" onclick="pauseDemoScan()">Pausieren</button>`:`<button class="btn btn-primary btn-sm" onclick="navigate('offer');setTimeout(()=>setPageState('import'),0)">Vorschlag prüfen</button><button class="btn btn-secondary btn-sm" onclick="resetDemoScan()">Neu prüfen</button>`}</div></div>${websitePreview()}</div>`;
+ }
+ if(pageState==='cms'){
+  const links=['18 Leistungen verknüpft','4 Teamprofile verknüpft','2 Standorte verknüpft','Online-Buchung eingebettet'];
+  return pageHeader('Website','Website und CMS bleiben tiefer mit Angebot, Team und Standorten verbunden.',actions)+`<div class="grid-2"><div class="card card-padded"><h3 class="card-title">Verknüpfte Inhalte</h3><p class="card-subtitle">Änderungen werden nicht blind veröffentlicht, sondern als prüfbare Vorschläge synchronisiert.</p><div class="check-list" style="margin-top:15px">${links.map(item=>`<div class="check-row"><span class="check-icon">✓</span><span>${item}</span></div>`).join('')}</div></div><div class="card card-padded"><h3 class="card-title">Publikationsvertrag</h3><div class="status-model" style="margin-top:13px"><div class="status-axis"><strong>Erkannte Änderung</strong><div>${badge('Vorschlag','info')}${badge('Prüfen','warning')}</div></div><div class="status-axis"><strong>Nach Freigabe</strong><div>${badge('Sichtbar','success')}</div></div></div></div></div>`;
+ }
+ const attention=pageState==='attention';
+ const summary=compactSummary([{label:'Seiten',value:'7',detail:'öffentlich'},{label:'Letzte Prüfung',value:'Heute',detail:'10:42 Uhr'},{label:'Abweichungen',value:attention?'4':'0',detail:attention?'konkret prüfen':'alles synchron',tone:attention?'attention':''},{label:'Performance',value:'92',detail:'Lighthouse mobil'}]);
+ const task=attention?`<div class="card"><div class="section-head"><div><h2>Jetzt prüfen</h2><p>Konkrete Abweichungen, nicht nur eine Zahl.</p></div>${badge('4 offen','warning')}</div><div class="today-priority-list"><button type="button" class="today-priority-item" onclick="navigate('offer')"><span class="today-priority-icon">${icon('alert')}</span><span class="today-priority-copy"><strong>2 Preisänderungen</strong><span>Balayage und Ansatzfarbe</span></span><span class="arrow">${icon('arrow')}</span></button><button type="button" class="today-priority-item" onclick="navigate('team')"><span class="today-priority-icon online">${icon('team')}</span><span class="today-priority-copy"><strong>1 Teamprofil geändert</strong><span>Laura Frei · neue Beschreibung</span></span><span class="arrow">${icon('arrow')}</span></button></div></div>`:`<div class="card card-padded"><h3 class="card-title">Alles synchron</h3><p class="card-subtitle">Website und Buchungsangebot stimmen überein.</p><div style="margin-top:12px">${badge('Sichtbar','success')}</div></div>`;
+ const pagesList=['Startseite','Leistungen','Team','Standorte','Kontakt'].map(item=>`<button type="button" class="settings-row interactive-reset" onclick="demoToast('${item} geöffnet')"><span class="settings-icon" aria-hidden="true">${icon('website')}</span><span class="settings-copy"><strong>${item}</strong><span>Sichtbar · heute geprüft</span></span>${badge('Sichtbar','success')}<span class="arrow">${icon('arrow')}</span></button>`).join('');
+ return pageHeader('Website','Online-Auftritt, erkannte Änderungen und Seitenzustand an einem Ort.',actions)+summary+`<div class="golden">${websitePreview()}<aside class="stack">${task}<div class="card"><div class="section-head"><div><h2>Seiten</h2><p>Veröffentlichter Auftritt</p></div><button class="btn btn-secondary btn-sm" onclick="setPageState('cms')">CMS</button></div><div class="settings-list">${pagesList}</div></div></aside></div>`;
+}
+function startDemoScan(){
+ if(scanPhase<5){demoToast('Eine Website-Prüfung läuft bereits.');navigateToScan();return}
+ scanPhase=0;demoStorage.setItem('gwsDemoScanPhase',String(scanPhase));pageState='scan';updateScanIndicator();renderPage();resumeScanTimer();
+}
+function resumeScanTimer(){
+ if(scanTimer||scanPhase>=5)return;
+ scanTimer=setInterval(()=>{scanPhase++;demoStorage.setItem('gwsDemoScanPhase',String(scanPhase));updateScanIndicator();if(activePage==='website')renderPage();if(scanPhase>=5){clearInterval(scanTimer);scanTimer=null;demoToast('Website-Prüfung abgeschlossen.');}},1300);
+}
+function pauseDemoScan(){if(scanTimer){clearInterval(scanTimer);scanTimer=null;demoToast('Scan pausiert. Er kann später fortgesetzt werden.')}else{resumeScanTimer();demoToast('Scan fortgesetzt.')}}
+function resetDemoScan(){scanPhase=5;demoStorage.setItem('gwsDemoScanPhase','5');updateScanIndicator();renderPage()}
+function navigateToScan(){activePage='website';pageState='scan';location.hash='website';renderNavigation();renderPage();if(scanPhase<5)resumeScanTimer()}
+function updateScanIndicator(){
+ const el=document.getElementById('scanIndicator');if(!el)return;
+ el.classList.toggle('show',scanPhase<5);document.getElementById('scanIndicatorText').textContent=scanPhase<5?`Website-Prüfung · Phase ${Math.min(scanPhase+1,5)}/5`:'';
+}
+
+function renderWidget(){
+ setDemoStates([['normal','Buchbar'],['attention','Unvollständig'],['off','Pausiert'],['test','Testbuchung']]);
+ const attention=pageState==='attention',off=pageState==='off',test=pageState==='test';
+ const actions=`<button class="btn btn-secondary" onclick="setPageState('test')">Testbuchung durchführen</button><button class="btn ${off?'btn-primary':'btn-danger'}" onclick="demoToast('${off?'Online-Buchung aktiviert':'Online-Buchung pausiert'}','Rückgängig')">${off?'Aktivieren':'Pausieren'}</button>`;
+ const steps=['Standort wählen','Leistung wählen','Mitarbeitende wählen','Termin wählen','Kontaktdaten'];
+ const preview=`<div class="widget-preview"><div class="widget-head"><h3>Termin buchen</h3><p style="margin:5px 0 0;color:#cdd7cf">Salon Lumière</p></div><div class="widget-body">${steps.map((item,i)=>`<div class="widget-step"><span class="widget-step-num">${i+1}</span><span><strong>${item}</strong><span style="display:block;color:var(--text-3);margin-top:2px">${test&&i<3?['Grenchen','Balayage','Elma'][i]:i===0?'Grenchen oder Solothurn':'Noch nicht ausgewählt'}</span></span><span class="arrow" style="margin-left:auto">${icon('arrow')}</span></div>`).join('')}${test?`<button class="btn btn-primary" style="width:100%;margin-top:14px" onclick="demoToast('Testbuchung erfolgreich.','Rückgängig')">Testbuchung abschliessen</button>`:''}</div></div>`;
+ const checks=[['Leistungen buchbar',1],['Team zugeordnet',1],['Standorte sicher zugeordnet',attention?0:1],['Arbeitszeiten geprüft',attention?0:1],['Testbuchung durchgeführt',test||!attention?1:0]];
+ const checkRows=checks.map(([item,done])=>`<div class="check-row"><span class="check-icon ${done?'':'open'}">${done?'✓':'!'}</span><span>${item}</span></div>`).join('');
+ return pageHeader('Online-Buchung','Kundenerlebnis, sichere Freigabe und Testlauf — technische Widget-Begriffe bleiben im Hintergrund.',actions)+`<div class="golden"><div class="preview-shell">${preview}</div><aside class="stack"><div class="card card-padded"><div style="display:flex;justify-content:space-between;gap:12px"><div><h3 class="card-title">Buchbarkeit</h3><p class="card-subtitle">${off?'Öffentliche Buchbarkeit ist pausiert':attention?'Noch nicht vollständig buchbar':'Online-Buchung ist buchbar'}</p></div>${badge(off?'Pausiert':attention?'Unvollständig':'Buchbar',off||attention?'warning':'success')}</div><div class="check-list" style="margin-top:16px">${checkRows}</div>${attention?`<button class="btn btn-primary" style="width:100%;margin-top:15px" onclick="navigate('offer')">Fehlende Punkte lösen</button>`:''}</div><div class="card card-padded"><h3 class="card-title">Einbettung</h3><p class="card-subtitle">Die Online-Buchung ist auf der Website eingebunden.</p><div class="detail-box" style="margin-top:14px"><span>Adresse</span><strong>booking.gasserwerk.ch/salon-lumiere</strong></div><button class="btn btn-secondary btn-sm" style="margin-top:12px" onclick="demoToast('Link kopiert')">Link kopieren</button></div></aside></div>`;
+}
+function renderAnalytics(){
+ setDemoStates([['normal','Guter Monat'],['attention','Rückgang'],['empty','Noch keine Daten'],['benchmark','Benchmarks & Vorschläge']]);
+ const empty=pageState==='empty',attention=pageState==='attention',benchmark=pageState==='benchmark';
+ const actions=`<label class="sr-only" for="analyticsPeriod">Analysezeitraum</label><select id="analyticsPeriod" class="select" aria-label="Analysezeitraum"><option>Letzte 30 Tage</option><option>Diese Woche</option><option>Dieses Jahr</option></select><button class="btn btn-secondary" onclick="demoToast('Bericht exportiert')">Exportieren</button>`;
+ const bars=empty?[0,0,0,0,0,0,0]:attention?[62,55,51,48,44,39,35]:[42,55,49,67,72,80,88];
+ const benchmarkPanel=benchmark?`<div class="grid-2" style="margin-bottom:16px"><div class="card card-padded"><h3 class="card-title">Anonymisierter Branchenvergleich</h3><p class="card-subtitle">Freiwilliges Benchmark-Signal, nicht als absolute Wahrheit.</p><div class="detail-grid" style="margin-top:13px"><div class="detail-box"><span>Deine Auslastung</span><strong>74 %</strong></div><div class="detail-box"><span>Vergleichsgruppe</span><strong>69 %</strong></div></div></div><div class="card card-padded"><h3 class="card-title">Automatischer Vorschlag</h3><p class="card-subtitle">Mittwoch 14–16 Uhr ist wiederholt frei.</p><button class="btn btn-primary btn-sm" style="margin-top:13px" onclick="demoToast('Vorschlag als Aufgabe gespeichert.','Rückgängig')">Vorschlag übernehmen</button></div></div>`:'';
+ const decision=`<section class="analytics-decision"><div class="analytics-decision__lead"><h2>${attention?'Dienstag verliert Nachfrage':'Mittwoch bietet nutzbare Kapazität'}</h2><p>${attention?'Die letzten vier Dienstage lagen unter dem Vergleichszeitraum. Prüfe Leistungsmix, Standort und kurzfristige Sichtbarkeit.':'Mittwoch 14–16 Uhr bleibt wiederholt frei. Eine gezielte Online-Aktion könnte zusätzliche Buchungen bringen.'}</p><button class="btn btn-primary btn-sm" style="margin-top:12px" onclick="demoToast('Entscheidung als Aufgabe gespeichert.','Rückgängig')">Als Aufgabe speichern</button></div><div class="analytics-decision__metric"><span>Gegen Vorperiode</span><strong>${attention?'−12 %':'+18 %'}</strong><small>Online-Buchungen</small></div><div class="analytics-decision__metric"><span>Wirtschaftliche Wirkung</span><strong>${attention?'− CHF 2’180':'+ CHF 3’640'}</strong><small>geschätzter Buchungswert</small></div></section>`;
+ const kpis=`<div class="stats">${stat('Online-Besuche',empty?'—':'1’842','Buchungsstrecke geöffnet')}${stat('Online-Buchungen',empty?'—':attention?'142':'176',attention?'−12 % zur Vorperiode':'+18 % zur Vorperiode',attention?'warning':'')}${stat('Abschlussrate',empty?'—':attention?'7.7 %':'9.6 %','Besuch → Buchung')}${stat('Auslastung',empty?'—':attention?'61 %':'74 %','verfügbare Arbeitszeit',attention?'warning':'')}</div>`;
+ const chart=`<div class="card card-padded"><div style="display:flex;justify-content:space-between;gap:12px;align-items:flex-start"><div><h3 class="card-title">Buchungen pro Woche</h3><p class="card-subtitle">Vergleich mit der vorherigen Periode</p></div>${badge(attention?'Rückgang':'Wachstum',attention?'warning':'success')}</div><div class="bar-chart" role="img" aria-label="Buchungen in sieben Wochen: ${bars.join(', ')}">${bars.map((height,i)=>`<div class="bar" style="height:${Math.max(height,3)}%"><em>${height||'—'}</em><span>W${i+1}</span></div>`).join('')}</div></div>`;
+ const attentionPanel=empty?`<div class="card">${emptyState(icon('analytics'),'Noch keine Auswertung','Nach den ersten Buchungen entstehen hier handlungsleitende Signale.')}</div>`:`<div class="card"><div class="section-head"><div><h2>Entscheidungsgrundlage</h2><p>Segmentiert nach Standort, Leistung und Herkunft.</p></div><button class="btn btn-secondary btn-sm" onclick="setPageState('benchmark')">Mehr</button></div><div class="table-wrap"><table class="table" style="min-width:0"><thead><tr><th>Segment</th><th>Signal</th><th>Wirkung</th></tr></thead><tbody><tr><td>Grenchen</td><td>${attention?'Dienstag schwach':'Samstag stark'}</td><td>${attention?'− CHF 980':'+ CHF 1’420'}</td></tr><tr><td>Balayage</td><td>Hohe Nachfrage</td><td>+ CHF 1’860</td></tr><tr><td>Online-Buchung</td><td>${attention?'7.7 % Conversion':'9.6 % Conversion'}</td><td>${attention?'Optimieren':'Stabil'}</td></tr></tbody></table></div></div>`;
+ return pageHeader('Analytics','Entscheidungen aus Nachfrage, Kapazität, Herkunft und wirtschaftlicher Wirkung ableiten.',actions)+benchmarkPanel+decision+kpis+`<div class="grid-2">${chart}${attentionPanel}</div>`;
+}
+function renderSettings(){
+ setDemoStates([['normal','Standard'],['attention','Sicherheit prüfen'],['roles','Rollen & Rechte'],['integrations','Integrationen']]);
+ const attention=pageState==='attention',roles=pageState==='roles',integrations=pageState==='integrations';
+ const special=roles?`<div class="card" style="margin-bottom:16px"><div class="section-head"><div><h2>Benutzer und Rollen</h2><p>Klare Berechtigungen für Administrator, Manager und Mitarbeitende.</p></div><button class="btn btn-primary btn-sm" onclick="openModal('Benutzer einladen',staffForm())">${icon('plus')} Einladen</button></div><div class="table-wrap"><table class="table"><thead><tr><th>Person</th><th>Rolle</th><th>Buchungen</th><th>Betrieb</th><th>Abrechnung</th></tr></thead><tbody><tr><td>Severin Gasser</td><td>${badge('Administrator','info')}</td><td>Vollzugriff</td><td>Vollzugriff</td><td>Vollzugriff</td></tr><tr><td>Belinda Gerber</td><td>${badge('Manager')}</td><td>Bearbeiten</td><td>Bearbeiten</td><td>Kein Zugriff</td></tr><tr><td>Laura Frei</td><td>${badge('Mitarbeitende')}</td><td>Eigene Termine</td><td>Kein Zugriff</td><td>Kein Zugriff</td></tr></tbody></table></div></div>`:integrations?`<div class="grid-2" style="margin-bottom:16px">${[['SMS-Erinnerungen','Verbunden','success'],['Google Calendar','Nicht verbunden','warning'],['Website/CMS','Verbunden','success'],['Buchhaltung','Später verfügbar','info']].map(x=>`<div class="card card-padded"><div style="display:flex;justify-content:space-between;gap:12px"><div><h3 class="card-title">${x[0]}</h3><p class="card-subtitle">Integration verwalten</p></div>${badge(x[1],x[2])}</div><button class="btn btn-secondary btn-sm" style="margin-top:13px" onclick="demoToast('${x[0]} geöffnet')">Öffnen</button></div>`).join('')}</div>`:'';
+ const group=(title,sub,items)=>`<div class="card"><div class="section-head"><div><h2>${title}</h2><p>${sub}</p></div></div><div class="settings-list">${items.map(x=>`<button type="button" class="settings-row interactive-reset" onclick="${x.action}"><span class="settings-icon" aria-hidden="true">${icon(x.icon)}</span><span class="settings-copy"><strong>${x.title}</strong><span>${x.sub}</span></span><span class="arrow">${icon('arrow')}</span></button>`).join('')}</div></div>`;
+ const account=group('Betrieb und Konto','Grundlegende Organisationseinstellungen',[{title:'Betriebsprofil',sub:'Name, Kontakt und Zeitzone',icon:'home',action:"demoToast('Betriebsprofil geöffnet')"},{title:'Benutzer und Rollen',sub:'Zugänge und Berechtigungen',icon:'team',action:"setPageState('roles')"},{title:'Benachrichtigungen',sub:'E-Mail, SMS und interne Hinweise',icon:'alert',action:"demoToast('Benachrichtigungen geöffnet')"},{title:'Sicherheit',sub:'Passwort und Zwei-Faktor-Authentifizierung',icon:'settings',action:"setPageState('attention')"}]);
+ const platform=group('Plattform','Abrechnung, Integrationen und Datenschutz',[{title:'Tarif und Rechnung',sub:'Plan, Rechnungen und Zahlungsmittel',icon:'analytics',action:"demoToast('Tarif und Rechnung geöffnet')"},{title:'Integrationen',sub:'Kalender, SMS und weitere Dienste',icon:'widget',action:"setPageState('integrations')"},{title:'Datenschutz und Export',sub:'Datenexport und Aufbewahrung',icon:'bookings',action:"demoToast('Datenschutz und Export geöffnet')"},{title:'Marke',sub:'Farben, Logo und Darstellung',icon:'offer',action:"demoToast('Markeneinstellungen geöffnet')"}]);
+ return pageHeader('Einstellungen','Seltene Konto-, Benutzer-, Integrations- und Abrechnungsfunktionen ausserhalb des Tagesgeschäfts.','')+(attention?`<div class="callout warning" style="margin-bottom:16px"><div><strong>Zwei-Faktor-Authentifizierung ist noch nicht aktiviert</strong><p>Schütze Administratorzugänge zusätzlich.</p></div><button class="btn btn-secondary btn-sm" onclick="demoToast('Sicherheit geöffnet')">Jetzt einrichten</button></div>`:'')+special+`<div class="grid-2">${account}${platform}</div>`;
+}
+const renderers={today:renderToday,bookings:renderBookings,calendar:renderCalendar,customers:renderCustomers,offer:renderOffer,team:renderTeam,locations:renderLocations,availability:renderAvailability,website:renderWebsite,widget:renderWidget,analytics:renderAnalytics,settings:renderSettings};
+
+const AUDIT_ITEMS=[
+ 'Kalender: echte Mehrfachauswahl','Kalender: Termin und Verfügbarkeit semantisch getrennt','Fachsprache: Zeit blockieren','Adaptive Dashboard-Slots','Offene Punkte statt abstraktem Prüfen','Online-Besuche nur mit Conversion',
+ 'Angebot als Buchbarkeitszentrale','Plus nur für neues Objekt','Wiederherstellung in Importverlauf zurückgestuft','Ehrliche Scanphasen','Unsicherheitsgrad pro Feld','Kurze Warnung mit Details',
+ 'Kontextbasierte Dauer-Vorschläge','Dubletten- und Variantenprüfung','Testbuchung vor Freigabe','Kompaktes Team','Buchbarkeitsstatus pro Person','Leistungszuordnung aus Personenkontext',
+ 'Sicherer Standortdefault','Eindeutige Standortaktionen','Verfügbarkeit intern strukturiert','Schweizer Feiertagsvorschläge','Arbeitszeit-Kopiermuster','Konfliktvorschau mit direkter Lösung',
+ 'Abhängigkeiten sichtbar, aber sparsam','Website und Online-Buchung fachlich benannt','Angebot & Buchbarkeit klar bezeichnet','Ruhige Einstellungsarchitektur',
+ 'Terminaktionen kontextabhängig','Telefon und E-Mail direkt nutzbar','Datenqualität sichtbar abgesichert','Mobile Tagesarbeit statt Mini-Woche',
+ 'Aufgabenorientierte Suche und Command Palette','Leere Zustände mit nächster Handlung','Erfolgsmeldungen mit Undo','Kanonisches Statusmodell'
+];
+const COMMANDS=[
+ {group:'Aktionen',icon:'plus',title:'Neue Buchung',sub:'Termin manuell erfassen',run:()=>openModal('Neue Buchung',bookingForm())},
+ {group:'Aktionen',icon:'availability',title:'Zeit blockieren',sub:'Pause, Schulung oder internen Termin reservieren',run:()=>openModal('Zeit blockieren',blockForm())},
+ {group:'Aktionen',icon:'website',title:'Website prüfen',sub:'Wiederaufnehmbaren Scan starten',run:()=>{navigate('website');startDemoScan()}},
+ {group:'Navigation',icon:'home',title:'Heute öffnen',sub:'Tagesgeschäft',run:()=>navigate('today')},
+ {group:'Navigation',icon:'calendar',title:'Kalender öffnen',sub:'Wochenplanung und Tagesagenda',run:()=>navigate('calendar')},
+ {group:'Navigation',icon:'offer',title:'Angebot & Buchbarkeit öffnen',sub:'Abhängigkeiten und Freigabe',run:()=>navigate('offer')},
+ {group:'Einstellungen',icon:'team',title:'Benutzer und Rollen',sub:'Zugänge und Berechtigungen',run:()=>{navigate('settings');setTimeout(()=>setPageState('roles'),0)}}
+];
+
+function openAuditCoverage(){
+ const groups=[['Kalender & Tagesgeschäft',0,6],['Angebot & Import',6,15],['Betrieb',15,24],['IA, Details & Querschnitt',24,36]];
+ openDrawer('Product-Maturity-Audit','Alle 36 Verbesserungsvorschläge sind in dieser lokalen Demo prototypisch abgebildet.',groups.map(g=>`<div class="audit-group-title">${g[0]}</div><div class="audit-grid">${AUDIT_ITEMS.slice(g[1],g[2]).map((x,i)=>`<div class="audit-item"><span class="audit-num">${g[1]+i+1}</span><span>${x}</span></div>`).join('')}</div>`).join(''),`<button class="btn btn-secondary" onclick="closeDrawer()">Schliessen</button>`);
+}
+function openStatusModel(){
+ openDrawer('Kanonisches Statusmodell','Vier getrennte Achsen verhindern, dass „aktiv“, „sichtbar“ und „buchbar“ dasselbe meinen.',`<div class="status-model"><div class="status-axis"><strong>Datensatz</strong><div>${STATUS_MODEL.record.map(x=>badge(x,x==='Aktiv'?'success':'' )).join('')}</div></div><div class="status-axis"><strong>Öffentliche Sichtbarkeit</strong><div>${STATUS_MODEL.visibility.map(x=>badge(x,x==='Sichtbar'?'info':'' )).join('')}</div></div><div class="status-axis"><strong>Buchbarkeit</strong><div>${STATUS_MODEL.bookability.map(x=>badge(x,x==='Buchbar'?'success':x==='Unvollständig'?'warning':'' )).join('')}</div></div><div class="status-axis"><strong>Termin</strong><div>${STATUS_MODEL.appointment.map(x=>badge(x,x==='Anfrage'?'warning':x==='Bestätigt'?'success':x==='No-Show'?'danger':'' )).join('')}</div></div></div>`,`<button class="btn btn-secondary" onclick="closeDrawer()">Schliessen</button>`);
+}
+function commandEntries(query=''){
+ const q=query.trim().toLowerCase();
+ const data=[
+  ...COMMANDS,
+  ...customers.map(c=>({group:'Kunden',icon:'customers',title:c.name,sub:`${c.contact} · ${c.status}`,run:()=>openCustomerDrawer(c.id)})),
+  ...bookings.map(b=>({group:'Termine',icon:'bookings',title:`${b.name} · ${b.date} ${b.time}`,sub:`${b.service} · ${b.status}`,run:()=>openBookingDrawer(b.id)})),
+  ...staff.map(s=>({group:'Team',icon:'team',title:s.name,sub:`${s.role} · ${s.status}`,run:()=>openStaffDrawer(s.id)})),
+  ...services.map(s=>({group:'Leistungen',icon:'offer',title:s.name,sub:`${s.duration} · ${s.price}`,run:()=>navigate('offer')})),
+  ...locations.map(l=>({group:'Standorte',icon:'locations',title:l.name,sub:l.address,run:()=>navigate('locations')}))
+ ];
+ return q?data.filter(x=>(x.title+' '+x.sub+' '+x.group).toLowerCase().includes(q)):data.slice(0,14);
+}
+function openCommandPalette(){
+ const input=document.getElementById('commandSearch');input.value='';commandIndex=0;renderCommandResults('');activateDialog(document.querySelector('#commandWrap .command'),input);
+}
+function closeCommandPalette(){deactivateDialog(document.getElementById('commandWrap'))}
+function commandBackdropClose(e){if(e.target.id==='commandWrap')closeCommandPalette()}
+function renderCommandResults(q){
+ const entries=commandEntries(q);window.__commandEntries=entries;commandIndex=Math.min(commandIndex,Math.max(entries.length-1,0));
+ let group='';
+ document.getElementById('commandResults').innerHTML=entries.length?entries.map((x,i)=>`${x.group!==group?(group=x.group,`<div class="command-group">${x.group}</div>`):''}<button class="command-item ${i===commandIndex?'active':''}" onclick="runCommand(${i})"><span class="command-item-icon">${icon(x.icon)}</span><span class="command-item-copy"><strong>${escapeHtml(x.title)}</strong><span>${escapeHtml(x.sub)}</span></span><span class="arrow">↵</span></button>`).join(''):`<div class="empty" style="padding:28px"><strong>Kein Ergebnis</strong><p>Suche nach Kunde, Termin, Team, Leistung, Standort oder Aktion.</p></div>`;
+}
+function commandKeydown(e){
+ const entries=window.__commandEntries||[];
+ if(e.key==='ArrowDown'){e.preventDefault();commandIndex=Math.min(commandIndex+1,entries.length-1);renderCommandResults(e.target.value)}
+ if(e.key==='ArrowUp'){e.preventDefault();commandIndex=Math.max(commandIndex-1,0);renderCommandResults(e.target.value)}
+ if(e.key==='Enter'&&entries.length){e.preventDefault();runCommand(commandIndex)}
+ if(e.key==='Escape')closeCommandPalette();
+}
+function runCommand(i){const item=(window.__commandEntries||[])[i];if(item){closeCommandPalette();item.run()}}
+function toggleProfileMenu(e){e.stopPropagation();const menu=document.getElementById('profileMenu');const open=menu.classList.toggle('open');document.querySelectorAll('[aria-controls="profileMenu"]').forEach(x=>x.setAttribute('aria-expanded',String(open)))}
+function closeProfileMenu(){document.getElementById('profileMenu').classList.remove('open');document.querySelectorAll('[aria-controls="profileMenu"]').forEach(x=>x.setAttribute('aria-expanded','false'))}
+
+
+let lastFocusedElement=null;
+let activeDialog=null;
+function focusableElements(root){return [...root.querySelectorAll('a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')].filter(el=>!el.hidden&&el.offsetParent!==null)}
+function activateDialog(root,preferred){lastFocusedElement=document.activeElement;activeDialog=root;root.closest('.backdrop,.modal-wrap,.command-wrap')?.classList.add('open');setTimeout(()=>{const target=preferred||focusableElements(root)[0]||root;target.focus()},0)}
+function deactivateDialog(wrapper){wrapper.classList.remove('open');activeDialog=null;const target=lastFocusedElement;lastFocusedElement=null;if(target&&document.contains(target))setTimeout(()=>target.focus(),0)}
+function trapDialogFocus(e){if(e.key!=='Tab'||!activeDialog)return;const items=focusableElements(activeDialog);if(!items.length){e.preventDefault();activeDialog.focus();return}const first=items[0],last=items[items.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}
+
+function openDrawer(title,subtitle,body,footer=''){
+ document.getElementById('drawer').innerHTML=`<div class="drawer-head"><div><h3 id="drawerTitle">${title}</h3><p>${subtitle}</p></div><button class="drawer-close" onclick="closeDrawer()" aria-label="Detailansicht schliessen">${icon('close')}</button></div><div class="drawer-body">${body}</div><div class="drawer-footer">${footer||`<button class="btn btn-secondary" onclick="closeDrawer()">Schliessen</button>`}</div>`;
+ activateDialog(document.getElementById('drawer'),document.querySelector('.drawer-close'));
+}
+function closeDrawer(){deactivateDialog(document.getElementById('drawerBackdrop'))}
+function drawerBackdropClose(e){if(e.target.id==='drawerBackdrop')closeDrawer()}
+function openBookingDrawer(id){
+ const b=bookings.find(x=>x.id===id)||bookings[0];
+ const isPast=b.phase==='past';
+ const isRequest=b.status==='Anfrage';
+ const contactOk=!b.dataIssue;
+ let footer='';
+ if(isPast&&b.status!=='Erledigt'&&b.status!=='No-Show'&&b.status!=='Abgesagt'){
+  footer=`<button class="btn btn-secondary" onclick="demoToast('Termin als erledigt markiert.','Rückgängig')">Erledigt</button><button class="btn btn-danger" onclick="demoToast('Termin als No-Show markiert.','Rückgängig')">No-Show</button>`;
+ }else if(isRequest){
+  footer=`<button class="btn btn-primary" onclick="demoToast('Anfrage bestätigt.','Rückgängig')">Bestätigen</button><button class="btn btn-secondary" onclick="demoToast('Terminverschiebung geöffnet')">Verschieben</button><button class="btn btn-danger" onclick="demoToast('Anfrage abgesagt.','Rückgängig')">Absagen</button>`;
+ }else if(!isPast){
+  footer=`<button class="btn btn-secondary" onclick="demoToast('Termin bearbeiten')">Bearbeiten</button><button class="btn btn-secondary" onclick="demoToast('Terminverschiebung geöffnet')">Verschieben</button><button class="btn btn-danger" onclick="demoToast('Absage vorbereitet')">Absagen</button>`;
+ }else{
+  footer=`<button class="btn btn-secondary" onclick="closeDrawer()">Schliessen</button>`;
+ }
+ openDrawer(b.name,`${b.date} · ${b.time} · ${b.status}`,`${b.dataIssue?`<div class="callout warning" style="margin-bottom:14px"><div><strong>Datenqualität prüfen</strong><p>Name, Telefonnummer oder E-Mail sind unvollständig. Der Termin bleibt nutzbar, aber die Korrektur wird empfohlen.</p></div></div>`:''}<div class="detail-grid"><div class="detail-box"><span>Leistung</span><strong>${b.service}</strong></div><div class="detail-box"><span>Dauer</span><strong>${b.duration}</strong></div><div class="detail-box"><span>Mitarbeitende</span><strong>${b.staff}</strong></div><div class="detail-box"><span>Terminstatus</span><strong>${b.status}</strong></div></div><div class="card card-padded" style="margin-top:14px;box-shadow:none"><h3 class="card-title">Kontakt aufnehmen</h3><p class="card-subtitle"><a href="${contactOk?'tel:'+b.phone.replace(/\s/g,''):'#'}">${b.phone}</a><br><a href="${contactOk?'mailto:'+b.email:'#'}">${b.email}</a></p><div style="display:flex;gap:8px;margin-top:12px"><a class="btn btn-secondary btn-sm" href="${contactOk?'tel:'+b.phone.replace(/\s/g,''):'#'}">Anrufen</a><a class="btn btn-secondary btn-sm" href="${contactOk?'mailto:'+b.email:'#'}">E-Mail</a><button class="btn btn-secondary btn-sm" onclick="demoToast('Nachricht vorbereitet')">Nachricht</button></div></div><div class="card card-padded" style="margin-top:14px;box-shadow:none"><h3 class="card-title">Notiz</h3><p class="card-subtitle">${b.note||'Keine Notiz vorhanden.'}</p><button class="btn btn-ghost btn-sm" style="margin-top:9px" onclick="demoToast('Notiz bearbeiten')">Notiz bearbeiten</button></div>`,footer);
+}
+function openCustomerDrawer(id){
+ const c=customers.find(x=>x.id===id)||customers[0];
+ openDrawer(c.name,`${c.visits} Besuche · zuletzt ${c.last}`,`${c.dataIssue?`<div class="callout warning" style="margin-bottom:14px"><div><strong>Plausibilitätsprüfung</strong><p>Name oder Kontaktangaben wirken unvollständig. Nicht blockiert, aber sichtbar zur Korrektur markiert.</p></div></div>`:''}<div class="detail-grid"><div class="detail-box"><span>Telefon</span><strong><a href="${c.dataIssue?'#':'tel:'+c.contact.replace(/\s/g,'')}">${c.contact}</a></strong></div><div class="detail-box"><span>E-Mail</span><strong><a href="${c.dataIssue?'#':'mailto:'+c.email}">${c.email}</a></strong></div><div class="detail-box"><span>Kundenwert</span><strong>${c.value}</strong></div><div class="detail-box"><span>Datenstatus</span><strong>${c.status}</strong></div></div><div class="card card-padded" style="margin-top:14px;box-shadow:none"><h3 class="card-title">Letzte Termine</h3>${bookings.slice(0,3).map(b=>`<div class="agenda-item"><div class="agenda-time">${b.date}</div><div class="agenda-copy"><strong>${b.service}</strong><span>${b.staff} · ${b.price}</span></div></div>`).join('')}</div>`,`<button class="btn btn-secondary" onclick="demoToast('Kunde bearbeiten')">Bearbeiten</button><button class="btn btn-primary" onclick="openModal('Neue Buchung',bookingForm())">Buchung erstellen</button>`);
+}
+function openStaffDrawer(id){
+ const s=staff.find(x=>x.id===id)||staff[0];
+ openDrawer(s.name,s.role,`<div class="detail-grid"><div class="detail-box"><span>Standorte</span><strong>${s.locations}</strong></div><div class="detail-box"><span>Buchbarkeit</span><strong>${s.status}</strong></div></div><div class="card card-padded" style="margin-top:14px;box-shadow:none"><h3 class="card-title">Leistungen</h3><p class="card-subtitle">${s.services}</p></div><div class="card card-padded" style="margin-top:14px;box-shadow:none"><h3 class="card-title">Nächste Arbeitszeit</h3><p class="card-subtitle">Montag, 08:30–17:30 · Grenchen</p></div>`,`<button class="btn btn-secondary" onclick="demoToast('Leistungen zuordnen')">Leistungen zuordnen</button><button class="btn btn-primary" onclick="demoToast('Profil bearbeiten')">Bearbeiten</button>`);
+}
+function openModal(title,body){
+ document.getElementById('modal').innerHTML=`<div class="modal-head"><h3 id="modalTitle">${title}</h3><button class="modal-close" onclick="closeModal()" aria-label="Dialog schliessen">${icon('close')}</button></div>${body}`;
+ activateDialog(document.getElementById('modal'),document.querySelector('#modal input,#modal select,#modal button'));
+}
+function closeModal(){deactivateDialog(document.getElementById('modalWrap'))}
+function modalBackdropClose(e){if(e.target.id==='modalWrap')closeModal()}
+function formActions(label='Speichern'){return `<div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" onclick="saveDemo('${label} wurde in der Demo ausgeführt.')">${label}</button></div>`}
+function bookingForm(){return `<div class="field"><label>Kundin oder Kunde</label><input aria-label="Kundin oder Kunde" value="Mia Baumann"></div><div class="field"><label>Leistung</label><select aria-label="Leistung"><option>Waschen, Schneiden, Föhnen · 60 Min.</option><option>Balayage · 180 Min.</option></select></div><div class="field"><label>Mitarbeitende</label><select aria-label="Mitarbeitende"><option>Belinda</option><option>Elma</option><option>Laura</option></select></div><div class="field"><label>Datum und Zeit</label><input aria-label="Datum und Zeit" value="21.07.2026 · 09:30"></div>${formActions('Buchung anlegen')}`}
+function blockForm(){return `<div class="field"><label>Mitarbeitende</label><select aria-label="Mitarbeitende"><option>Belinda</option><option>Elma</option><option>Laura</option></select></div><div class="field"><label>Grund</label><select aria-label="Grund der blockierten Zeit"><option>Pause</option><option>Schulung</option><option>Interner Termin</option><option>Sonstiges</option></select></div><div class="field"><label>Zeitraum</label><input aria-label="Zeitraum" value="13:00–13:30"></div>${formActions('Zeit reservieren')}`}
+function customerForm(){return `<div class="field"><label>Name</label><input aria-label="Name" value="Mia Baumann" minlength="2"><small style="color:var(--text-3)">Kurze oder unvollständige Namen werden zur Prüfung markiert, nicht aggressiv blockiert.</small></div><div class="field"><label>Telefon</label><input aria-label="Telefon" value="+41 79 000 00 00"></div><div class="field"><label>E-Mail</label><input aria-label="E-Mail" value="mia@example.ch"></div>${formActions('Kunde speichern')}`}
+function serviceForm(){return `<div class="field"><label>Name der Leistung</label><input aria-label="Name der Leistung" value="Glossing"></div><div class="field"><label>Kategorie</label><select aria-label="Kategorie"><option>Coloration</option><option>Damen</option><option>Herren</option></select></div><div class="grid-2"><div class="field"><label>Dauer</label><input aria-label="Dauer" value="60 Min."><small style="color:var(--warning)">Vorschlag aus Kategorie, Teilleistungen und Salonkontext — bitte prüfen.</small></div><div class="field"><label>Preis</label><input aria-label="Preis" value="CHF 95"></div></div>${formActions('Leistung speichern')}`}
+function staffForm(){return `<div class="field"><label>Name</label><input aria-label="Name" value="Mia Baumann"></div><div class="field"><label>Rolle</label><input aria-label="Rolle" value="Stylistin"></div><div class="field"><label>Standort</label><select aria-label="Standort"><option>Grenchen</option><option>Solothurn</option></select></div>${formActions('Mitarbeitende speichern')}`}
+function locationForm(){return `<div class="field"><label>Name</label><input aria-label="Standortname" value="Biel"></div><div class="field"><label>Adresse</label><input aria-label="Adresse" value="Bahnhofstrasse 10, 2502 Biel"></div>${formActions('Standort speichern')}`}
+function availabilityForm(){return `<div class="field"><label>Mitarbeitende</label><select aria-label="Mitarbeitende"><option>Belinda</option><option>Elma</option></select></div><div class="field"><label>Wochentag</label><select aria-label="Wochentag"><option>Montag</option><option>Dienstag</option></select></div><div class="field"><label>Arbeitszeit</label><input aria-label="Arbeitszeit" value="08:30–17:30"></div>${formActions('Arbeitszeit speichern')}`}
+function absenceForm(){return `<div class="field"><label>Art</label><select aria-label="Art der Abweichung"><option>Ferien</option><option>Schulung</option><option>Krankheit</option></select></div><div class="field"><label>Zeitraum</label><input aria-label="Zeitraum" value="24.07.2026–31.07.2026"></div>${formActions('Abweichung speichern')}`}
+function scanForm(){return `<div class="field"><label>Website-Adresse</label><input aria-label="Website-Adresse" value="https://salon-lumiere.ch"></div><div class="callout info"><div><strong>Ehrlicher, wiederaufnehmbarer Prozess</strong><p>Phasen statt künstlichem Prozentwert. Ein zweiter Scan wird verhindert, solange die Prüfung läuft.</p></div></div><div class="modal-actions"><button class="btn btn-secondary" onclick="closeModal()">Abbrechen</button><button class="btn btn-primary" onclick="closeModal();startDemoScan()">Prüfung starten</button></div>`}
+function websiteForm(){return `<div class="field"><label>Website-Adresse</label><input aria-label="Website-Adresse" value="https://salon-lumiere.ch"></div>${formActions('Website verbinden')}`}
+function saveDemo(message,undoLabel=''){
+ closeModal();demoToast(message,undoLabel);
+}
+function demoToast(message,undoLabel=''){
+ const t=document.getElementById('toast');
+ t.innerHTML=undoLabel?`<span class="undo-toast"><span>${escapeHtml(message)}</span><button onclick="demoToast('Änderung rückgängig gemacht.')">${escapeHtml(undoLabel)}</button></span>`:escapeHtml(message);
+ t.classList.add('show');clearTimeout(window.__toastTimer);window.__toastTimer=setTimeout(()=>t.classList.remove('show'),3200);return false;
+}
+function toggleMenu(){document.getElementById('sidebar').classList.toggle('open')}
+function closeDemoPanel(){document.getElementById('demoPanel').style.display='none'}
+function openDemoPanel(){document.getElementById('demoPanel').style.display='block'}
+function globalSearch(e){
+ if(e.key==='Enter'){openCommandPalette();const q=e.target.value.trim();document.getElementById('commandSearch').value=q;renderCommandResults(q)}
+ if(e.key==='Escape')e.target.blur();
+}
+document.addEventListener('click',e=>{if(!e.target.closest('.profile-menu')&&!e.target.closest('.avatar')&&!e.target.closest('.mobile-avatar'))closeProfileMenu()})
+document.addEventListener('keydown',e=>{trapDialogFocus(e);if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==='k'){e.preventDefault();openCommandPalette()}if(e.key==='Escape'){closeDrawer();closeModal();closeCommandPalette();document.getElementById('sidebar').classList.remove('open')}})
+renderNavigation();renderPage();
+</script>
+</body>
+</html>
