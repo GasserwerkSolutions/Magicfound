@@ -1,0 +1,514 @@
+<!doctype html>
+<html lang="de-CH" data-mode="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>Salon Flow · Tagesplan – Hierarchie, Termindetail und Systemstatus</title>
+<style>
+/* Eigenständiger, vorläufiger PROTOTYP. Rollen-Namen orientieren sich am DS;
+   Werte sind hier nur gebündelte DEMO-Aliase, nicht das kanonische DS-Paket. */
+:root {
+  color-scheme:light;
+  --color-bg:#f5f3ed;--color-surface:#fffefa;--color-surface-subtle:#faf8f2;
+  --color-surface-hover:#f2f0e9;--color-text-primary:#202823;
+  --color-text-secondary:#4d5b53;--color-text-tertiary:#617068;
+  --color-border:#dfe2db;--color-border-light:#e9ebe5;
+  --color-interactive:#3f7778;--color-interactive-dark:#2f5f60;--color-interactive-light:#e3efec;
+  --color-quick-border:#476fae; /* EINZIGE Blau-Rolle: Schnellauswahl-Knopf-Rand */
+  --color-recap-bg:#e9e7de;--color-recap-border:#d2d5cc;--color-system-rail:#eaece6;
+  --status-warning-bg:#fff8e6;--status-warning-fg:#795005;--status-warning-border:#b68a29;
+  --status-danger-bg:#fff1f1;--status-danger-fg:#952e31;--status-danger-border:#ba5357;
+  --status-success-bg:#eaf5ed;--status-success-fg:#235f3f;
+  --shadow-card:0 6px 23px rgb(32 40 35 / 5%);
+  --radius-card:12px;--radius-control:10px;--radius-field:4px;
+  --gap-page:16px;--gap-tile:14px;--control-h:36px;--ink-strong:#202823;
+}
+html[data-mode="dark"] {
+  color-scheme:dark;
+  --color-bg:#242a27;--color-surface:#303833;--color-surface-subtle:#353d37;
+  --color-surface-hover:#3d4841;--color-text-primary:#f1f4ee;
+  --color-text-secondary:#d9e2d9;--color-text-tertiary:#c5d2c8;
+  --color-border:#536059;--color-border-light:#46534b;
+  --color-interactive:#6da5a6;--color-interactive-dark:#97bec0;--color-interactive-light:#254347;
+  --color-quick-border:#9cbced;
+  --color-recap-bg:#29342e;--color-recap-border:#526058;--color-system-rail:#333c36;
+  --status-warning-bg:#443b22;--status-warning-fg:#ffda94;--status-warning-border:#bda05d;
+  --status-danger-bg:#482f32;--status-danger-fg:#ffd1d0;--status-danger-border:#db777a;
+  --status-success-bg:#254435;--status-success-fg:#b8e5c9;
+  --shadow-card:none;--ink-strong:#f1f4ee;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{font-family:system-ui,-apple-system,"Segoe UI",sans-serif;font-size:16px}
+body{margin:0;min-width:280px;background:var(--color-bg);color:var(--color-text-primary);line-height:1.4}
+button,input,select{font:inherit}
+button{cursor:pointer}
+button:disabled{cursor:not-allowed;opacity:.56}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible,[tabindex="0"]:focus-visible{outline:3px solid var(--color-interactive);outline-offset:3px}
+a{color:var(--color-interactive-dark)}
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.prototype{min-height:100dvh;display:grid;grid-template-rows:auto auto minmax(0,1fr)}
+.global-bar{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:62px;padding:8px clamp(14px,2.2vw,32px);border-bottom:1px solid var(--color-border);background:var(--color-surface)}
+.brand{display:flex;align-items:center;gap:10px;min-width:max-content;font-weight:760;letter-spacing:-.02em}
+.mark{display:grid;place-items:center;width:33px;height:33px;border-radius:10px;background:var(--color-interactive-light);color:var(--color-interactive-dark);font-weight:800}
+.brand small{font-size:12px;font-weight:520;color:var(--color-text-secondary);margin-left:6px}
+.nav{display:flex;gap:24px;align-items:center;align-self:stretch}
+.nav button{border:0;background:transparent;border-bottom:3px solid transparent;font-weight:660;font-size:14px;white-space:nowrap;padding:0 3px;color:var(--color-text-secondary)}
+.nav button[aria-current="page"]{border-bottom-color:var(--color-interactive);color:var(--color-text-primary)}
+.nav button:hover{color:var(--color-text-primary)}
+.header-extras{display:flex;align-items:center;gap:10px}
+.demo-chip{font-size:12px;border:1px solid var(--color-border);border-radius:999px;padding:5px 9px;color:var(--color-text-secondary);white-space:nowrap}
+.more-wrap{position:relative}
+.icon-btn{display:grid;place-items:center;min-width:36px;min-height:36px;border:1px solid var(--color-border);border-radius:var(--radius-control);background:var(--color-surface);color:var(--color-text-primary);font-size:20px}
+.popover{position:absolute;top:calc(100% + 8px);right:0;z-index:50;min-width:240px;background:var(--color-surface);border:1px solid var(--color-border);box-shadow:0 12px 32px rgb(0 0 0 / 15%);border-radius:var(--radius-card);padding:13px}
+.popover[hidden]{display:none}
+.popover label{display:grid;gap:7px;font-size:13px}
+.popover select{min-height:36px;width:100%;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-field);color:var(--color-text-primary);padding:5px}
+.mode-toggle{margin-top:11px;display:flex;align-items:center;gap:9px;font-size:13px}
+.mode-toggle input{width:18px;height:18px;accent-color:var(--color-interactive)}
+.mobile-area{display:none}
+.control-line{min-height:74px;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:10px clamp(14px,2.2vw,32px);background:var(--color-surface);border-bottom:1px solid var(--color-border)}
+.control-left{min-width:0;display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+.context{display:flex;align-items:center;gap:11px}
+.context strong{display:block;font-size:16px;letter-spacing:-.015em}
+.context span{display:block;font-size:12px;color:var(--color-text-secondary)}
+.context-stroke{height:28px;width:2px;background:var(--color-border)}
+.quick-choices{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.quick-choice{min-height:var(--control-h);background:var(--color-surface);border:1px solid var(--color-quick-border);border-radius:var(--radius-control);padding:6px 11px;color:var(--color-text-primary);font-size:12px;font-weight:660;white-space:nowrap}
+.quick-choice[aria-pressed="true"]{background:var(--color-interactive-light);font-weight:760}
+.quick-choice:hover{box-shadow:inset 0 0 0 1px var(--color-quick-border)}
+.control-right{display:flex;align-items:center;gap:9px;min-width:0}
+.search{position:relative}
+.search input{width:clamp(170px,19vw,250px);height:var(--control-h);border:1px solid var(--color-border);border-radius:var(--radius-field);background:var(--color-surface-subtle);color:var(--color-text-primary);padding:6px 10px;font-size:13px}
+.search-results{position:absolute;z-index:45;top:calc(100% + 7px);right:0;width:min(320px,calc(100vw - 28px));background:var(--color-surface);border:1px solid var(--color-border);box-shadow:0 10px 32px rgb(0 0 0 / 12%);border-radius:var(--radius-control);padding:8px}
+.search-results[hidden]{display:none}
+.search-results p{font-size:12px;margin:6px;padding:4px;color:var(--color-text-secondary)}
+.search-results button{display:grid;gap:2px;width:100%;border:0;background:transparent;color:var(--color-text-primary);border-radius:5px;text-align:left;padding:9px;font-size:13px}
+.search-results button:hover,.search-results button:focus-visible{background:var(--color-surface-hover)}
+.search-results small{color:var(--color-text-secondary)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:var(--control-h);padding:7px 12px;border:1px solid var(--color-border);border-radius:var(--radius-control);font-size:13px;font-weight:700;color:var(--color-text-primary);background:var(--color-surface)}
+.btn:hover{background:var(--color-surface-hover)}
+.btn--primary{border-color:var(--color-interactive);background:var(--color-interactive);color:white}
+.btn--primary:hover{background:var(--color-interactive-dark)}
+html[data-mode="dark"] .btn--primary{color:#172522}
+.btn--ghost{border-color:transparent;background:transparent;color:var(--color-interactive-dark)}
+.btn--sm{font-size:12px;min-height:32px}
+.workspace{min-height:0;min-width:0;padding:var(--gap-page) clamp(14px,2.2vw,32px) 20px;display:grid;grid-template-rows:auto minmax(0,1fr);gap:10px}
+.context-caption{display:flex;justify-content:space-between;gap:12px;align-items:center;color:var(--color-text-secondary);font-size:12px;min-width:0}
+.context-caption strong{font-weight:700;color:var(--color-text-primary)}
+.surface-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(255px,280px) 58px;gap:var(--gap-tile);min-height:0;align-items:stretch}
+.card{min-width:0;min-height:0;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-card);box-shadow:var(--shadow-card);overflow:hidden}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:14px 15px;border-bottom:1px solid var(--color-border-light)}
+.card-head h2{font-size:15px;letter-spacing:-.014em;margin:0}
+.card-head p{font-size:12px;margin:4px 0 0;color:var(--color-text-secondary)}
+.card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--color-border-light);background:var(--color-surface-subtle);padding:9px 14px;min-height:49px;font-size:12px;color:var(--color-text-secondary)}
+.primary-board{display:flex;flex-direction:column;min-width:0;min-height:0}
+.board-facts{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;background:var(--color-surface-subtle);border:1px solid var(--color-border);padding:4px 8px;font-size:12px;font-weight:650;white-space:nowrap}
+.badge--warning{background:var(--status-warning-bg);color:var(--status-warning-fg);border-color:var(--status-warning-border)}
+.badge--danger{background:var(--status-danger-bg);color:var(--status-danger-fg);border-color:var(--status-danger-border)}
+.badge--success{background:var(--status-success-bg);color:var(--status-success-fg)}
+.calendar-viewport{flex:1;min-height:0;min-width:0;overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;scrollbar-color:var(--color-border) transparent}
+.planner-table{--hour-h:69px;position:relative;display:grid;grid-template-columns:64px repeat(var(--staff-count),minmax(155px,1fr));min-width:max(100%,540px)}
+.time-col{position:relative;background:var(--color-surface-subtle);border-right:1px solid var(--color-border-light);min-height:calc(var(--hour-h)*8 + 46px)}
+.time-col .lane-label{position:sticky;top:0;z-index:8;height:46px;background:var(--color-surface-subtle);border-bottom:1px solid var(--color-border-light)}
+.time-mark{height:var(--hour-h);font-size:12px;text-align:center;color:var(--color-text-secondary);padding-top:5px;border-bottom:1px solid var(--color-border-light)}
+.lane{border-right:1px solid var(--color-border-light);min-width:0}
+.lane:last-child{border-right:0}
+.lane-header{position:sticky;top:0;z-index:6;height:46px;display:flex;align-items:center;justify-content:center;padding:4px 6px;gap:8px;background:var(--color-surface-subtle);border-bottom:1px solid var(--color-border-light);font-weight:700;font-size:13px}
+.avatar{width:25px;height:25px;background:var(--color-interactive-light);color:var(--color-interactive-dark);font-weight:700;border-radius:50%;display:grid;place-items:center;font-size:10px;flex:0 0 auto}
+.lane-body{position:relative;height:calc(var(--hour-h)*8);background:repeating-linear-gradient(to bottom, transparent 0,transparent calc(var(--hour-h) - 1px),var(--color-border-light) calc(var(--hour-h) - 1px),var(--color-border-light) var(--hour-h))}
+.event{position:absolute;top:calc(var(--y) * var(--hour-h) / 60);height:calc(var(--duration) * var(--hour-h) / 60 - 5px);min-height:26px;left:6px;right:6px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;border:0;border-left:4px solid var(--color-interactive);border-radius:4px;padding:7px;background:var(--color-interactive-light);color:var(--color-text-primary);font-size:12px;text-align:left;overflow:hidden}
+.event:hover{filter:brightness(.96);box-shadow:0 0 0 1px var(--color-interactive)}
+.event strong{font-size:12px;line-height:1.18;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.event small{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.event[data-kind="done"]{border-left-color:var(--color-text-secondary);background:var(--color-surface-subtle);color:var(--color-text-secondary)}
+.event[data-kind="block"]{border-left-color:var(--color-text-secondary);background:repeating-linear-gradient(-45deg,var(--color-surface-subtle),var(--color-surface-subtle) 5px,var(--color-surface-hover) 5px,var(--color-surface-hover) 10px)}
+.event[data-kind="attention"]{border-left-color:var(--status-warning-border);background:var(--status-warning-bg)}
+.time-now{position:absolute;left:64px;right:0;top:calc(46px + 3.25 * var(--hour-h));border-top:2px solid var(--color-interactive);z-index:3;pointer-events:none}
+.time-now span{position:absolute;right:8px;top:-23px;font-size:11px;padding:3px 7px;border-radius:5px;background:var(--color-interactive);color:#fff}
+.board-foot-hint{font-size:11px}
+.rail{min-width:0;min-height:0;display:grid;grid-template-rows:auto minmax(0,1fr);gap:var(--gap-tile)}
+.next-card{display:flex;flex-direction:column;min-height:0;background:var(--color-surface)}
+.next-card .list-scroll{flex:1}
+.list-scroll{min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable}
+.list{margin:0;padding:0;list-style:none}
+.list-row{border-bottom:1px solid var(--color-border-light);margin:0}
+.list-row:last-child{border-bottom:0}
+.list-row button{width:100%;border:0;background:transparent;color:var(--color-text-primary);padding:12px 14px;display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:8px;align-items:center;text-align:left;font-size:12px}
+.list-row button:hover{background:var(--color-surface-hover)}
+.list-time{font-variant-numeric:tabular-nums;font-weight:770}
+.list-info{min-width:0;display:grid;gap:3px}
+.list-info strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.list-info small{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--color-text-secondary)}
+.list-row .arrow{color:var(--color-interactive-dark);font-size:16px}
+.empty-state{padding:34px 16px;text-align:center;color:var(--color-text-secondary);font-size:13px}
+.empty-state strong{display:block;color:var(--color-text-primary);margin-bottom:5px}
+.attention-card .card-head{padding-bottom:10px}
+.attention-card .attention-rows{display:grid;padding:0 13px 12px}
+.attention-item{display:flex;align-items:flex-start;gap:8px;padding:9px 0;font-size:12px}
+.attention-item + .attention-item{border-top:1px solid var(--color-border-light)}
+.attention-item strong{font-size:12px;display:block}
+.attention-item small{display:block;color:var(--color-text-secondary);font-size:12px;margin-top:3px}
+.alert-dot{display:grid;place-items:center;width:21px;height:21px;border-radius:50%;background:var(--status-warning-bg);border:1px solid var(--status-warning-border);color:var(--status-warning-fg);font-size:12px;flex:0 0 auto}
+.footnote{font-size:11px;line-height:1.4;color:var(--color-text-secondary)}
+.modal{max-width:min(500px,calc(100vw - 28px));width:500px;border:1px solid var(--color-border);border-radius:var(--radius-card);padding:0;background:var(--color-surface);color:var(--color-text-primary);box-shadow:0 18px 60px rgb(0 0 0 / 22%)}
+.modal::backdrop{background:rgb(15 24 18 / 42%)}
+.modal header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 18px 12px;border-bottom:1px solid var(--color-border-light)}
+.modal h2{margin:0;font-size:17px}
+.modal .modal-body{padding:17px 18px;font-size:14px}
+.modal p{margin:7px 0 12px}
+.modal footer{padding:13px 18px;display:flex;justify-content:flex-end;border-top:1px solid var(--color-border-light)}
+.modal .info-rows{display:grid;grid-template-columns:110px minmax(0,1fr);gap:9px;font-size:13px}
+.modal .info-rows dt{color:var(--color-text-secondary)}
+.modal .info-rows dd{margin:0;overflow-wrap:anywhere}
+@media (min-width:960px) and (min-height:700px) {
+  html,body{height:100%;overflow:hidden}
+  .prototype{height:100dvh;min-height:0}
+  .workspace{overflow:hidden}
+  .surface-grid{overflow:hidden}
+}
+@media (max-width:1100px){.surface-grid{grid-template-columns:minmax(0,1fr) minmax(245px,270px) 54px}.brand small{display:none}.nav{gap:14px}.global-bar{gap:10px}}
+@media (max-width:959px), (max-height:699px){
+  html,body{height:auto;overflow:auto}
+  .prototype{height:auto;min-height:100dvh;display:block}
+  .workspace{display:block;overflow:visible}
+  .surface-grid{display:grid;grid-template-columns:1fr;overflow:visible}
+  .primary-board{min-height:460px}
+  .calendar-viewport{height:430px;flex:none}
+  .rail{grid-template-columns:1fr;grid-template-rows:auto auto;align-items:start}
+  .next-card{min-height:0}
+  .list-scroll{max-height:330px}
+  .global-bar{position:relative}.control-line{position:relative}
+}
+@media (max-width:719px){
+  .global-bar{min-height:58px}
+  .nav{display:none}.mobile-area{display:block;min-width:0}
+  .mobile-area select{max-width:120px;font-size:12px;background:var(--color-surface);border:1px solid var(--color-border);padding:8px 4px;border-radius:var(--radius-control);color:var(--color-text-primary)}
+  .demo-chip{display:none}.control-line{align-items:stretch;flex-direction:column}
+  .control-left,.control-right{justify-content:space-between}
+  .quick-choices{gap:6px}.quick-choice{font-size:12px}
+  .search{flex:1}.search input{width:100%}
+  .surface-grid{grid-template-columns:minmax(0,1fr)}.rail{grid-template-columns:1fr}
+  .list-scroll{max-height:none;overflow:visible}
+  .calendar-viewport{height:auto;overflow-x:auto;overflow-y:visible}
+  .primary-board{min-height:0}
+  .context-caption{align-items:start}
+}
+@media (max-width:959px), (max-height:699px){.list-scroll{max-height:none;overflow:visible}.calendar-viewport{height:auto;overflow-x:auto;overflow-y:visible}}
+@media(max-width:379px){.global-bar,.control-line{padding-left:10px;padding-right:10px}.workspace{padding-left:10px;padding-right:10px}.context span{font-size:12px}.brand{font-size:14px}.quick-choice{padding-left:7px;padding-right:7px}}
+@media(pointer:coarse){:root{--control-h:44px}.btn,.quick-choice,.icon-btn{min-height:44px}.nav button,.mobile-area select{min-height:44px}.list-row button{min-height:56px}}
+/* Referenz V2: Primärer Arbeitsraum + kurze Auslastung + helle Liste + persistentes Lesedetail + Systemstreifen. */
+.surface-grid{gap:12px}
+.surface-grid.detail-open{grid-template-columns:minmax(0,1fr) minmax(250px,278px) minmax(250px,296px) 58px}
+.surface-grid:not(.detail-open){grid-template-columns:minmax(0,1fr) minmax(250px,300px) 58px}
+.utilization-card{background:var(--color-recap-bg);border-color:var(--color-recap-border);padding:14px 15px 12px;box-shadow:none}
+.util-title{display:flex;justify-content:space-between;align-items:center;gap:6px}
+.util-title h2{font-size:13px;margin:0;letter-spacing:-.01em}
+.util-title small{font-size:11px;color:var(--color-text-secondary)}
+.util-main{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px}
+.util-number{font-size:27px;font-weight:780;line-height:1.1;font-variant-numeric:tabular-nums}
+.util-meta{font-size:12px;color:var(--color-text-secondary);text-align:right}
+.util-bar{height:7px;background:var(--color-surface);border-radius:100px;margin:10px 0 8px;overflow:hidden;border:1px solid var(--color-recap-border)}
+.util-bar span{display:block;height:100%;width:0;background:var(--color-interactive);border-radius:100px}
+.util-description{font-size:11px;color:var(--color-text-secondary);margin:0 0 4px}
+.utilization-card .attention-rows{margin-top:10px;padding:8px 0 0;border-top:1px solid var(--color-recap-border)}
+.utilization-card .attention-item{padding:0;gap:7px}
+.utilization-card .attention-item + .attention-item{padding-top:7px;margin-top:7px}
+.utilization-card .attention-item strong,.utilization-card .attention-item small{font-size:11px}
+.utilization-card .attention-item small{margin-top:1px}
+.utilization-card .alert-dot{background:var(--color-surface);width:19px;height:19px}
+.detail-dock{display:flex;flex-direction:column;min-height:0}
+.detail-dock[hidden]{display:none!important}
+.detail-dock .card-head{align-items:center}
+.detail-dock .card-head p{font-size:11px}
+.detail-scroll{min-height:0;flex:1;overflow:auto;padding:17px;overscroll-behavior:contain;scrollbar-gutter:stable}
+.detail-intro{display:flex;gap:12px;align-items:center;padding-bottom:17px;border-bottom:1px solid var(--color-border-light)}
+.detail-initials{width:42px;height:42px;display:grid;place-items:center;border-radius:12px;background:var(--color-interactive-light);color:var(--color-interactive-dark);font-weight:800}
+.detail-person{min-width:0}.detail-person strong{display:block;font-size:16px}.detail-person span{display:block;font-size:12px;color:var(--color-text-secondary);margin-top:3px}
+.detail-rows{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:10px;padding-top:17px;margin:0}
+.detail-rows dt{color:var(--color-text-secondary);font-size:12px}.detail-rows dd{font-size:13px;font-weight:650;overflow-wrap:anywhere;margin:0}
+.detail-note{margin-top:20px;border:1px solid var(--color-border);border-radius:var(--radius-control);background:var(--color-surface-subtle);padding:12px;font-size:12px;color:var(--color-text-secondary)}
+.detail-note strong{display:block;color:var(--color-text-primary);margin-bottom:4px}
+.detail-dock .card-foot{align-items:flex-start;flex-direction:column;justify-content:center;gap:2px;min-height:52px}
+.detail-dock .card-foot span{font-size:12px}
+.detail-empty{font-size:13px;color:var(--color-text-secondary);padding:12px 0}
+.event.is-selected{box-shadow:inset 0 0 0 2px var(--color-interactive-dark)}
+.list-row button[aria-current="true"]{background:var(--color-interactive-light);box-shadow:inset 3px 0 0 var(--color-interactive)}
+.system-rail{position:relative;min-height:0;display:flex;flex-direction:column;align-items:stretch;gap:8px;padding:12px 6px;background:var(--color-system-rail);border:1px solid var(--color-border);border-radius:var(--radius-card)}
+.system-rail-label{display:flex;flex-direction:column;gap:3px;align-items:center;color:var(--color-text-secondary);font-size:9px;font-weight:800;letter-spacing:.04em;padding-bottom:7px;border-bottom:1px solid var(--color-border)}
+.system-rail-label small{font-size:9px;font-weight:600;letter-spacing:0}
+.system-service{position:relative;display:grid;place-items:center;gap:1px;min-height:52px;width:100%;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface);color:var(--color-text-primary);padding:4px 2px}
+.system-service:hover,.system-service[aria-expanded="true"]{border-color:var(--color-interactive)}
+.system-letter{font-size:11px;font-weight:760}
+.system-symbol{font-size:12px;font-weight:800;line-height:1}
+.system-service[data-health="ok"] .system-symbol{color:var(--status-success-fg)}
+.system-service[data-health="warning"] .system-symbol{color:var(--status-warning-fg)}
+.system-service[data-health="unknown"] .system-symbol{color:var(--color-text-secondary)}
+.system-info{position:absolute;right:calc(100% + 10px);top:35px;z-index:22;width:245px;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-card);box-shadow:0 8px 30px rgb(0 0 0 / 14%);padding:13px;font-size:12px}
+.system-info[hidden]{display:none}
+.system-info strong{display:block;font-size:13px}
+.system-info p{margin:5px 0 9px;color:var(--color-text-secondary)}
+.system-info small{color:var(--color-text-tertiary)}
+.system-demo-footer{margin-top:auto;font-size:10px;line-height:1.25;text-align:center;color:var(--color-text-secondary);overflow-wrap:anywhere}
+@media (max-width:1359px){.surface-grid.detail-open{grid-template-columns:minmax(0,1fr) minmax(250px,290px) 58px}.detail-dock{display:none}}
+@media (max-width:959px), (max-height:699px){
+  .surface-grid.detail-open,.surface-grid:not(.detail-open){grid-template-columns:minmax(0,1fr);overflow:visible}
+  .detail-dock{display:none}
+  .rail{grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto}
+  .next-card{min-height:280px}
+  .list-scroll{max-height:330px!important;overflow-y:auto!important}
+  .system-rail{flex-direction:row;flex-wrap:wrap;align-items:center;gap:7px;padding:9px}
+  .system-rail-label{flex-direction:row;gap:8px;padding:0 10px 0 0;border:0;border-right:1px solid var(--color-border)}
+  .system-service{min-height:44px;width:54px}
+  .system-demo-footer{margin-left:auto;margin-top:0;font-size:11px}
+  .system-info{right:8px;top:auto;bottom:calc(100% + 7px)}
+}
+@media (max-width:719px){
+  .list-scroll{max-height:none!important;overflow:visible!important}
+  .system-rail{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));justify-items:stretch}
+  .system-rail-label,.system-demo-footer{grid-column:1/-1;border:0;justify-content:center}
+  .system-service{width:100%;min-height:48px;grid-template-columns:1fr auto;padding:7px 12px}
+}
+@media (pointer:coarse){.system-service{min-height:44px}}
+
+@media(prefers-reduced-motion:no-preference){.quick-choice,.btn,.list-row button{transition:background-color 150ms ease,border-color 150ms ease,box-shadow 150ms ease}}
+
+/* V3 – Calendar-first layout. All day controls live in the upper-right header. */
+.prototype{grid-template-rows:auto minmax(0,1fr)}
+.global-bar{min-height:64px;padding:9px clamp(12px,1.6vw,26px);gap:clamp(12px,1.1vw,20px)}
+.brand{flex:none;font-size:14px}
+.brand small{font-size:11px;font-weight:500}
+.nav{flex:none;gap:clamp(10px,1.15vw,20px);margin-left:auto}
+.nav button{font-size:13px}
+.header-worktools{display:flex;align-items:center;justify-content:flex-end;gap:8px;min-width:0;flex:0 1 auto}
+.header-extras{flex:none;gap:6px}
+.header-extras .icon-btn{width:36px;height:36px}
+.demo-chip{padding:5px 8px}
+.date-chip{display:flex;align-items:center;gap:6px;min-height:36px;padding:0 8px;border:1px solid var(--color-border);background:var(--color-surface-subtle);border-radius:var(--radius-control);white-space:nowrap}
+.date-chip strong{font-size:12px;letter-spacing:-.01em}
+.date-symbol{font-size:16px;color:var(--color-interactive);line-height:1}
+.header-worktools .quick-choices{display:flex;flex-wrap:nowrap;gap:1px;padding:3px;border:1px solid var(--color-border);border-radius:var(--radius-control);background:var(--color-surface-subtle)}
+.header-worktools .quick-choice{border:0;min-height:29px;padding:5px 9px;background:transparent;color:var(--color-text-secondary);border-radius:7px;font-size:11px;box-shadow:none}
+.header-worktools .quick-choice:hover{background:var(--color-surface-hover);box-shadow:none}
+.header-worktools .quick-choice[aria-pressed="true"]{background:var(--color-surface);color:var(--color-text-primary);box-shadow:0 1px 4px rgb(0 0 0 / 9%)}
+.header-worktools .search input{width:clamp(135px,12vw,215px);height:36px;font-size:12px;border-radius:9px}
+.header-worktools .btn{min-height:36px;white-space:nowrap;padding:6px 11px;font-size:12px}
+.mobile-plan-choice{display:none}
+.workspace{padding:9px clamp(12px,1.6vw,26px) 12px;display:block;min-height:0}
+.surface-grid{height:100%;min-height:0;gap:11px}
+.primary-board{overflow:hidden}
+.primary-board>.sr-only{position:absolute!important}
+.calendar-viewport{height:100%;flex:1;min-height:0}
+.planner-table{--hour-h:max(69px,calc((100dvh - 135px)/8))}
+.time-col,.lane-header,.time-col .lane-label{background:var(--color-surface)}
+.lane-header{border-bottom-color:var(--color-border)}
+/* Responsive: add a tool row only once the single-line controls would collide. */
+@media(max-width:1560px){
+ .brand small,.demo-chip{display:none}
+ .global-bar{gap:11px}
+ .nav{gap:12px}
+ .header-worktools .quick-choice{padding-inline:7px}
+ .date-chip{padding-inline:6px}
+ .header-worktools .search input{width:155px}
+}
+@media(max-width:1240px){
+ .global-bar{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"brand navigation extras" "tools tools tools";row-gap:7px}
+ .brand{grid-area:brand}
+ .nav{grid-area:navigation;margin:0 auto}
+ .header-extras{grid-area:extras}
+ .header-worktools{grid-area:tools;justify-self:end;width:auto;padding:1px 0 0}
+ .header-worktools .search input{width:clamp(185px,27vw,270px)}
+ .workspace{padding-top:8px}
+}
+@media(max-width:959px), (max-height:699px){
+ .prototype{display:block;min-height:100dvh;height:auto}
+ .workspace{display:block;overflow:visible}
+ .surface-grid{height:auto;overflow:visible}
+ .calendar-viewport{height:auto;overflow-x:auto;overflow-y:visible}
+ .primary-board{min-height:0}
+ .planner-table{--hour-h:69px}
+}
+@media(max-width:719px){
+ .global-bar{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"brand navigation extras" "tools tools tools";padding:9px 12px;column-gap:9px}
+ .brand{font-size:13px}
+ .mobile-area{grid-area:navigation;display:block;justify-self:end}
+ .mobile-area select{min-height:36px;max-width:120px}
+ .nav{display:none}
+ .header-worktools{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"date choice choice" "search search booking";width:100%;justify-items:end;gap:7px}
+ .date-chip{grid-area:date;justify-self:start;min-width:0}
+ .header-worktools .quick-choices{display:none}
+ .mobile-plan-choice{grid-area:choice;display:block}
+ .mobile-plan-choice select{height:36px;border:1px solid var(--color-border);border-radius:9px;background:var(--color-surface);color:var(--color-text-primary);font-size:12px;padding:0 9px}
+ .header-worktools .search{grid-area:search;min-width:0;width:100%}
+ .header-worktools .search input{width:100%;height:36px}
+ .header-worktools .btn{grid-area:booking}
+ .workspace{padding:8px 10px 12px}
+ .planner-table{min-width:max(100%,540px)}
+ .surface-grid{gap:10px}
+}
+@media(pointer:coarse){
+ .header-worktools .btn,.header-worktools .search input,.date-chip,.mobile-plan-choice select,.header-worktools .quick-choice{min-height:44px;height:44px}
+}
+@media(max-width:379px){
+ .global-bar{padding-left:9px;padding-right:9px}
+ .brand .mark{width:29px;height:29px}
+ .mobile-area select{max-width:98px}
+ .date-chip strong{font-size:11px}
+ .date-symbol{display:none}
+}
+</style>
+</head>
+<body>
+<div class="prototype" id="app">
+  <header class="global-bar" aria-label="Salon Flow Navigation">
+    <div class="brand"><span class="mark" aria-hidden="true">SF</span><span>Salon Flow</span><small>Referenzkomposition</small></div>
+    <nav class="nav" aria-label="Hauptbereiche">
+      <button type="button" data-other="Tagesplan" aria-current="page">Tagesplan</button>
+      <button type="button" data-other="Termine">Termine</button>
+      <button type="button" data-other="Kundenkartei">Kundenkartei</button>
+      <button type="button" data-other="Betrieb">Betrieb</button>
+    </nav>
+    <div class="mobile-area"><label class="sr-only" for="mobileAreas">Hauptbereich</label><select id="mobileAreas"><option>Tagesplan</option><option>Termine</option><option>Kundenkartei</option><option>Betrieb</option></select></div>
+    <div class="header-worktools" role="group" aria-label="Tagesplan steuern">
+      <div class="date-chip" aria-label="Datum des Tagesplans"><span class="date-symbol" aria-hidden="true">▦</span><strong id="day-label">Mo., 20. Juli</strong></div>
+      <div class="quick-choices" role="group" aria-label="Schnellauswahl">
+        <button class="quick-choice" type="button" data-choice="all" aria-pressed="true">Alle</button>
+        <button class="quick-choice" type="button" data-choice="mine" aria-pressed="false">Mein Plan</button>
+        <button class="quick-choice" type="button" data-choice="free" aria-pressed="false">Freie Zeiten</button>
+      </div>
+      <div class="mobile-plan-choice"><label class="sr-only" for="mobilePlanFilter">Ansicht des Tagesplans</label><select id="mobilePlanFilter"><option value="all">Alle</option><option value="mine">Mein Plan</option><option value="free">Freie Zeiten</option></select></div>
+      <div class="search"><label class="sr-only" for="search">Suche im Tagesplan</label><input id="search" type="search" placeholder="Kundin oder Termin suchen" autocomplete="off" aria-controls="searchResults" aria-expanded="false"><div class="search-results" id="searchResults" hidden></div></div>
+      <button class="btn btn--primary" id="newBooking" type="button">+ Termin</button>
+      <span class="sr-only" id="viewState" role="status" aria-live="polite">Normaler Tag · alle Personen</span>
+    </div>
+    <div class="header-extras"><span class="demo-chip">Demo</span>
+      <div class="more-wrap"><button class="icon-btn" id="more" type="button" aria-haspopup="true" aria-controls="prefs" aria-expanded="false" aria-label="Prüfoptionen öffnen">⋯</button>
+        <div id="prefs" class="popover" hidden><label>Prüfszenario<select id="scenario"><option value="normal">Normaler Tag</option><option value="busy">Voller Tag</option><option value="quiet">Ruhiger Tag</option><option value="empty">Keine Termine</option></select></label>
+        <label class="mode-toggle"><input type="checkbox" id="darkMode"> Dunkelmodus demonstrieren</label><p class="footnote">Nur lokale Darstellung. Keine echten Termine oder Änderungen.</p></div>
+      </div>
+    </div>
+  </header>
+  <main class="workspace" id="mainContent" aria-labelledby="pageTitle"><h1 class="sr-only" id="pageTitle">Tagesplan</h1>
+    <div class="surface-grid">
+      <section class="card primary-board" aria-labelledby="planTitle">
+        <h2 class="sr-only" id="planTitle">Zeit und Personen</h2>
+        <span class="sr-only" id="bookingCount">0 Termine</span><span class="sr-only" id="staffCount">0 Personen</span>
+        <div class="calendar-viewport" id="calendarScroll" role="region" aria-label="Tagesplan: Zeitachse und Mitarbeitende" tabindex="0">
+          <div class="planner-table" id="plannerTable" style="--staff-count:3"></div>
+        </div>
+      </section>
+      <aside class="rail" aria-label="Ergänzende Tagesinformationen">
+        <section class="card utilization-card" aria-labelledby="utilTitle">
+          <div class="util-title"><h2 id="utilTitle">Auslastung</h2><small>Ein Blick genügt</small></div>
+          <div class="util-main"><strong class="util-number" id="utilValue">–</strong><span class="util-meta" id="utilMeta">Belegung<br>Demozeit</span></div>
+          <div class="util-bar" role="progressbar" aria-label="Rechnerische Demo-Auslastung" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="utilBar"><span id="utilFill"></span></div>
+          <p class="util-description">Vereinfachte Demorechnung, keine echte Kapazitätsprüfung.</p>
+          <div id="alerts" class="attention-rows" aria-label="Jetzt wichtige Hinweise"></div>
+        </section>
+        <section class="card next-card" aria-labelledby="nextTitle">
+          <div class="card-head"><div><h2 id="nextTitle">Nächste Termine</h2><p>Helle Arbeitsfläche · intern scrollbare Zeilen</p></div><span class="badge" id="nextCount">0</span></div>
+          <div class="list-scroll" id="nextScroll" aria-labelledby="nextTitle"><ul class="list" id="nextList"></ul></div>
+          <div class="card-foot"><span id="nextFooter">Beispieldaten</span><button class="btn btn--ghost btn--sm" type="button" id="allBookings">Alle Termine →</button></div>
+        </section>
+      </aside>
+      <section class="card detail-dock" id="detailDock" aria-labelledby="dockTitle">
+        <div class="card-head"><div><h2 id="dockTitle">Termindetail</h2><p>Bleibt beim Arbeiten offen</p></div><button class="icon-btn" type="button" id="dockClose" aria-label="Termindetail ausblenden">×</button></div>
+        <div class="detail-scroll" id="dockBody" role="region" aria-label="Inhalt des Termindetails" tabindex="0"></div>
+        <div class="card-foot"><span>Lesemodus · Demodaten</span><span>Andere Termine auswählen, ohne zu schliessen.</span></div>
+      </section>
+      <aside class="system-rail" aria-label="Systemstatus – ausschliesslich Beispielzustände">
+        <div class="system-rail-label">SYS <small>Demo</small></div>
+        <button class="system-service" type="button" data-system="website" data-health="ok" title="Website – simulierter Status" aria-label="Website: Beispielzustand erreichbar" aria-expanded="false" aria-controls="systemInfo"><span class="system-letter">WEB</span><span class="system-symbol" aria-hidden="true">✓</span></button>
+        <button class="system-service" type="button" data-system="booking" data-health="ok" title="Online-Buchung – simulierter Status" aria-label="Online-Buchung: Beispielzustand betriebsbereit" aria-expanded="false" aria-controls="systemInfo"><span class="system-letter">BUCH</span><span class="system-symbol" aria-hidden="true">✓</span></button>
+        <button class="system-service" type="button" data-system="email" data-health="warning" title="E-Mail – simulierter Prüfhinweis" aria-label="E-Mail: Beispielzustand Verzögerung" aria-expanded="false" aria-controls="systemInfo"><span class="system-letter">MAIL</span><span class="system-symbol" aria-hidden="true">!</span></button>
+        <button class="system-service" type="button" data-system="sms" data-health="unknown" title="SMS – nicht geprüft" aria-label="SMS: Zustand unbekannt" aria-expanded="false" aria-controls="systemInfo"><span class="system-letter">SMS</span><span class="system-symbol" aria-hidden="true">?</span></button>
+        <span class="system-demo-footer">Nur Demo</span>
+        <div class="system-info" id="systemInfo" hidden role="status" aria-live="polite"></div>
+      </aside>
+    </div>
+  </main>
+</div>
+<dialog class="modal" id="detailDialog" aria-labelledby="dialogTitle"><header><h2 id="dialogTitle">Details</h2><button id="closeTop" class="icon-btn" type="button" aria-label="Fenster schliessen">×</button></header><div class="modal-body" id="dialogBody"></div><footer><button class="btn" type="button" id="closeBottom">Schliessen</button></footer></dialog>
+<script>
+'use strict';
+// Nur Testdaten: keine Backend-Calls, keine Domain-Kommandos und keine Persistenz.
+const STAFF=[{id:'elma',name:'Elma',initials:'ER'},{id:'belinda',name:'Belinda',initials:'BG'},{id:'laura',name:'Laura',initials:'LF'}];
+const EVENTS=[
+ {id:'a1',staff:'elma',start:'09:00',duration:60,name:'Anna Keller',service:'Haarschnitt',kind:'done'},
+ {id:'a2',staff:'elma',start:'10:30',duration:150,name:'Lea Schmid',service:'Balayage',kind:'now'},
+ {id:'a3',staff:'elma',start:'14:15',duration:90,name:'Nina Frei',service:'Ansatzfarbe',kind:'future'},
+ {id:'a4',staff:'elma',start:'16:15',duration:45,name:'Sandra Baumann',service:'Haarpflege',kind:'future'},
+ {id:'b1',staff:'belinda',start:'09:15',duration:60,name:'Sofia Meier',service:'Schnitt & Styling',kind:'done'},
+ {id:'b2',staff:'belinda',start:'11:00',duration:50,name:'Mara Graf',service:'Haarschnitt',kind:'done'},
+ {id:'b3',staff:'belinda',start:'13:15',duration:75,name:'Mia Roth',service:'Beratung',kind:'future'},
+ {id:'b4',staff:'belinda',start:'15:30',duration:60,name:'Nora Weber',service:'Haarschnitt',kind:'future'},
+ {id:'l1',staff:'laura',start:'09:00',duration:60,name:'Leonie Graf',service:'Föhnen',kind:'done'},
+ {id:'l2',staff:'laura',start:'10:30',duration:90,name:'Blockzeit',service:'Interne Schulung',kind:'block'},
+ {id:'l3',staff:'laura',start:'13:00',duration:60,name:'Lina Meier',service:'Herrenhaarschnitt',kind:'future'},
+ {id:'l4',staff:'laura',start:'14:30',duration:75,name:'Lara Frei',service:'Haarschnitt',kind:'future'}
+];
+const ADD_BUSY=[
+ {id:'f1',staff:'elma',start:'12:45',duration:45,name:'Zusatztermin',service:'Beratung · Zeitkonflikt',kind:'attention'},
+ {id:'f2',staff:'belinda',start:'10:00',duration:45,name:'Sabine Bühler',service:'Styling',kind:'future'},
+ {id:'f3',staff:'laura',start:'15:45',duration:60,name:'Kim Graf',service:'Föhnen',kind:'future'}
+];
+const day0=new Date(2026,6,20);let dateOffset=0;let scenario='normal';let selection='all';let originElement=null;
+const $=id=>document.getElementById(id);
+const timeToMin=s=>{const [h,m]=s.split(':').map(Number);return h*60+m};
+const safe=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function currentEvents(){const base=scenario==='empty'?[]:scenario==='quiet'?EVENTS.filter(e=>['a2','b3','l2'].includes(e.id)):scenario==='busy'?[...EVENTS,...ADD_BUSY]:EVENTS;const chosen=selection==='mine'?base.filter(e=>e.staff==='elma'):base;return dateOffset===0?chosen:[]}
+function currentStaff(){return selection==='mine'?STAFF.slice(0,1):STAFF}
+function fmtDay(){const d=new Date(day0);d.setDate(d.getDate()+dateOffset);return new Intl.DateTimeFormat('de-CH',{weekday:'short',day:'numeric',month:'short'}).format(d)}
+function stateText(k){return k==='now'?'jetzt':k==='done'?'erledigt':k==='block'?'Blockzeit':k==='attention'?'Prüfen':'kommend'}
+function openDialog(title,html,origin){originElement=origin||document.activeElement;$('dialogTitle').textContent=title;$('dialogBody').innerHTML=html;$('detailDialog').showModal()}
+let selectedEventId='b3';
+function eventDetailHTML(e){return `<div class="detail-intro"><span class="detail-initials" aria-hidden="true">${safe(e.name.split(' ').map(t=>t[0]).slice(0,2).join(''))}</span><div class="detail-person"><strong>${safe(e.name)}</strong><span>${safe(e.service)}</span></div></div><dl class="detail-rows"><dt>Zeit</dt><dd>${safe(e.start)} · ${e.duration} Min.</dd><dt>Mitarbeitende</dt><dd>${safe(STAFF.find(s=>s.id===e.staff)?.name||'')}</dd><dt>Zustand</dt><dd>${safe(stateText(e.kind))}</dd><dt>Datum</dt><dd>${safe(fmtDay())}</dd></dl><div class="detail-note"><strong>Zum Weiterarbeiten sichtbar</strong>Nur lokale Beispieldaten. Keine Kundendatenbank, kein Speichern und keine echte Systemprüfung.</div>`}
+function updateDock(){const e=[...EVENTS,...ADD_BUSY].find(x=>x.id===selectedEventId);const visible=e&&currentEvents().some(x=>x.id===e.id);$('detailDock').hidden=!selectedEventId;$('mainContent').querySelector('.surface-grid').classList.toggle('detail-open',!!selectedEventId);$('dockBody').innerHTML=e?(visible?eventDetailHTML(e):`<p class="detail-empty"><strong>${safe(e.name)}</strong> ist ausgewählt, gehört aber nicht zur aktuellen Ansicht. Einen sichtbaren Termin wählen oder das Detail ausblenden.</p>`):'<p class="detail-empty">Einen Termin im Plan oder in der Liste auswählen.</p>';
+document.querySelectorAll('[data-event],[data-next]').forEach(el=>{const chosen=el.dataset.event===selectedEventId||el.dataset.next===selectedEventId;el.classList.toggle('is-selected',chosen);if(el.hasAttribute('data-next')){if(chosen)el.setAttribute('aria-current','true');else el.removeAttribute('aria-current')}})}
+function detailEvent(id,source){const e=currentEvents().find(x=>x.id===id);if(!e)return;selectedEventId=id;updateDock();if(!window.matchMedia('(min-width:1360px) and (min-height:700px)').matches){openDialog(e.name,`<dl class="info-rows"><dt>Zeit</dt><dd>${safe(e.start)} · ${e.duration} Min.</dd><dt>Inhalt</dt><dd>${safe(e.service)}</dd><dt>Person</dt><dd>${safe(STAFF.find(s=>s.id===e.staff)?.name||'')}</dd><dt>Zustand</dt><dd>${safe(stateText(e.kind))}</dd></dl><p class="footnote">Lesedetail für diese Bildschirmgrösse. Keine echten Änderungen.</p>`,source)}}
+function renderCalendar(){const staff=currentStaff(),events=currentEvents();$('plannerTable').style.setProperty('--staff-count',String(staff.length));const timeCol=`<div class="time-col"><div class="lane-label" aria-hidden="true"></div>${Array.from({length:8},(_,i)=>`<div class="time-mark">${String(i+9).padStart(2,'0')}:00</div>`).join('')}</div>`;
+ $('plannerTable').innerHTML=timeCol+staff.map(s=>`<div class="lane"><div class="lane-header"><span class="avatar" aria-hidden="true">${safe(s.initials)}</span>${safe(s.name)}</div><div class="lane-body">${events.filter(e=>e.staff===s.id).map(e=>{const off=timeToMin(e.start)-540;const end=Math.max(1,Math.min(e.duration,480-off));return `<button type="button" class="event" data-event="${safe(e.id)}" data-kind="${safe(e.kind)}" style="--y:${off};--duration:${end}" aria-label="${safe(e.start)}: ${safe(e.name)}, ${safe(e.service)}, ${safe(stateText(e.kind))}"><strong>${safe(e.start)} · ${safe(e.name)}</strong><small>${safe(e.service)}</small></button>`}).join('')}</div></div>`).join('')+`<div class="time-now" aria-hidden="true"><span>Jetzt · Demo 12:15</span></div>`;
+ $('plannerTable').querySelectorAll('[data-event]').forEach(el=>el.addEventListener('click',()=>detailEvent(el.dataset.event,el)));
+ $('bookingCount').textContent=events.filter(e=>e.kind!=='block').length+' Termine';$('staffCount').textContent=staff.length+' Personen';
+}
+function renderNext(){const events=currentEvents().filter(e=>e.kind!=='block').slice().sort((a,b)=>timeToMin(a.start)-timeToMin(b.start));
+ // Der Testtag startet um 12:15: nur die folgenden Ereignisse zählen als „nächste".
+ const future=events.filter(e=>timeToMin(e.start)>=12*60+15);
+ $('nextCount').textContent=String(future.length);
+ $('nextList').innerHTML=future.length?future.map(e=>`<li class="list-row"><button data-next="${safe(e.id)}" type="button"><span class="list-time">${safe(e.start)}</span><span class="list-info"><strong>${safe(e.name)}</strong><small>${safe(e.service)} · ${safe(STAFF.find(s=>s.id===e.staff)?.name||'')}</small></span><span class="arrow" aria-hidden="true">›</span></button></li>`).join(''):`<li class="empty-state"><strong>Keine weiteren Termine</strong>Für diesen Beispieltag sind keine weiteren Termine eingetragen.</li>`;
+ $('nextList').querySelectorAll('[data-next]').forEach(el=>el.addEventListener('click',()=>detailEvent(el.dataset.next,el)));
+ $('nextFooter').textContent=future.length?`${future.length} weitere Termine`:'Keine Einträge';requestAnimationFrame(syncScroller)
+}
+function syncScroller(){const x=$('nextScroll');if(!x)return;const scrollable=x.scrollHeight>x.clientHeight+2;if(scrollable){x.setAttribute('tabindex','0');x.setAttribute('role','region');x.setAttribute('aria-label','Scrollbare Liste Nächste Termine')}else{x.removeAttribute('tabindex');x.removeAttribute('role');x.removeAttribute('aria-label')}}
+function renderCapacity(){const es=currentEvents().filter(e=>e.kind!=='block');const total=8*60*currentStaff().length;const minutes=es.reduce((n,e)=>n+e.duration,0);const pct=total?Math.min(100,Math.round(minutes/total*100)):0;
+$('utilValue').textContent=pct+' %';$('utilFill').style.width=pct+'%';$('utilBar').setAttribute('aria-valuenow',String(pct));$('utilMeta').innerHTML=es.length+' Termine<br>'+Math.round(minutes/60*10)/10+' Std. Demo'}
+function renderAlerts(){const items=scenario==='empty'?[['i','Einrichtung prüfen','Keine Demotermine für diesen Tag']]:scenario==='quiet'?[['i','Freies Zeitfenster','Im Beispiel besteht noch Kapazität']]:scenario==='busy'?[['!','Zeitkonflikt demonstriert','Ein Zusatztermin überschneidet sich mit einem anderen'],['i','Auslastung hoch','Mehrere Termine im Nachmittagsbereich']]:[['i','Ein freies Zeitfenster','Verfügbarkeit im Zeitraster prüfen']];
+ $('alerts').innerHTML=items.map(([sym,title,desc])=>`<div class="attention-item"><span class="alert-dot" aria-hidden="true">${safe(sym)}</span><div><strong>${safe(title)}</strong><small>${safe(desc)}</small></div></div>`).join('')}
+function render(){ $('day-label').textContent=fmtDay();renderCalendar();renderNext();renderCapacity();renderAlerts();updateDock();let scene={normal:'Normaler Tag',busy:'Voller Tag',quiet:'Ruhiger Tag',empty:'Keine Termine'}[scenario];$('viewState').textContent=scene+' · '+({all:'Alle Personen',mine:'Mein Plan',free:'Freie Zeiten'}[selection]);$('calendarScroll').scrollTop=0; if(selection==='free'){$('alerts').insertAdjacentHTML('beforeend','<div class="attention-item"><span class="alert-dot" aria-hidden="true">i</span><div><strong>Freie Zeiten</strong><small>Diese Schnellauswahl zeigt im Prototyp nur den Orientierungskontext. Eine echte Slot-Berechnung bleibt dem Buchbarkeitsdienst vorbehalten.</small></div></div>')};$('search').value='';$('searchResults').hidden=true;$('search').setAttribute('aria-expanded','false') }
+function setSelection(which){selection=which;document.querySelectorAll('[data-choice]').forEach(el=>el.setAttribute('aria-pressed',String(which===el.dataset.choice)));$('mobilePlanFilter').value=which;render()}
+document.querySelectorAll('[data-choice]').forEach(el=>el.addEventListener('click',()=>setSelection(el.dataset.choice)));
+$('mobilePlanFilter').addEventListener('change',e=>setSelection(e.target.value));
+$('dockClose').addEventListener('click',()=>{selectedEventId=null;updateDock()});
+const SYSTEM_INFO={website:{title:'Website',status:'Beispiel: erreichbar',detail:'Nur eine simulierte Anzeige. Eine echte Prüfung müsste Auslieferung, TLS und den letzten erfolgreichen Abruf berücksichtigen.'},booking:{title:'Online-Buchung',status:'Beispiel: betriebsbereit',detail:'Noch kein echter Check gegen Buchungs-API, verfügbares Kontingent und Buchbarkeit verbunden.'},email:{title:'E-Mail',status:'Beispiel: verzögert',detail:'Fiktiver Warnfall. Später getrennt prüfen: Versandannahme, Warteschlange, Provider und bekannte Zustellfehler.'},sms:{title:'SMS',status:'Unbekannt',detail:'Kein tatsächlicher Provider- oder Zustellnachweis. Unbekannt bedeutet ausdrücklich nicht «funktioniert». '}};
+function closeSystemInfo(){ $('systemInfo').hidden=true;document.querySelectorAll('[data-system]').forEach(el=>el.setAttribute('aria-expanded','false')) }
+document.querySelectorAll('[data-system]').forEach(el=>el.addEventListener('click',()=>{const was=el.getAttribute('aria-expanded')==='true';closeSystemInfo();if(!was){const x=SYSTEM_INFO[el.dataset.system];$('systemInfo').innerHTML='<strong>'+safe(x.title)+'</strong><p><b>'+safe(x.status)+'</b><br>'+safe(x.detail)+'</p><small>Beispielstatus – keine Live-Daten</small>';$('systemInfo').hidden=false;el.setAttribute('aria-expanded','true')}}));
+$('newBooking').addEventListener('click',e=>openDialog('Termin erfassen',`<p>Das ist eine <strong>Referenzkomposition</strong>. Der bestehende Buchungs-Use-Case ist hier absichtlich nicht angeschlossen.</p><p>Eine echte Erfassung darf nur über den freigegebenen fachlichen Buchungsweg erfolgen.</p>`,e.currentTarget));
+$('allBookings').addEventListener('click',e=>openDialog('Alle Termine',`<p>Die vollständige Terminliste gehört zum Hauptbereich <strong>Termine</strong>.</p><p>Diese HTML-Datei prüft nur die Tagesplan-Komposition und verändert keine Daten.</p>`,e.currentTarget));
+document.querySelectorAll('[data-other]').forEach(el=>el.addEventListener('click',()=>{if(el.dataset.other!=='Tagesplan')openDialog(el.dataset.other,`<p>Der Hauptbereich <strong>${safe(el.dataset.other)}</strong> ist Teil der festgelegten Navigation, wird in diesem Referenzprototyp aber nicht nachgebildet.</p>`,el)}));
+$('mobileAreas').addEventListener('change',e=>{if(e.target.value!=='Tagesplan')openDialog(e.target.value,`<p>Der Bereich <strong>${safe(e.target.value)}</strong> ist hier nicht implementiert.</p>`,e.target);e.target.value='Tagesplan'});
+$('more').addEventListener('click',()=>{const p=$('prefs');p.hidden=!p.hidden;$('more').setAttribute('aria-expanded',String(!p.hidden))});
+$('scenario').addEventListener('change',e=>{scenario=e.target.value;render();$('prefs').hidden=true;$('more').setAttribute('aria-expanded','false')});
+$('darkMode').addEventListener('change',e=>{document.documentElement.dataset.mode=e.target.checked?'dark':'light'});
+for(const id of ['closeTop','closeBottom'])$(id).addEventListener('click',()=>$('detailDialog').close());
+$('detailDialog').addEventListener('close',()=>{if(originElement?.isConnected)originElement.focus();originElement=null});
+function search(){const val=$('search').value.trim().toLowerCase(),box=$('searchResults');if(val.length<3){box.hidden=true;$('search').setAttribute('aria-expanded','false');return}const result=currentEvents().filter(e=>e.kind!=='block'&&[e.name,e.service,e.start].join(' ').toLowerCase().includes(val)).slice(0,5);box.innerHTML=result.length?result.map(e=>`<button type="button" data-found="${safe(e.id)}"><strong>${safe(e.name)}</strong><small>${safe(e.start)} · ${safe(e.service)}</small></button>`).join(''):'<p>Kein passender Termin in den Demodaten.</p>';box.hidden=false;$('search').setAttribute('aria-expanded','true');box.querySelectorAll('[data-found]').forEach(btn=>btn.addEventListener('click',()=>{box.hidden=true;detailEvent(btn.dataset.found,btn)}))}
+$('search').addEventListener('input',search);
+$('search').addEventListener('keydown',e=>{if(e.key==='Escape'){$('searchResults').hidden=true;$('search').setAttribute('aria-expanded','false')}if(e.key==='Enter'){e.preventDefault();const b=$('searchResults').querySelector('button');if(b)b.click()}});
+document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();$('search').focus()}if(e.key==='Escape'&&!$('systemInfo').hidden)closeSystemInfo();if(e.key==='Escape'&&!$('prefs').hidden){$('prefs').hidden=true;$('more').setAttribute('aria-expanded','false')}});
+document.addEventListener('pointerdown',e=>{if(!e.target.closest('.system-rail'))closeSystemInfo();if(!$('prefs').hidden&&!e.target.closest('.more-wrap')){$('prefs').hidden=true;$('more').setAttribute('aria-expanded','false')}});
+if('ResizeObserver' in window){const obs=new ResizeObserver(()=>syncScroller());obs.observe($('nextScroll'))}
+render();
+</script>
+</body>
+</html>

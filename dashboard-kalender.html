@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de" data-tone="trust" data-mode="light" data-density="comfortable">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gasserwerk — Kalender (Archetyp B) · DS Referenz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,100..1000&family=Playfair+Display:wght@400..900&display=swap">
+  <link rel="stylesheet" href="../main.css">
+</head>
+<body>
+
+<div class="app-shell">
+
+  <header class="app-shell__header">
+    <div class="cluster cluster--md w-full">
+      <span class="nav__brand">Gasserwerk <span class="nav__brand-badge">Studio</span></span>
+      <div class="cluster cluster--sm" style="margin-inline-start: auto;">
+        <span class="badge badge--success hidden-mobile"><span class="badge__dot" aria-hidden="true"></span>Widget live</span>
+        <div class="select-wrap select-wrap--inline hidden-mobile">
+          <select class="select" data-tone-select aria-label="Tone wählen">
+            <option value="trust">Trust</option>
+            <option value="modern">Modern</option>
+            <option value="playful">Playful</option>
+            <option value="premium">Premium</option>
+            <option value="industrial">Industrial</option>
+            <option value="minimal">Minimal</option>
+            <option value="musikraum">Musikraum</option>
+          </select>
+        </div>
+        <button class="theme-toggle" aria-label="Auf Dark Mode wechseln" data-theme-toggle>
+          <span class="theme-toggle__icon theme-toggle__icon--sun" aria-hidden="true">☀</span>
+          <span class="theme-toggle__icon theme-toggle__icon--moon" aria-hidden="true">☾</span>
+        </button>
+        <span class="avatar avatar--c3" title="Coiffure Milano">CM</span>
+      </div>
+    </div>
+  </header>
+
+  <aside class="app-shell__sidebar">
+    <nav aria-label="Hauptnavigation" class="stack stack--md">
+      <ul class="nav__items">
+        <li><a class="nav__item" href="dashboard-gasserwerk.html">Übersicht</a></li>
+        <li><a class="nav__item" href="dashboard-bookings.html">Buchungen</a></li>
+        <li><a class="nav__item nav__item--active" href="#" aria-current="page">Kalender</a></li>
+        <li><a class="nav__item" href="dashboard-kunden.html">Kunden</a></li>
+        <li><a class="nav__item" href="dashboard-angebot.html">Angebot</a></li>
+        <li><a class="nav__item" href="dashboard-team.html">Team</a></li>
+        <li><a class="nav__item" href="dashboard-gasserwerk-analytics.html">Analytics</a></li>
+        <li><a class="nav__item" href="dashboard-website.html">Website</a></li>
+        <li><a class="nav__item" href="dashboard-nachrichten.html">Nachrichten</a></li>
+        <li><a class="nav__item" href="dashboard-abo.html">Abo &amp; Rechnung</a></li>
+        <li><a class="nav__item" href="dashboard-einstellungen.html">Einstellungen</a></li>
+      </ul>
+    </nav>
+  </aside>
+
+  <main class="app-shell__main cq" id="main">
+    <div class="stack stack--lg">
+
+      <div class="cluster cluster--between">
+        <div class="stack stack--xs">
+          <h1 style="margin: 0; font-size: var(--text-size-h3);">Kalender</h1>
+          <span style="color: var(--color-text-secondary); font-size: var(--font-sm);">Kernfrage: Wann ist wer frei? · KW 28, 6. – 11. Juli · cal-Komponente (Stunden-Raster)</span>
+        </div>
+        <div class="cluster cluster--sm">
+          <button class="btn btn--sm btn--ghost" data-open-drawer="avail-drawer">Verfügbarkeit</button>
+          <button class="btn btn--sm">Slot blockieren</button>
+        </div>
+      </div>
+
+      <div class="cluster cluster--sm">
+        <fieldset class="segmented segmented--sm">
+          <legend class="sr-only">Ansicht</legend>
+          <label class="segmented__item"><input type="radio" name="view" value="tag"><span>Tag</span></label>
+          <label class="segmented__item"><input type="radio" name="view" value="woche" checked><span>Woche</span></label>
+        </fieldset>
+        <div class="select-wrap select-wrap--inline">
+          <select class="select" aria-label="Teammitglied">
+            <option>Ganzes Team</option>
+            <option>Sandra</option>
+            <option>Marco</option>
+          </select>
+        </div>
+        <nav class="pagination" aria-label="Wochen-Navigation">
+          <a href="#" class="pagination__link" rel="prev" aria-label="Vorherige Woche">←</a>
+          <a href="#" class="pagination__link" aria-current="page">KW 28</a>
+          <a href="#" class="pagination__link" rel="next" aria-label="Nächste Woche">→</a>
+        </nav>
+      </div>
+
+      <aside class="callout callout--info">
+        <div>
+          <div class="callout__body">Sa 1. August ist als Feiertag hinterlegt — das Widget bietet dort keine Slots an. Verwalten unter Einstellungen → Öffnungszeiten.</div>
+        </div>
+      </aside>
+
+      <div class="cal-wrap">
+        <div class="cal" style="--cal-days: 6; --cal-rows: 8;" role="grid" aria-label="Wochenkalender KW 28, 09:00 bis 17:00">
+          <div class="cal__corner" aria-hidden="true"></div>
+          <div class="cal__day">Mo 6.7.</div>
+          <div class="cal__day">Di 7.7.</div>
+          <div class="cal__day cal__day--today">Mi 8.7. · heute</div>
+          <div class="cal__day">Do 9.7.</div>
+          <div class="cal__day">Fr 10.7.</div>
+          <div class="cal__day">Sa 11.7.</div>
+
+          <div class="cal__col" style="--cal-col: 0" aria-hidden="true"></div>
+          <div class="cal__col" style="--cal-col: 1" aria-hidden="true"></div>
+          <div class="cal__col" style="--cal-col: 2" aria-hidden="true"></div>
+          <div class="cal__col" style="--cal-col: 3" aria-hidden="true"></div>
+          <div class="cal__col" style="--cal-col: 4" aria-hidden="true"></div>
+          <div class="cal__col" style="--cal-col: 5" aria-hidden="true"></div>
+
+          <span class="cal__time" style="--cal-row: 0">09:00</span>
+          <span class="cal__time" style="--cal-row: 1">10:00</span>
+          <span class="cal__time" style="--cal-row: 2">11:00</span>
+          <span class="cal__time" style="--cal-row: 3">12:00</span>
+          <span class="cal__time" style="--cal-row: 4">13:00</span>
+          <span class="cal__time" style="--cal-row: 5">14:00</span>
+          <span class="cal__time" style="--cal-row: 6">15:00</span>
+          <span class="cal__time" style="--cal-row: 7">16:00</span>
+
+          <!-- Montag -->
+          <button class="cal__event cal__event--c2" style="--cal-col: 0; --cal-row: 0;"><span class="cal__event-title">Huber</span><span class="cal__event-meta">09:00 · Sandra</span></button>
+          <button class="cal__event cal__event--c5" style="--cal-col: 0; --cal-row: 1;"><span class="cal__event-title">Roth</span><span class="cal__event-meta">10:00 · Marco</span></button>
+          <button class="cal__event cal__event--c2" style="--cal-col: 0; --cal-row: 4;"><span class="cal__event-title">Vogel</span><span class="cal__event-meta">13:00 · Sandra</span></button>
+          <button class="cal__event cal__event--c5" style="--cal-col: 0; --cal-row: 6;"><span class="cal__event-title">Näf</span><span class="cal__event-meta">15:00 · Marco</span></button>
+
+          <!-- Dienstag -->
+          <button class="cal__event cal__event--c2" style="--cal-col: 1; --cal-row: 0;"><span class="cal__event-title">Keller</span><span class="cal__event-meta">09:00 · Sandra</span></button>
+          <button class="cal__event cal__event--c5" style="--cal-col: 1; --cal-row: 2;"><span class="cal__event-title">Blaser</span><span class="cal__event-meta">11:00 · Marco</span></button>
+          <button class="cal__event cal__event--c2" style="--cal-col: 1; --cal-row: 4;"><span class="cal__event-title">Meyer</span><span class="cal__event-meta">13:00 · Sandra</span></button>
+          <button class="cal__event cal__event--c2" style="--cal-col: 1; --cal-row: 5;"><span class="cal__event-title">Bieri</span><span class="cal__event-meta">14:00 · Sandra</span></button>
+          <button class="cal__event cal__event--c2" style="--cal-col: 1; --cal-row: 7;"><span class="cal__event-title">Suter</span><span class="cal__event-meta">16:00 · Sandra</span></button>
+
+          <!-- Mittwoch (heute) -->
+          <button class="cal__event cal__event--c2" style="--cal-col: 2; --cal-row: 0;"><span class="cal__event-title">Meier</span><span class="cal__event-meta">09:00 · Sandra</span></button>
+          <button class="cal__event cal__event--pending" style="--cal-col: 2; --cal-row: 1;"><span class="cal__event-title">Steiner</span><span class="cal__event-meta">10:15 · unbestätigt</span></button>
+          <div class="cal__event cal__event--blocked" style="--cal-col: 2; --cal-row: 2;"><span class="cal__event-title">Blockiert</span><span class="cal__event-meta">Lieferung</span></div>
+          <button class="cal__event cal__event--c5" style="--cal-col: 2; --cal-row: 4;"><span class="cal__event-title">Vogel</span><span class="cal__event-meta">13:30 · Marco</span></button>
+          <button class="cal__event cal__event--c5" style="--cal-col: 2; --cal-row: 6;"><span class="cal__event-title">Brunner</span><span class="cal__event-meta">15:00 · Marco</span></button>
+
+          <!-- Donnerstag -->
+          <button class="cal__event cal__event--c2" style="--cal-col: 3; --cal-row: 1; --cal-span: 2;"><span class="cal__event-title">Schmid</span><span class="cal__event-meta">10:00 – 11:45 · Farbe + Schnitt · Sandra</span></button>
+          <button class="cal__event cal__event--c5" style="--cal-col: 3; --cal-row: 4;"><span class="cal__event-title">Kunz</span><span class="cal__event-meta">13:00 · Marco</span></button>
+          <button class="cal__event cal__event--c5" style="--cal-col: 3; --cal-row: 5;"><span class="cal__event-title">Brunner</span><span class="cal__event-meta">14:00 · Marco</span></button>
+          <button class="cal__event cal__event--c2" style="--cal-col: 3; --cal-row: 7;"><span class="cal__event-title">Zbinden</span><span class="cal__event-meta">16:00 · Sandra</span></button>
+
+          <!-- Freitag -->
+          <button class="cal__event cal__event--c5" style="--cal-col: 4; --cal-row: 0;"><span class="cal__event-title">Gerber</span><span class="cal__event-meta">09:00 · Marco</span></button>
+          <button class="cal__event cal__event--c2" style="--cal-col: 4; --cal-row: 2;"><span class="cal__event-title">Weber</span><span class="cal__event-meta">11:00 · Sandra</span></button>
+          <button class="cal__event cal__event--c2" style="--cal-col: 4; --cal-row: 5;"><span class="cal__event-title">Lang</span><span class="cal__event-meta">14:00 · Sandra</span></button>
+          <button class="cal__event cal__event--c5" style="--cal-col: 4; --cal-row: 7;"><span class="cal__event-title">Egli</span><span class="cal__event-meta">16:00 · Marco</span></button>
+
+          <!-- Samstag — inkl. Lane-Teilung für parallele Termine um 09:00 -->
+          <button class="cal__event cal__event--c2" style="--cal-col: 5; --cal-row: 0; --cal-lanes: 2; --cal-lane: 0;"><span class="cal__event-title">Arnold</span><span class="cal__event-meta">09:00 · Sandra</span></button>
+          <button class="cal__event cal__event--c5" style="--cal-col: 5; --cal-row: 0; --cal-lanes: 2; --cal-lane: 1;"><span class="cal__event-title">Marti</span><span class="cal__event-meta">09:00 · Marco</span></button>
+          <button class="cal__event cal__event--c2" style="--cal-col: 5; --cal-row: 2;"><span class="cal__event-title">Frei</span><span class="cal__event-meta">11:00 · Sandra</span></button>
+          <div class="cal__event cal__event--blocked" style="--cal-col: 5; --cal-row: 4;"><span class="cal__event-title">Blockiert</span><span class="cal__event-meta">privat</span></div>
+          <button class="cal__event cal__event--c2" style="--cal-col: 5; --cal-row: 5;"><span class="cal__event-title">Huber</span><span class="cal__event-meta">14:00 · Sandra</span></button>
+          <button class="cal__event cal__event--pending" style="--cal-col: 5; --cal-row: 6;"><span class="cal__event-title">Warteliste</span><span class="cal__event-meta">Angebot läuft · 12 min</span></button>
+
+          <!-- Jetzt-Linie: Mi ~09:40 -->
+          <div class="cal__now" style="--cal-row: 0; --cal-now-offset: 0.66;" aria-hidden="true"></div>
+        </div>
+      </div>
+
+      <div class="cluster cluster--md" style="font-size: var(--font-sm); color: var(--color-text-secondary);">
+        <span class="cluster cluster--sm"><span class="chart__swatch" style="--swatch: var(--staff-2-bg)"></span> Sandra</span>
+        <span class="cluster cluster--sm"><span class="chart__swatch" style="--swatch: var(--staff-5-bg)"></span> Marco</span>
+        <span class="cluster cluster--sm"><span class="chart__swatch" style="--swatch: var(--status-warning-bg)"></span> unbestätigt / Warteliste</span>
+        <span class="cluster cluster--sm"><span class="chart__swatch" style="--swatch: var(--color-bg-tertiary)"></span> blockiert</span>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="app-shell__footer">
+    <div class="cluster cluster--between">
+      <span>Referenz-Demo Archetyp B, Kalender-Variante (cal-Komponente) — 100 % DS-Token</span>
+      <a href="demo-gallery.html" style="color: inherit;">← Alle Demos</a>
+    </div>
+  </footer>
+
+</div>
+
+<!-- Verfügbarkeit je Staff (absorbiert die alte Route /verfuegbarkeit) -->
+<dialog class="drawer drawer--end" id="avail-drawer">
+  <header class="drawer__header">
+    <h2 class="drawer__title" style="font-size: var(--text-size-h4);">Verfügbarkeit · Sandra</h2>
+    <button class="drawer__close" aria-label="Schließen">×</button>
+  </header>
+  <div class="drawer__body stack stack--md">
+    <div class="stack stack--sm">
+      <label class="choice"><input type="checkbox" class="switch" role="switch" checked><span>Montag <span class="choice__hint">09:00 – 18:00</span></span></label>
+      <label class="choice"><input type="checkbox" class="switch" role="switch" checked><span>Dienstag <span class="choice__hint">09:00 – 18:00</span></span></label>
+      <label class="choice"><input type="checkbox" class="switch" role="switch" checked><span>Mittwoch <span class="choice__hint">09:00 – 18:00</span></span></label>
+      <label class="choice"><input type="checkbox" class="switch" role="switch" checked><span>Donnerstag <span class="choice__hint">11:00 – 20:00 · Abendtermine</span></span></label>
+      <label class="choice"><input type="checkbox" class="switch" role="switch" checked><span>Freitag <span class="choice__hint">09:00 – 18:00</span></span></label>
+      <label class="choice"><input type="checkbox" class="switch" role="switch" checked><span>Samstag <span class="choice__hint">08:00 – 14:00</span></span></label>
+      <label class="choice"><input type="checkbox" class="switch" role="switch"><span>Sonntag <span class="choice__hint">geschlossen</span></span></label>
+    </div>
+    <hr class="divider">
+    <div class="field">
+      <label class="field__label" for="abs-range">Abwesenheit eintragen</label>
+      <div class="date-range">
+        <input type="date" id="abs-range" aria-label="Von" value="2026-07-20">
+        <span class="date-range__separator" aria-hidden="true">—</span>
+        <input type="date" aria-label="Bis" value="2026-08-02">
+      </div>
+      <p class="field__hint">Betriebsferien: Das Widget zeigt in diesem Zeitraum keine Slots für Sandra.</p>
+    </div>
+    <div class="cluster cluster--sm">
+      <button class="btn">Speichern</button>
+      <button class="btn btn--ghost" data-close-dialog>Abbrechen</button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  document.querySelectorAll("[data-theme-toggle]").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const root = document.documentElement;
+      const next = (root.getAttribute("data-mode") || "light") === "dark" ? "light" : "dark";
+      root.setAttribute("data-mode", next);
+      btn.setAttribute("aria-label", next === "dark" ? "Auf Light Mode wechseln" : "Auf Dark Mode wechseln");
+    });
+  });
+  document.querySelectorAll("[data-open-drawer]").forEach((btn) =>
+    btn.addEventListener("click", () => document.getElementById(btn.dataset.openDrawer).showModal())
+  );
+  document.querySelectorAll(".drawer__close, [data-close-dialog]").forEach((btn) =>
+    btn.addEventListener("click", () => btn.closest("dialog").close())
+  );
+
+  // Tone-Umschalter: wirkt sofort und bleibt via localStorage über Seitenwechsel erhalten.
+  (() => {
+    const root = document.documentElement;
+    const stored = localStorage.getItem("gws-demo-tone");
+    if (stored) root.setAttribute("data-tone", stored);
+    const sel = document.querySelector("[data-tone-select]");
+    if (!sel) return;
+    sel.value = root.getAttribute("data-tone") || "trust";
+    sel.addEventListener("change", () => {
+      root.setAttribute("data-tone", sel.value);
+      localStorage.setItem("gws-demo-tone", sel.value);
+    });
+  })();
+</script>
+
+</body>
+</html>
